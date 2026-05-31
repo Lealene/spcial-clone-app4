@@ -8,7 +8,7 @@ import { useAuth } from "@/providers/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser } = useAuth(); // ✅ ADD THIS
+  const { setUser } = useAuth(); 
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       const user = await loginUser(username, password);
 
-      // ✅ CRITICAL FIX: update global auth state
+      
       setUser(user);
 
       router.push("/");
