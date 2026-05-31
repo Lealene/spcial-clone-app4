@@ -156,12 +156,12 @@ export default function HomePage() {
 
               <p>{post.content}</p>
 
-              {/* ACTION ROW */}
+             
               <div style={styles.row}>
-                {/* COMMENT */}
+                
                 <span>💬 {post._count.comments}</span>
 
-                {/* LIKE */}
+              
                 <button
                   onClick={(e) => {
                     e.preventDefault();
