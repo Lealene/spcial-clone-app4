@@ -21,7 +21,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // 🔒 AUTH GUARD
+ 
   useEffect(() => {
     const stored = localStorage.getItem("user");
 
@@ -57,7 +57,7 @@ export default function SettingsPage() {
 
       const updated = await res.json();
 
-      // 🔁 sync localStorage
+      
       localStorage.setItem("user", JSON.stringify(updated));
 
       alert("Profile updated!");
@@ -82,13 +82,13 @@ export default function SettingsPage() {
     <div style={styles.container}>
       <h1>Settings</h1>
 
-      {/* EMAIL (READ ONLY) */}
+      
       <div style={styles.field}>
         <label>Email</label>
         <input value={user.email} disabled style={styles.inputDisabled} />
       </div>
 
-      {/* USERNAME */}
+      
       <div style={styles.field}>
         <label>Username</label>
         <input
@@ -98,7 +98,7 @@ export default function SettingsPage() {
         />
       </div>
 
-      {/* BIO */}
+     
       <div style={styles.field}>
         <label>Bio</label>
         <textarea
