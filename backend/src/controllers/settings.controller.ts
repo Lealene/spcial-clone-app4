@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { prisma } from "../lib/prisma.js";
 
-// PUT /api/settings
+
 export const updateSettings = async (req: any, res: Response) => {
   try {
     const { username, bio } = req.body;
@@ -10,7 +10,7 @@ export const updateSettings = async (req: any, res: Response) => {
       return res.status(400).json({ message: "Username is required" });
     }
 
-    // Check username not taken by someone else
+  
     const existing = await prisma.user.findUnique({
       where: { username: username.trim() },
     });
