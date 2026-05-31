@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
 
-// REGISTER
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, username, password } = req.body;
@@ -40,7 +40,7 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-// LOGIN
+
 export const login = async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
