@@ -25,7 +25,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <Navbar />
-            {/* push content below fixed navbar */}
+          
             <div style={{ paddingTop: "56px" }}>{children}</div>
           </AuthProvider>
         </QueryProvider>
