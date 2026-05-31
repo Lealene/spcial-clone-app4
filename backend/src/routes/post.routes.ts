@@ -21,7 +21,7 @@ router.delete("/:id", requireAuth, deletePost);
 
 router.post("/:id/comments", requireAuth, createComment);
 
-// ❤️ LIKE ROUTE
+
 router.post("/:id/like", requireAuth, toggleLike);
 
 export default router;
