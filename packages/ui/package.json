@@ -1,0 +1,31 @@
+{
+  "name": "@mvp-realty/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@mvp-realty/eslint-config": "workspace:*",
+    "@mvp-realty/prettier-config": "workspace:*",
+    "@mvp-realty/typescript-config": "workspace:*",
+    "@mvp-realty/vitest-config": "workspace:*",
+    "@types/react": "^19.0.0",
+    "eslint": "^9.13.0",
+    "react": "^19.2.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.1.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "prettier": "@mvp-realty/prettier-config"
+}
