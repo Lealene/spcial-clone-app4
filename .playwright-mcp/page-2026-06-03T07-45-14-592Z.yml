@@ -1,0 +1,31 @@
+- generic [active] [ref=e1]:
+    - main [ref=e2]:
+        - generic [ref=e3]:
+            - heading "UI kit" [level=1] [ref=e4]
+            - paragraph [ref=e5]:
+                - text: shadcn/ui components, served from
+                - code [ref=e6]: '@mvp-realty/ui'
+                - text: .
+        - generic [ref=e7]:
+            - button "Primary" [ref=e8]
+            - button "Secondary" [ref=e9]
+            - button "Outline" [ref=e10]
+            - button "Destructive" [ref=e11]
+            - button "Ghost" [ref=e12]
+            - generic [ref=e13]: Badge
+            - generic [ref=e14]: Secondary
+            - generic [ref=e15]: Outline
+        - generic [ref=e16]:
+            - generic [ref=e17]:
+                - generic [ref=e18]: Sign in
+                - generic [ref=e19]: Verifies cards, inputs, and labels render.
+            - generic [ref=e20]:
+                - generic [ref=e21]:
+                    - generic [ref=e22]: Email
+                    - textbox "Email" [ref=e23]:
+                        - /placeholder: you@example.com
+                - generic [ref=e24]:
+                    - generic [ref=e25]: Password
+                    - textbox "Password" [ref=e26]
+            - button "Continue" [ref=e28]
+    - alert [ref=e29]
