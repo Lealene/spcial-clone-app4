@@ -1,30 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { registerUser } from "@/lib/auth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { registerUser } from "@/lib/auth";
+import { useAuth } from "@/providers/AuthProvider";
+
+type RegisterForm = {
+  email: string;
+  username: string;
+  password: string;
+};
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { setUser } = useAuth();
 
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterForm>();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const registerMutation = useMutation({
+    mutationFn: registerUser,
 
-    try {
-      await registerUser({ email, username, password });
-      router.push("/"); // go to feed after register
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setLoading(false);
-    }
+    onSuccess: (data) => {
+      setUser(data.user);
+      router.push("/");
+    },
+
+    onError: (error) => {
+      console.error("Register Error:", error);
+    },
+  });
+
+  const onSubmit = (data: RegisterForm) => {
+    console.log("Submitting:", data);
+    registerMutation.mutate(data);
   };
 
   return (
@@ -50,104 +64,119 @@ export default function RegisterPage() {
           boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: "35px" }}>
-          <h1
-            style={{
-              fontSize: "36px",
-              fontWeight: "bold",
-              color: "white",
-              marginBottom: "10px",
-            }}
-          >
-            Create Account
-          </h1>
-          <p style={{ color: "#cbd5e1" }}>Join SocialClone today</p>
-        </div>
+        <h1
+          style={{
+            textAlign: "center",
+            color: "white",
+            marginBottom: "30px",
+          }}
+        >
+          Create Account
+        </h1>
 
         <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "18px" }}
+          onSubmit={handleSubmit(onSubmit)}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
         >
-          {[
-            {
-              label: "Email",
-              type: "email",
-              value: email,
-              setter: setEmail,
-              placeholder: "Enter email",
-            },
-            {
-              label: "Username",
-              type: "text",
-              value: username,
-              setter: setUsername,
-              placeholder: "Choose a username",
-            },
-            {
-              label: "Password",
-              type: "password",
-              value: password,
-              setter: setPassword,
-              placeholder: "Create a password",
-            },
-          ].map(({ label, type, value, setter, placeholder }) => (
-            <div key={label}>
-              <label style={{ color: "white", fontSize: "14px" }}>
-                {label}
-              </label>
-              <input
-                type={type}
-                placeholder={placeholder}
-                value={value}
-                onChange={(e) => setter(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  marginTop: "8px",
-                  padding: "14px",
-                  borderRadius: "12px",
-                  border: "1px solid #334155",
-                  background: "#0f172a",
-                  color: "white",
-                  outline: "none",
-                  fontSize: "15px",
-                  boxSizing: "border-box",
-                }}
-              />
+          <div>
+            <input
+              type="email"
+              placeholder="Email"
+              {...register("email", {
+                required: "Email is required",
+              })}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+              }}
+            />
+
+            {errors.email && (
+              <p style={{ color: "red" }}>{errors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Username"
+              {...register("username", {
+                required: "Username is required",
+              })}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+              }}
+            />
+
+            {errors.username && (
+              <p style={{ color: "red" }}>{errors.username.message}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="password"
+              placeholder="Password"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+              }}
+            />
+
+            {errors.password && (
+              <p style={{ color: "red" }}>{errors.password.message}</p>
+            )}
+          </div>
+
+          {registerMutation.isError && (
+            <div
+              style={{
+                color: "red",
+              }}
+            >
+              {(registerMutation.error as Error).message}
             </div>
-          ))}
+          )}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={registerMutation.isPending}
             style={{
-              marginTop: "10px",
-              padding: "14px",
-              borderRadius: "12px",
+              padding: "12px",
               border: "none",
+              borderRadius: "10px",
               background: "#2563eb",
               color: "white",
-              fontSize: "16px",
-              fontWeight: "bold",
               cursor: "pointer",
             }}
           >
-            {loading ? "Creating account..." : "Register"}
+            {registerMutation.isPending ? "Creating account..." : "Register"}
           </button>
         </form>
 
-        <p style={{ textAlign: "center", marginTop: "25px", color: "#cbd5e1" }}>
-          Already have an account?{" "}
-          <Link
-            href="/login"
-            style={{
-              color: "#60a5fa",
-              textDecoration: "none",
-              fontWeight: "bold",
-            }}
-          >
-            Login
-          </Link>
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "20px",
+            color: "#cbd5e1",
+          }}
+        >
+          Already have an account? <Link href="/login">Login</Link>
         </p>
       </div>
     </div>

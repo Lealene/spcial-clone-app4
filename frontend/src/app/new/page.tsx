@@ -1,40 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 
 const MAX_CHARS = 500;
 
+type PostForm = {
+  content: string;
+};
+
 export default function NewPostPage() {
   const router = useRouter();
-  const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  // Protect route
+  const { register, handleSubmit, watch, reset } = useForm<PostForm>({
+    defaultValues: {
+      content: "",
+    },
+  });
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) router.replace("/login");
+
+    if (!token) {
+      router.replace("/login");
+    }
   }, [router]);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim()) return alert("Post cannot be empty");
-    if (content.length > MAX_CHARS) return alert(`Max ${MAX_CHARS} characters`);
-
-    setLoading(true);
-    try {
-      await apiFetch("/posts", {
+  const createPostMutation = useMutation({
+    mutationFn: async (data: PostForm) => {
+      return apiFetch("/posts", {
         method: "POST",
-        body: JSON.stringify({ content }),
+        body: JSON.stringify(data),
       });
+    },
+
+    onSuccess: () => {
+      reset();
       router.push("/");
-    } catch (err: any) {
-      alert(err.message || "Failed to create post");
-    } finally {
-      setLoading(false);
+    },
+
+    onError: (error: any) => {
+      alert(error?.message || "Failed to create post");
+    },
+  });
+
+  const onSubmit = (data: PostForm) => {
+    if (!data.content.trim()) {
+      alert("Post cannot be empty");
+      return;
     }
+
+    if (data.content.length > MAX_CHARS) {
+      alert(`Max ${MAX_CHARS} characters`);
+      return;
+    }
+
+    createPostMutation.mutate(data);
   };
+
+  const content = watch("content") || "";
 
   const remaining = MAX_CHARS - content.length;
   const overLimit = remaining < 0;
@@ -44,17 +71,17 @@ export default function NewPostPage() {
       <div style={styles.card}>
         <h1 style={styles.title}>Create Post</h1>
 
-        <form onSubmit={submit} style={styles.form}>
+        <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
           <div style={{ position: "relative" }}>
             <textarea
               placeholder="What's on your mind?"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              {...register("content")}
               style={{
                 ...styles.textarea,
                 borderColor: overLimit ? "#ef4444" : "#334155",
               }}
             />
+
             <span
               style={{
                 position: "absolute",
@@ -74,13 +101,18 @@ export default function NewPostPage() {
 
           <button
             type="submit"
-            disabled={loading || overLimit || !content.trim()}
+            disabled={
+              createPostMutation.isPending || overLimit || !content.trim()
+            }
             style={{
               ...styles.button,
-              opacity: loading || overLimit || !content.trim() ? 0.6 : 1,
+              opacity:
+                createPostMutation.isPending || overLimit || !content.trim()
+                  ? 0.6
+                  : 1,
             }}
           >
-            {loading ? "Posting..." : "Post"}
+            {createPostMutation.isPending ? "Posting..." : "Post"}
           </button>
         </form>
       </div>
@@ -97,6 +129,7 @@ const styles: any = {
     alignItems: "flex-start",
     padding: "40px 16px",
   },
+
   card: {
     width: "100%",
     maxWidth: 560,
@@ -105,8 +138,19 @@ const styles: any = {
     borderRadius: 16,
     border: "1px solid #1f2937",
   },
-  title: { color: "white", fontSize: 22, marginBottom: 20 },
-  form: { display: "flex", flexDirection: "column", gap: 16 },
+
+  title: {
+    color: "white",
+    fontSize: 22,
+    marginBottom: 20,
+  },
+
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+  },
+
   textarea: {
     width: "100%",
     height: 160,
@@ -120,6 +164,7 @@ const styles: any = {
     outline: "none",
     boxSizing: "border-box",
   },
+
   button: {
     padding: 14,
     background: "#2563eb",

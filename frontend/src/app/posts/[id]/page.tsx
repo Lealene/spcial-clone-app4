@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 
 type User = {
   id: string;
@@ -29,51 +30,42 @@ type Post = {
   likedByMe: boolean;
 };
 
+type CommentForm = {
+  content: string;
+};
+
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export default function PostPage() {
   const params = useParams();
   const id = params?.id as string;
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [comment, setComment] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [posting, setPosting] = useState(false);
+  const { register, handleSubmit, reset } = useForm<CommentForm>();
 
-  const loadPost = async () => {
-    try {
-      setLoading(true);
+  const {
+    data: post,
+    isLoading,
+    refetch,
+  } = useQuery<Post>({
+    queryKey: ["post", id],
 
+    queryFn: async () => {
       const res = await fetch(`${API}/posts/${id}`);
 
       if (!res.ok) {
         throw new Error("Failed to load post");
       }
 
-      const data = await res.json();
+      return res.json();
+    },
 
-      console.log("POST DATA:", data);
+    enabled: !!id,
+  });
 
-      setPost(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const likeMutation = useMutation({
+    mutationFn: async () => {
+      const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    if (id) {
-      loadPost();
-    }
-  }, [id]);
-
-  const toggleLike = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token || !post) return;
-
-    try {
       const res = await fetch(`${API}/posts/${id}/like`, {
         method: "POST",
         headers: {
@@ -81,51 +73,45 @@ export default function PostPage() {
         },
       });
 
-      const data = await res.json();
+      return res.json();
+    },
 
-      setPost((prev) =>
-        prev
-          ? {
-              ...prev,
-              likes: data.likes,
-              likedByMe: data.liked,
-            }
-          : prev,
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
-  const submitComment = async () => {
-    const token = localStorage.getItem("token");
+  const commentMutation = useMutation({
+    mutationFn: async (data: CommentForm) => {
+      const token = localStorage.getItem("token");
 
-    if (!token || !comment.trim()) return;
-
-    try {
-      setPosting(true);
-
-      await fetch(`${API}/posts/${id}/comments`, {
+      const res = await fetch(`${API}/posts/${id}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          content: comment,
-        }),
+        body: JSON.stringify(data),
       });
 
-      setComment("");
-      await loadPost();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setPosting(false);
-    }
+      if (!res.ok) {
+        throw new Error("Failed to comment");
+      }
+
+      return res.json();
+    },
+
+    onSuccess: () => {
+      reset();
+      refetch();
+    },
+  });
+
+  const onSubmit = (data: CommentForm) => {
+    commentMutation.mutate(data);
   };
 
-  if (loading) {
+  if (isLoading) {
     return <div style={{ padding: 20, color: "white" }}>Loading...</div>;
   }
 
@@ -162,7 +148,7 @@ export default function PostPage() {
         <p>{post.content}</p>
 
         <button
-          onClick={toggleLike}
+          onClick={() => likeMutation.mutate()}
           style={{
             marginTop: 10,
             background: "none",
@@ -178,32 +164,35 @@ export default function PostPage() {
 
       <h3 style={{ marginTop: 25 }}>Add Comment</h3>
 
-      <textarea
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        placeholder="Write a comment..."
-        style={{
-          width: "100%",
-          minHeight: 100,
-          padding: 10,
-          borderRadius: 8,
-        }}
-      />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <textarea
+          {...register("content", {
+            required: true,
+          })}
+          placeholder="Write a comment..."
+          style={{
+            width: "100%",
+            minHeight: 100,
+            padding: 10,
+            borderRadius: 8,
+          }}
+        />
 
-      <button
-        onClick={submitComment}
-        disabled={posting}
-        style={{
-          marginTop: 10,
-          padding: "10px 20px",
-        }}
-      >
-        {posting ? "Posting..." : "Post Comment"}
-      </button>
+        <button
+          type="submit"
+          disabled={commentMutation.isPending}
+          style={{
+            marginTop: 10,
+            padding: "10px 20px",
+          }}
+        >
+          {commentMutation.isPending ? "Posting..." : "Post Comment"}
+        </button>
+      </form>
 
-      <h3 style={{ marginTop: 30 }}>Comments ({post.comments?.length || 0})</h3>
+      <h3 style={{ marginTop: 30 }}>Comments ({post.comments.length})</h3>
 
-      {post.comments?.map((c) => {
+      {post.comments.map((c) => {
         const commentUser =
           c.user?.username || c.author?.username || "Unknown User";
 

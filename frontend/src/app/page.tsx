@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 type Post = {
   id: string;
@@ -22,64 +27,65 @@ type Post = {
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export default function HomePage() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchPosts = useCallback(
-    async (pageNum: number) => {
-      if (loading) return;
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["posts"],
 
-      setLoading(true);
-
-      try {
-        const res = await fetch(`${API}/posts?page=${pageNum}`);
+      queryFn: async ({ pageParam = 1 }) => {
+        const res = await fetch(`${API}/posts?page=${pageParam}`);
 
         if (!res.ok) {
-          throw new Error(`HTTP Error: ${res.status}`);
+          throw new Error("Failed to fetch posts");
         }
 
-        const data = await res.json();
+        return res.json();
+      },
 
-        setPosts((prev) => {
-          const merged: Post[] =
-            pageNum === 1 ? data.posts : [...prev, ...data.posts];
+      initialPageParam: 1,
 
-          const seen = new Set<string>();
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage.hasMore ? pages.length + 1 : undefined;
+      },
+    });
 
-          return merged.filter((post) => {
-            if (seen.has(post.id)) {
-              return false;
-            }
+  const posts: Post[] = data?.pages.flatMap((page) => page.posts) ?? [];
 
-            seen.add(post.id);
-            return true;
-          });
-        });
+  const likeMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      const token = localStorage.getItem("token");
 
-        setHasMore(Boolean(data.hasMore));
-      } catch (err) {
-        console.error("Failed to fetch posts:", err);
-      } finally {
-        setLoading(false);
+      const res = await fetch(`${API}/posts/${postId}/like`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to like post");
       }
-    },
-    [loading],
-  );
 
-  useEffect(() => {
-    fetchPosts(1);
-  }, []);
+      return res.json();
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
+      });
+    },
+  });
+
+  const toggleLike = (postId: string) => {
+    likeMutation.mutate(postId);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore && !loading) {
-        const next = page + 1;
-        setPage(next);
-        fetchPosts(next);
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
       }
     });
 
@@ -88,63 +94,18 @@ export default function HomePage() {
     }
 
     return () => observer.disconnect();
-  }, [hasMore, loading, page, fetchPosts]);
-
-  const toggleLike = async (postId: string) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === postId
-          ? {
-              ...p,
-              likedByMe: !p.likedByMe,
-              likes: p.likedByMe ? p.likes - 1 : p.likes + 1,
-            }
-          : p,
-      ),
-    );
-
-    try {
-      const res = await fetch(`${API}/posts/${postId}/like`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      setPosts((prev) =>
-        prev.map((p) =>
-          p.id === postId
-            ? {
-                ...p,
-                likes: data.likes,
-                likedByMe: data.liked,
-              }
-            : p,
-        ),
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  console.log(
-    "POST IDS:",
-    posts.map((p) => p.id),
-  );
+  }, [fetchNextPage, hasNextPage]);
 
   return (
     <div style={styles.page}>
       <div style={styles.feed}>
         <h1>Latest Posts</h1>
 
-        {posts.map((post, index) => (
+        {isLoading && <p style={{ textAlign: "center" }}>Loading posts...</p>}
+
+        {posts.map((post) => (
           <Link
-            key={`${post.id}-${index}`}
+            key={post.id}
             href={`/posts/${post.id}`}
             style={{
               textDecoration: "none",
@@ -156,12 +117,9 @@ export default function HomePage() {
 
               <p>{post.content}</p>
 
-              {/* ACTION ROW */}
               <div style={styles.row}>
-                {/* COMMENT */}
                 <span>💬 {post._count.comments}</span>
 
-                {/* LIKE */}
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -178,6 +136,7 @@ export default function HomePage() {
                   }}
                 >
                   {post.likedByMe ? "❤️" : "🤍"}
+
                   <span>{post.likes}</span>
                 </button>
               </div>
@@ -187,7 +146,9 @@ export default function HomePage() {
 
         <div ref={loaderRef} />
 
-        {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
+        {isFetchingNextPage && (
+          <p style={{ textAlign: "center" }}>Loading more...</p>
+        )}
       </div>
     </div>
   );

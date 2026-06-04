@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 type User = {
   id: string;
@@ -10,69 +12,95 @@ type User = {
   bio?: string;
 };
 
+type FormData = {
+  username: string;
+  bio: string;
+};
+
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export default function SettingsPage() {
   const router = useRouter();
 
-  const [user, setUser] = useState<User | null>(null);
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { register, handleSubmit, reset } = useForm<FormData>({
+    defaultValues: {
+      username: "",
+      bio: "",
+    },
+  });
 
-  // 🔒 AUTH GUARD
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: async () => {
+      const stored = localStorage.getItem("user");
+
+      if (!stored) {
+        throw new Error("No user found");
+      }
+
+      return JSON.parse(stored) as User;
+    },
+  });
+
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-
-    if (!stored) {
+    if (!isLoading && !user) {
       router.push("/login");
-      return;
     }
+  }, [user, isLoading, router]);
 
-    const parsed: User = JSON.parse(stored);
+  useEffect(() => {
+    if (user) {
+      reset({
+        username: user.username,
+        bio: user.bio || "",
+      });
+    }
+  }, [user, reset]);
 
-    setUser(parsed);
-    setUsername(parsed.username);
-    setBio(parsed.bio || "");
-    setLoading(false);
-  }, [router]);
-
-  const saveChanges = async () => {
-    if (!user) return;
-
-    setSaving(true);
-
-    try {
-      const res = await fetch(`${API}/users/${user.id}`, {
+  const updateProfile = useMutation({
+    mutationFn: async (data: FormData) => {
+      const res = await fetch(`${API}/users/${user?.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          bio,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Failed to update profile");
+      if (!res.ok) {
+        throw new Error("Failed to update profile");
+      }
 
-      const updated = await res.json();
+      return res.json();
+    },
 
-      // 🔁 sync localStorage
+    onSuccess: (updated) => {
       localStorage.setItem("user", JSON.stringify(updated));
 
       alert("Profile updated!");
 
       router.push(`/profile/${updated.username}`);
-    } catch (err) {
+    },
+
+    onError: () => {
       alert("Update failed");
-    } finally {
-      setSaving(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: FormData) => {
+    updateProfile.mutate(data);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div style={{ padding: 80, color: "white" }}>Loading settings...</div>
+      <div
+        style={{
+          padding: 80,
+          color: "white",
+        }}
+      >
+        Loading settings...
+      </div>
     );
   }
 
@@ -82,35 +110,36 @@ export default function SettingsPage() {
     <div style={styles.container}>
       <h1>Settings</h1>
 
-      {/* EMAIL (READ ONLY) */}
-      <div style={styles.field}>
-        <label>Email</label>
-        <input value={user.email} disabled style={styles.inputDisabled} />
-      </div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div style={styles.field}>
+          <label>Email</label>
+          <input value={user.email} disabled style={styles.inputDisabled} />
+        </div>
 
-      {/* USERNAME */}
-      <div style={styles.field}>
-        <label>Username</label>
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          style={styles.input}
-        />
-      </div>
+        <div style={styles.field}>
+          <label>Username</label>
+          <input
+            {...register("username", {
+              required: "Username is required",
+              minLength: 3,
+            })}
+            style={styles.input}
+          />
+        </div>
 
-      {/* BIO */}
-      <div style={styles.field}>
-        <label>Bio</label>
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          style={styles.textarea}
-        />
-      </div>
+        <div style={styles.field}>
+          <label>Bio</label>
+          <textarea {...register("bio")} style={styles.textarea} />
+        </div>
 
-      <button onClick={saveChanges} style={styles.button}>
-        {saving ? "Saving..." : "Save Changes"}
-      </button>
+        <button
+          type="submit"
+          disabled={updateProfile.isPending}
+          style={styles.button}
+        >
+          {updateProfile.isPending ? "Saving..." : "Save Changes"}
+        </button>
+      </form>
     </div>
   );
 }
@@ -122,11 +151,13 @@ const styles: any = {
     margin: "0 auto",
     color: "white",
   },
+
   field: {
     display: "flex",
     flexDirection: "column",
     marginBottom: 15,
   },
+
   input: {
     padding: 10,
     borderRadius: 8,
@@ -134,6 +165,7 @@ const styles: any = {
     background: "#0f172a",
     color: "white",
   },
+
   inputDisabled: {
     padding: 10,
     borderRadius: 8,
@@ -141,6 +173,7 @@ const styles: any = {
     color: "#94a3b8",
     border: "1px solid #334155",
   },
+
   textarea: {
     padding: 10,
     borderRadius: 8,
@@ -149,6 +182,7 @@ const styles: any = {
     color: "white",
     border: "1px solid #334155",
   },
+
   button: {
     marginTop: 20,
     padding: "10px 16px",

@@ -1,7 +1,7 @@
+import type { Metadata } from "next";
 import QueryProvider from "@/providers/QueryProvider";
 import AuthProvider from "@/providers/AuthProvider";
 import Navbar from "@/components/Navbar";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "SocialClone",
@@ -10,23 +10,32 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
       <body
         style={{
           margin: 0,
-          background: "#0f172a",
+          minHeight: "100vh",
+          backgroundColor: "#0f172a",
+          color: "white",
           fontFamily: "Arial, sans-serif",
         }}
       >
         <QueryProvider>
           <AuthProvider>
             <Navbar />
-            {/* push content below fixed navbar */}
-            <div style={{ paddingTop: "56px" }}>{children}</div>
+
+            <main
+              style={{
+                paddingTop: "56px",
+                minHeight: "calc(100vh - 56px)",
+              }}
+            >
+              {children}
+            </main>
           </AuthProvider>
         </QueryProvider>
       </body>

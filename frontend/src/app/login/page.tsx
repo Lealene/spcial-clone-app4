@@ -2,76 +2,81 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/lib/auth";
 import { useAuth } from "@/providers/AuthProvider";
 
+type LoginForm = {
+  username: string;
+  password: string;
+};
+
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser } = useAuth(); // ✅ ADD THIS
+  const { setUser } = useAuth();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const loginMutation = useMutation({
+    mutationFn: (data: LoginForm) => loginUser(data.username, data.password),
 
-    try {
-      const user = await loginUser(username, password);
-
-      // ✅ CRITICAL FIX: update global auth state
-      setUser(user);
-
+    onSuccess: (data) => {
+      setUser(data.user);
       router.push("/");
-    } catch (err: any) {
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
+    },
+
+    onError: (error: any) => {
+      console.error(error);
+    },
+  });
+
+  const onSubmit = (data: LoginForm) => {
+    loginMutation.mutate(data);
   };
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Welcome Back</h1>
-          <p style={styles.subtitle}>Login to your SocialClone account</p>
-        </div>
+        <h1 style={styles.title}>Welcome Back</h1>
 
-        {error && <div style={styles.errorBox}>⚠️ {error}</div>}
+        <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
+          <input
+            placeholder="Username"
+            {...register("username", {
+              required: "Username is required",
+            })}
+            style={styles.input}
+          />
 
-        <form onSubmit={handleLogin} style={styles.form}>
-          <div style={styles.field}>
-            <label style={styles.label}>Username</label>
-            <input
-              type="text"
-              placeholder="Enter username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
+          {errors.username && <p>{errors.username.message}</p>}
 
-          <div style={styles.field}>
-            <label style={styles.label}>Password</label>
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            {...register("password", {
+              required: "Password is required",
+            })}
+            style={styles.input}
+          />
 
-          <button type="submit" disabled={loading} style={styles.button}>
-            {loading ? "Logging in..." : "Log In"}
+          {errors.password && <p>{errors.password.message}</p>}
+
+          <button
+            type="submit"
+            disabled={loginMutation.isPending}
+            style={styles.button}
+          >
+            {loginMutation.isPending ? "Logging in..." : "Log In"}
           </button>
+
+          {loginMutation.isError && (
+            <p>{(loginMutation.error as any)?.message || "Login failed"}</p>
+          )}
         </form>
 
         <p style={styles.footer}>
@@ -84,7 +89,6 @@ export default function LoginPage() {
     </div>
   );
 }
-
 const styles: any = {
   page: {
     minHeight: "100vh",
