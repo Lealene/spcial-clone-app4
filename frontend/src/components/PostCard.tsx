@@ -40,7 +40,6 @@ export default function PostCard({
     </Link>
   );
 }
-
 const styles: any = {
   card: {
     background: "#111827",
