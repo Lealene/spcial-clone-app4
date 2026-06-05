@@ -3,12 +3,22 @@ import { prisma } from "../lib/prisma.js";
 
 const PAGE_SIZE = 10;
 
-
 export const getProfile = async (req: Request, res: Response) => {
   try {
-    const { username } = req.params;
-    const page = parseInt(req.query.page as string) || 1;
-    const skip = (page - 1) * PAGE_SIZE;
+    const usernameParam = req.params.username;
+    const username = Array.isArray(usernameParam)
+      ? usernameParam[0]
+      : usernameParam;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const pageParam = req.query.page;
+    const pageString = Array.isArray(pageParam) ? pageParam[0] : pageParam;
+    const page = parseInt((pageString as string) || "", 10);
+    const currentPage = Number.isNaN(page) || page < 1 ? 1 : page;
+    const skip = (currentPage - 1) * PAGE_SIZE;
 
     const user = await prisma.user.findUnique({
       where: { username },
