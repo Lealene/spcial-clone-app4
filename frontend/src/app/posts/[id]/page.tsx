@@ -1,269 +1,178 @@
 "use client";
 
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 import { useForm } from "react-hook-form";
-import { useAuth } from "@/providers/AuthProvider";
+import { useMutation } from "@tanstack/react-query";
 
-type User = {
-  id: string;
-  username: string;
-  email: string;
-};
+const MAX_CHARS = 500;
 
-type Comment = {
-  id: string;
-  content: string;
-  createdAt: string;
-  author?: User;
-  user?: User;
-};
-
-type Post = {
-  id: string;
-  content: string;
-  createdAt: string;
-  author?: User;
-  user?: User;
-  comments: Comment[];
-  likes: number;
-  likedByMe: boolean;
-};
-
-type CommentForm = {
+type PostForm = {
   content: string;
 };
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-
-export default function PostPage() {
-  const params = useParams();
-  const id = params?.id as string;
-
+export default function NewPostPage() {
   const router = useRouter();
-  const { user } = useAuth();
-  const { register, handleSubmit, reset } = useForm<CommentForm>();
 
-  const {
-    data: post,
-    isLoading,
-    refetch,
-  } = useQuery<Post>({
-    queryKey: ["post", id],
-
-    queryFn: async () => {
-      const res = await fetch(`${API}/posts/${id}`);
-
-      if (!res.ok) {
-        throw new Error("Failed to load post");
-      }
-
-      return res.json();
+  const { register, handleSubmit, watch, reset } = useForm<PostForm>({
+    defaultValues: {
+      content: "",
     },
-
-    enabled: !!id,
   });
 
-  const likeMutation = useMutation({
-    mutationFn: async () => {
-      const token = localStorage.getItem("token");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-      const res = await fetch(`${API}/posts/${id}/like`, {
+    if (!token) {
+      router.replace("/login");
+    }
+  }, [router]);
+
+  const createPostMutation = useMutation({
+    mutationFn: async (data: PostForm) => {
+      return apiFetch("/posts", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      return res.json();
-    },
-
-    onSuccess: () => {
-      refetch();
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async () => {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(`${API}/posts/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to delete post");
-      }
-
-      return res.json();
-    },
-    onSuccess: () => {
-      router.push("/");
-    },
-  });
-
-  const commentMutation = useMutation({
-    mutationFn: async (data: CommentForm) => {
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(`${API}/posts/${id}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(data),
       });
-
-      if (!res.ok) {
-        throw new Error("Failed to comment");
-      }
-
-      return res.json();
     },
 
     onSuccess: () => {
       reset();
-      refetch();
+      router.push("/");
+    },
+
+    onError: (error: any) => {
+      alert(error?.message || "Failed to create post");
     },
   });
 
-  const onSubmit = (data: CommentForm) => {
-    commentMutation.mutate(data);
+  const onSubmit = (data: PostForm) => {
+    if (!data.content.trim()) {
+      alert("Post cannot be empty");
+      return;
+    }
+
+    if (data.content.length > MAX_CHARS) {
+      alert(`Max ${MAX_CHARS} characters`);
+      return;
+    }
+
+    createPostMutation.mutate(data);
   };
 
-  if (isLoading) {
-    return <div style={{ padding: 20, color: "white" }}>Loading...</div>;
-  }
+  const content = watch("content") || "";
 
-  if (!post) {
-    return (
-      <div style={{ padding: 20, color: "white" }}>Failed to load post.</div>
-    );
-  }
-
-  const username =
-    post.user?.username || post.author?.username || "Unknown User";
-
-  const isOwner =
-    user?.id && (post.user?.id === user.id || post.author?.id === user.id);
+  const remaining = MAX_CHARS - content.length;
+  const overLimit = remaining < 0;
 
   return (
-    <div
-      style={{
-        maxWidth: 700,
-        margin: "0 auto",
-        padding: 20,
-        color: "white",
-      }}
-    >
-      <Link href="/">← Back</Link>
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <h1 style={styles.title}>Create Post</h1>
 
-      <div
-        style={{
-          background: "#111827",
-          padding: 20,
-          borderRadius: 10,
-          marginTop: 15,
-        }}
-      >
-        <p>@{username}</p>
-
-        <p>{post.content}</p>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            alignItems: "center",
-            marginTop: 10,
-          }}
-        >
-          <button
-            onClick={() => likeMutation.mutate()}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: post.likedByMe ? "red" : "white",
-              fontSize: 18,
-            }}
-          >
-            {post.likedByMe ? "❤️" : "🤍"} {post.likes}
-          </button>
-
-          {isOwner && (
-            <button
-              onClick={() => deleteMutation.mutate()}
+        <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
+          <div style={{ position: "relative" }}>
+            <textarea
+              placeholder="What's on your mind?"
+              {...register("content")}
               style={{
-                background: "rgba(239,68,68,0.15)",
-                border: "1px solid #ef4444",
-                borderRadius: 8,
-                color: "#fecaca",
-                padding: "10px 14px",
-                cursor: "pointer",
+                ...styles.textarea,
+                borderColor: overLimit ? "#ef4444" : "#334155",
+              }}
+            />
+
+            <span
+              style={{
+                position: "absolute",
+                bottom: 12,
+                right: 14,
+                fontSize: 12,
+                color: overLimit
+                  ? "#ef4444"
+                  : remaining < 50
+                    ? "#f59e0b"
+                    : "#64748b",
               }}
             >
-              Delete Post
-            </button>
-          )}
-        </div>
-      </div>
+              {remaining}
+            </span>
+          </div>
 
-      <h3 style={{ marginTop: 25 }}>Add Comment</h3>
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <textarea
-          {...register("content", {
-            required: true,
-          })}
-          placeholder="Write a comment..."
-          style={{
-            width: "100%",
-            minHeight: 100,
-            padding: 10,
-            borderRadius: 8,
-          }}
-        />
-
-        <button
-          type="submit"
-          disabled={commentMutation.isPending}
-          style={{
-            marginTop: 10,
-            padding: "10px 20px",
-          }}
-        >
-          {commentMutation.isPending ? "Posting..." : "Post Comment"}
-        </button>
-      </form>
-
-      <h3 style={{ marginTop: 30 }}>Comments ({post.comments.length})</h3>
-
-      {post.comments.map((c) => {
-        const commentUser =
-          c.user?.username || c.author?.username || "Unknown User";
-      
-        return (
-          <div
-            key={c.id}
+          <button
+            type="submit"
+            disabled={
+              createPostMutation.isPending || overLimit || !content.trim()
+            }
             style={{
-              background: "#1f2937",
-              padding: 12,
-              borderRadius: 8,
-              marginBottom: 10,
+              ...styles.button,
+              opacity:
+                createPostMutation.isPending || overLimit || !content.trim()
+                  ? 0.6
+                  : 1,
             }}
           >
-            <p style={{ color: "#60a5fa" }}>@{commentUser}</p>
-
-            <p>{c.content}</p>
-          </div>
-        );
-      })}
+            {createPostMutation.isPending ? "Posting..." : "Post"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
+
+const styles: any = {
+  page: {
+    minHeight: "100vh",
+    background: "#0f172a",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    padding: "40px 16px",
+  },
+
+  card: {
+    width: "100%",
+    maxWidth: 560,
+    background: "#111827",
+    padding: 32,
+    borderRadius: 16,
+    border: "1px solid #1f2937",
+  },
+
+  title: {
+    color: "white",
+    fontSize: 22,
+    marginBottom: 20,
+  },
+
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+  },
+
+  textarea: {
+    width: "100%",
+    height: 160,
+    padding: "14px 14px 32px",
+    borderRadius: 10,
+    border: "1px solid",
+    background: "#0f172a",
+    color: "white",
+    fontSize: 15,
+    resize: "vertical",
+    outline: "none",
+    boxSizing: "border-box",
+  },
+
+  button: {
+    padding: 14,
+    background: "#2563eb",
+    color: "white",
+    border: "none",
+    borderRadius: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+    cursor: "pointer",
+  },
+};
