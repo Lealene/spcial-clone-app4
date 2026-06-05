@@ -10,7 +10,6 @@ export type AuthResponse = {
   };
 };
 
-/* ========================= LOGIN ========================= */
 export async function loginUser(
   username: string,
   password: string,
@@ -32,7 +31,6 @@ export async function loginUser(
   return data;
 }
 
-/* ========================= REGISTER ========================= */
 export async function registerUser(data: {
   email: string;
   username: string;
