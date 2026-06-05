@@ -247,7 +247,7 @@ export default function PostPage() {
       {post.comments.map((c) => {
         const commentUser =
           c.user?.username || c.author?.username || "Unknown User";
-
+      
         return (
           <div
             key={c.id}
