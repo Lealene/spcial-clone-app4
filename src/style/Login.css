@@ -1,0 +1,101 @@
+.login-page {
+  min-height: 100vh;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  width: 350px;
+  background: rgb(107, 105, 105);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.input-group input {
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+
+.error-box {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.forgot {
+  margin-top: 5px;
+  font-size: 12px;
+  text-align: right;
+}
+
+.sign {
+  width: 100%;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.social-message {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background: #ccc;
+}
+
+.message {
+  margin: 0 10px;
+  font-size: 12px;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.icon {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.signup {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 12px;
+}
