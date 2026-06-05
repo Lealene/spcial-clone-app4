@@ -38,7 +38,7 @@ export const getPosts = async (req: any, res: Response) => {
       user: post.author,
       _count: post._count,
 
-      // ❤️ FIXED LIKE SYSTEM
+    
       likes: post._count.likes,
       likedByMe: userId ? (post.likes?.length ?? 0) > 0 : false,
     }));
