@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser } from "@/lib/auth";
+import { useAuth } from "@/providers/AuthProvider";
 
 type RegisterForm = {
   email: string;
@@ -14,6 +15,7 @@ type RegisterForm = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const {
     register,
@@ -24,7 +26,10 @@ export default function RegisterPage() {
   const registerMutation = useMutation({
     mutationFn: registerUser,
 
-    onSuccess: () => {
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
       router.push("/");
     },
 
