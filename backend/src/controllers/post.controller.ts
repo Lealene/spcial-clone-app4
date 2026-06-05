@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma.js";
 
-/* =========================================================
-   GET POSTS (INFINITE FEED + LIKE STATE)
-========================================================= */
+
 export const getPosts = async (req: any, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -52,9 +50,7 @@ export const getPosts = async (req: any, res: Response) => {
   }
 };
 
-/* =========================================================
-   GET SINGLE POST (POST DETAIL PAGE)
-========================================================= */
+
 export const getPost = async (req: any, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -85,7 +81,7 @@ export const getPost = async (req: any, res: Response) => {
       ...post,
       user: post.author,
 
-      // ❤️ FIXED LIKE STATE
+     
       likes: post._count.likes,
       likedByMe: userId ? (post.likes?.length ?? 0) > 0 : false,
     });
@@ -95,9 +91,7 @@ export const getPost = async (req: any, res: Response) => {
   }
 };
 
-/* =========================================================
-   CREATE POST
-========================================================= */
+
 export const createPost = async (req: any, res: Response) => {
   try {
     const { content } = req.body;
@@ -128,9 +122,7 @@ export const createPost = async (req: any, res: Response) => {
   }
 };
 
-/* =========================================================
-   DELETE POST
-========================================================= */
+
 export const deletePost = async (req: any, res: Response) => {
   try {
     const post = await prisma.post.findUnique({
@@ -156,9 +148,7 @@ export const deletePost = async (req: any, res: Response) => {
   }
 };
 
-/* =========================================================
-   CREATE COMMENT
-========================================================= */
+
 export const createComment = async (req: any, res: Response) => {
   try {
     const { content } = req.body;
@@ -188,9 +178,7 @@ export const createComment = async (req: any, res: Response) => {
   }
 };
 
-/* =========================================================
-   TOGGLE LIKE (STABLE + RETURNS CORRECT STATE)
-========================================================= */
+
 export const toggleLike = async (req: any, res: Response) => {
   try {
     const userId = req.user.id;
@@ -205,7 +193,7 @@ export const toggleLike = async (req: any, res: Response) => {
       },
     });
 
-    // UNLIKE
+    
     if (existing) {
       await prisma.like.delete({
         where: { id: existing.id },
@@ -221,7 +209,7 @@ export const toggleLike = async (req: any, res: Response) => {
       });
     }
 
-    // LIKE
+  
     await prisma.like.create({
       data: {
         postId,

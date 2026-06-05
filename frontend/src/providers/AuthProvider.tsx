@@ -24,7 +24,6 @@ export default function AuthProvider({
 }) {
   const [user, setUserState] = useState<User | null>(null);
 
-  // ✅ load user once on app start
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (stored) {
@@ -32,7 +31,6 @@ export default function AuthProvider({
     }
   }, []);
 
-  // ✅ synced setter (IMPORTANT FIX)
   const setUser = (newUser: User | null) => {
     if (newUser) {
       localStorage.setItem("user", JSON.stringify(newUser));

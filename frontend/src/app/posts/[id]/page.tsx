@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/providers/AuthProvider";
 
 type User = {
   id: string;
@@ -40,6 +41,8 @@ export default function PostPage() {
   const params = useParams();
   const id = params?.id as string;
 
+  const router = useRouter();
+  const { user } = useAuth();
   const { register, handleSubmit, reset } = useForm<CommentForm>();
 
   const {
@@ -78,6 +81,28 @@ export default function PostPage() {
 
     onSuccess: () => {
       refetch();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API}/posts/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete post");
+      }
+
+      return res.json();
+    },
+    onSuccess: () => {
+      router.push("/");
     },
   });
 
@@ -124,6 +149,9 @@ export default function PostPage() {
   const username =
     post.user?.username || post.author?.username || "Unknown User";
 
+  const isOwner =
+    user?.id && (post.user?.id === user.id || post.author?.id === user.id);
+
   return (
     <div
       style={{
@@ -147,19 +175,43 @@ export default function PostPage() {
 
         <p>{post.content}</p>
 
-        <button
-          onClick={() => likeMutation.mutate()}
+        <div
           style={{
+            display: "flex",
+            gap: 12,
+            alignItems: "center",
             marginTop: 10,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: post.likedByMe ? "red" : "white",
-            fontSize: 18,
           }}
         >
-          {post.likedByMe ? "❤️" : "🤍"} {post.likes}
-        </button>
+          <button
+            onClick={() => likeMutation.mutate()}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: post.likedByMe ? "red" : "white",
+              fontSize: 18,
+            }}
+          >
+            {post.likedByMe ? "❤️" : "🤍"} {post.likes}
+          </button>
+
+          {isOwner && (
+            <button
+              onClick={() => deleteMutation.mutate()}
+              style={{
+                background: "rgba(239,68,68,0.15)",
+                border: "1px solid #ef4444",
+                borderRadius: 8,
+                color: "#fecaca",
+                padding: "10px 14px",
+                cursor: "pointer",
+              }}
+            >
+              Delete Post
+            </button>
+          )}
+        </div>
       </div>
 
       <h3 style={{ marginTop: 25 }}>Add Comment</h3>

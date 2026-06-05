@@ -16,67 +16,66 @@ export default function LoginPage() {
   const router = useRouter();
   const { setUser } = useAuth();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginForm>();
+  const { register, handleSubmit } = useForm<LoginForm>();
 
   const loginMutation = useMutation({
     mutationFn: (data: LoginForm) => loginUser(data.username, data.password),
 
     onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       setUser(data.user);
       router.push("/");
     },
-
-    onError: (error: any) => {
-      console.error(error);
-    },
   });
-
-  const onSubmit = (data: LoginForm) => {
-    loginMutation.mutate(data);
-  };
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h1 style={styles.title}>Welcome Back</h1>
+        <div style={styles.header}>
+          <h1 style={styles.title}>Welcome Back</h1>
+          <p style={styles.subtitle}>Sign in to your account</p>
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
-          <input
-            placeholder="Username"
-            {...register("username", {
-              required: "Username is required",
-            })}
-            style={styles.input}
-          />
+        <form
+          onSubmit={handleSubmit((d) => loginMutation.mutate(d))}
+          style={styles.form}
+        >
+          <div style={styles.field}>
+            <label style={styles.label}>Username</label>
+            <input
+              placeholder="Username"
+              {...register("username")}
+              style={styles.input}
+            />
+          </div>
 
-          {errors.username && <p>{errors.username.message}</p>}
+          <div style={styles.field}>
+            <label style={styles.label}>Password</label>
+            <input
+              type="password"
+              placeholder="Password"
+              {...register("password")}
+              style={styles.input}
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            {...register("password", {
-              required: "Password is required",
-            })}
-            style={styles.input}
-          />
-
-          {errors.password && <p>{errors.password.message}</p>}
+          {loginMutation.isError && (
+            <div style={styles.errorBox}>
+              {loginMutation.error instanceof Error
+                ? loginMutation.error.message
+                : "Login failed"}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={loginMutation.isPending}
             style={styles.button}
           >
-            {loginMutation.isPending ? "Logging in..." : "Log In"}
+            {loginMutation.isPending ? "Logging in..." : "Login"}
           </button>
-
-          {loginMutation.isError && (
-            <p>{(loginMutation.error as any)?.message || "Login failed"}</p>
-          )}
         </form>
 
         <p style={styles.footer}>
@@ -89,6 +88,7 @@ export default function LoginPage() {
     </div>
   );
 }
+
 const styles: any = {
   page: {
     minHeight: "100vh",

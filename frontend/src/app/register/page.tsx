@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser } from "@/lib/auth";
-import { useAuth } from "@/providers/AuthProvider";
 
 type RegisterForm = {
   email: string;
@@ -15,7 +14,6 @@ type RegisterForm = {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { setUser } = useAuth();
 
   const {
     register,
@@ -26,18 +24,19 @@ export default function RegisterPage() {
   const registerMutation = useMutation({
     mutationFn: registerUser,
 
-    onSuccess: (data) => {
-      setUser(data.user);
+    onSuccess: () => {
       router.push("/");
     },
 
-    onError: (error) => {
-      console.error("Register Error:", error);
+    onError: (error: unknown) => {
+      const message =
+        error instanceof Error ? error.message : "Registration failed";
+
+      alert(message);
     },
   });
 
   const onSubmit = (data: RegisterForm) => {
-    console.log("Submitting:", data);
     registerMutation.mutate(data);
   };
 
@@ -64,66 +63,102 @@ export default function RegisterPage() {
           boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
         }}
       >
-        <h1
-          style={{
-            textAlign: "center",
-            color: "white",
-            marginBottom: "30px",
-          }}
-        >
-          Create Account
-        </h1>
+        <div style={{ textAlign: "center", marginBottom: "35px" }}>
+          <h1
+            style={{
+              fontSize: "36px",
+              fontWeight: "bold",
+              color: "white",
+              marginBottom: "10px",
+            }}
+          >
+            Create Account
+          </h1>
+
+          <p style={{ color: "#cbd5e1" }}>Join SocialClone today</p>
+        </div>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "18px",
           }}
         >
+          {/* Email */}
           <div>
+            <label style={{ color: "white", fontSize: "14px" }}>Email</label>
+
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Enter email"
               {...register("email", {
                 required: "Email is required",
               })}
               style={{
                 width: "100%",
-                padding: "12px",
-                borderRadius: "10px",
+                marginTop: "8px",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "1px solid #334155",
+                background: "#0f172a",
+                color: "white",
+                outline: "none",
+                fontSize: "15px",
+                boxSizing: "border-box",
               }}
             />
 
             {errors.email && (
-              <p style={{ color: "red" }}>{errors.email.message}</p>
+              <p
+                style={{ color: "#ef4444", fontSize: "13px", marginTop: "5px" }}
+              >
+                {errors.email.message}
+              </p>
             )}
           </div>
 
+          {/* Username */}
           <div>
+            <label style={{ color: "white", fontSize: "14px" }}>Username</label>
+
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Choose a username"
               {...register("username", {
                 required: "Username is required",
               })}
               style={{
                 width: "100%",
-                padding: "12px",
-                borderRadius: "10px",
+                marginTop: "8px",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "1px solid #334155",
+                background: "#0f172a",
+                color: "white",
+                outline: "none",
+                fontSize: "15px",
+                boxSizing: "border-box",
               }}
             />
 
             {errors.username && (
-              <p style={{ color: "red" }}>{errors.username.message}</p>
+              <p
+                style={{ color: "#ef4444", fontSize: "13px", marginTop: "5px" }}
+              >
+                {errors.username.message}
+              </p>
             )}
           </div>
 
+          {/* Password */}
           <div>
+            <label style={{ color: "white", fontSize: "14px" }}>Password</label>
+
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Create a password"
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -133,23 +168,41 @@ export default function RegisterPage() {
               })}
               style={{
                 width: "100%",
-                padding: "12px",
-                borderRadius: "10px",
+                marginTop: "8px",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "1px solid #334155",
+                background: "#0f172a",
+                color: "white",
+                outline: "none",
+                fontSize: "15px",
+                boxSizing: "border-box",
               }}
             />
 
             {errors.password && (
-              <p style={{ color: "red" }}>{errors.password.message}</p>
+              <p
+                style={{ color: "#ef4444", fontSize: "13px", marginTop: "5px" }}
+              >
+                {errors.password.message}
+              </p>
             )}
           </div>
 
+          {/* Server Error */}
           {registerMutation.isError && (
             <div
               style={{
-                color: "red",
+                background: "rgba(239,68,68,0.15)",
+                border: "1px solid #ef4444",
+                borderRadius: "10px",
+                padding: "12px",
+                color: "#fca5a5",
               }}
             >
-              {(registerMutation.error as Error).message}
+              {registerMutation.error instanceof Error
+                ? registerMutation.error.message
+                : "Registration failed"}
             </div>
           )}
 
@@ -157,12 +210,16 @@ export default function RegisterPage() {
             type="submit"
             disabled={registerMutation.isPending}
             style={{
-              padding: "12px",
+              marginTop: "10px",
+              padding: "14px",
+              borderRadius: "12px",
               border: "none",
-              borderRadius: "10px",
               background: "#2563eb",
               color: "white",
-              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "bold",
+              cursor: registerMutation.isPending ? "not-allowed" : "pointer",
+              opacity: registerMutation.isPending ? 0.8 : 1,
             }}
           >
             {registerMutation.isPending ? "Creating account..." : "Register"}
@@ -172,11 +229,21 @@ export default function RegisterPage() {
         <p
           style={{
             textAlign: "center",
-            marginTop: "20px",
+            marginTop: "25px",
             color: "#cbd5e1",
           }}
         >
-          Already have an account? <Link href="/login">Login</Link>
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            style={{
+              color: "#60a5fa",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Login
+          </Link>
         </p>
       </div>
     </div>

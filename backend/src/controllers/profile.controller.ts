@@ -3,7 +3,7 @@ import { prisma } from "../lib/prisma.js";
 
 const PAGE_SIZE = 10;
 
-// GET /api/profile/:username
+
 export const getProfile = async (req: Request, res: Response) => {
   try {
     const { username } = req.params;
