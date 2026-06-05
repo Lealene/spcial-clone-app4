@@ -1,11 +1,11 @@
 import axios from "axios";
 
-// Axios instance (optional use)
+
 export const api = axios.create({
   baseURL: "http://localhost:4000/api",
 });
 
-// Fetch wrapper (THIS IS WHAT YOU ARE MISSING / BROKEN)
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
