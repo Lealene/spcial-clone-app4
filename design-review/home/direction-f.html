@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP Realty — Lifestyle Magazine</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  body { background: var(--sand-100); color: var(--ink); }
+  .f-wrap { overflow-x: clip; }
+  .f-container { max-width: 1200px; margin:0 auto; padding-inline: clamp(20px,5vw,56px); }
+
+  /* When a real photo loads, suppress the gradient-placeholder caption so it
+     doesn't read as a debug label over the image. The label only shows as a
+     graceful fallback when onerror removes the <img>. */
+  .photo:has(img)::after { content: none; }
+
+  /* nav */
+  .f-nav { position:absolute; top:0; left:0; right:0; z-index:40; display:flex; align-items:center; justify-content:space-between; padding:26px clamp(20px,5vw,56px); color:#fff; }
+  .f-brand { font-family: var(--serif-cormorant); font-weight:600; font-size:26px; letter-spacing:.01em; white-space:nowrap; }
+  .f-links { display:flex; gap:32px; align-items:center; }
+  .f-links a { color: rgba(255,255,255,.92); font-weight:500; font-size:14.5px; letter-spacing:.02em; transition: color .2s; }
+  .f-links a:hover { color: var(--seafoam-300); }
+  .f-links a:focus-visible, .f-nav-cta:focus-visible, .f-burger:focus-visible, .f-brand:focus-visible {
+    outline: 2px solid var(--seafoam-300); outline-offset: 4px; border-radius: 4px;
+  }
+  .f-nav-cta { color:#fff !important; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.5); padding:10px 20px; border-radius: var(--r-pill); font-size:14px; font-weight:600; transition: background .2s, box-shadow .2s; }
+  .f-nav-cta:hover { background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.85); }
+  .f-burger { display:none; background:none; border:none; color:#fff; padding:6px; margin:-6px; line-height:0; }
+
+  /* mobile menu panel */
+  .f-menu[hidden] { display:none; }
+  body.menu-open { overflow:hidden; }
+  .f-menu-back { position:fixed; inset:0; z-index:60; background: rgba(8,26,48,.55); backdrop-filter: blur(2px); opacity:0; transition: opacity .3s; }
+  .f-menu-panel { position:fixed; top:0; right:0; bottom:0; z-index:61; width:min(82vw,340px); background: var(--ocean-950); color:#fff;
+    padding: 24px clamp(22px,6vw,32px); display:flex; flex-direction:column; gap:6px;
+    transform: translateX(100%); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+  body.menu-open .f-menu-back { opacity:1; }
+  body.menu-open .f-menu-panel { transform: translateX(0); }
+  .f-menu-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .f-menu-top b { font-family: var(--serif-cormorant); font-weight:600; font-size:24px; }
+  .f-menu-close { background:none; border:none; color:#fff; padding:6px; margin:-6px; line-height:0; }
+  .f-menu-panel a { color: rgba(255,255,255,.9); font-size:19px; font-weight:500; padding:13px 0; border-bottom:1px solid rgba(255,255,255,.08); transition: color .2s; }
+  .f-menu-panel a:hover, .f-menu-panel a:focus-visible { color: var(--seafoam-300); }
+  .f-menu-panel a:focus-visible, .f-menu-close:focus-visible { outline:2px solid var(--seafoam-300); outline-offset:3px; }
+  .f-menu-panel .f-menu-contact { margin-top:auto; text-align:center; border:none; background: var(--seafoam-500); color: var(--ocean-900); font-weight:600; border-radius: var(--r-pill); padding:14px 0; }
+  .f-menu-panel .f-menu-contact:hover { background: var(--seafoam-600); color: var(--ocean-900); }
+
+  /* hero full-bleed */
+  .f-hero { position:relative; height: 100svh; min-height:600px; overflow:hidden; color:#fff; display:flex; align-items:flex-end; }
+  .f-hero .photo { position:absolute; inset:0; }
+  .f-hero-grad { position:absolute; inset:0; background: linear-gradient(to top, rgba(8,26,48,.78), rgba(8,26,48,.15) 55%, rgba(8,26,48,.35)); }
+  .f-hero-in { position:relative; z-index:2; width:100%; padding: 0 clamp(20px,5vw,56px) clamp(48px,7vw,84px); }
+  .f-hero-meta { display:flex; gap:18px; align-items:center; font-size:12px; letter-spacing:.18em; text-transform:uppercase; font-weight:700; margin-bottom:22px; color: var(--seafoam-300); }
+  .f-hero-meta .ln { height:1px; width:46px; background: rgba(255,255,255,.5); }
+  .f-hero h1 { font-family: var(--serif-cormorant); font-weight:500; font-size: clamp(46px,7vw,98px); line-height:1.0; letter-spacing:-.01em; margin:0; max-width:16ch; text-wrap:balance; }
+  .f-hero-foot { display:flex; align-items:flex-end; justify-content:space-between; gap:30px; margin-top:28px; flex-wrap:wrap; }
+  .f-hero-foot p { max-width:42ch; color: rgba(255,255,255,.84); font-size:17px; margin:0; }
+  .f-scroll { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color: rgba(255,255,255,.7); display:flex; align-items:center; gap:10px; }
+
+  /* intro editorial */
+  .f-intro { padding: clamp(64px,8vw,120px) 0; }
+  .f-intro-in { display:grid; grid-template-columns: 0.5fr 1.5fr; gap: clamp(30px,5vw,70px); align-items:start; }
+  .f-intro .lbl { font-family: var(--serif-cormorant); font-style:italic; font-size:30px; color: var(--seafoam-700); }
+  .f-intro h2 { font-family: var(--serif-cormorant); font-weight:500; font-size: clamp(28px,3.4vw,46px); line-height:1.22; color: var(--ocean-900); margin:0; max-width:24ch; text-wrap:pretty; }
+  .f-intro h2 em { font-style:italic; color: var(--seafoam-700); }
+
+  /* alternating story blocks */
+  .f-story { display:grid; grid-template-columns: 1fr 1fr; gap: clamp(30px,5vw,70px); align-items:center; padding: clamp(40px,5vw,64px) 0; }
+  .f-story.rev .f-story-media { order:2; }
+  .f-story-media { position:relative; }
+  .f-story-media .photo { aspect-ratio: 5/6; border-radius: var(--r-md); }
+  .f-story-media .tag { position:absolute; left:20px; top:20px; background: rgba(255,255,255,.92); color: var(--ocean-700); font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:7px 14px; border-radius:var(--r-pill); }
+  .f-story .num { font-family: var(--serif-cormorant); font-size:60px; color: var(--seafoam-300); line-height:1; }
+  .f-story h3 { font-family: var(--serif-cormorant); font-weight:600; font-size: clamp(26px,3vw,40px); color: var(--ocean-900); margin:10px 0 14px; line-height:1.12; }
+  .f-story p { color: var(--muted); font-size:16.5px; margin:0 0 22px; max-width:46ch; }
+  .f-link { color: var(--ocean-600); font-weight:700; font-size:15px; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
+  .f-link svg { transition: transform .3s; } .f-link:hover svg { transform: translateX(5px); }
+
+  /* listings band */
+  .f-listings { background:#fff; }
+  .f-lh { text-align:center; max-width:560px; margin:0 auto clamp(40px,5vw,56px); }
+  .f-lh .eyebrow { color: var(--seafoam-700); }
+  .f-lh h2 { font-family: var(--serif-cormorant); font-weight:600; font-size: clamp(30px,3.6vw,46px); color: var(--ocean-900); margin:12px 0 0; line-height:1.1; }
+  .f-lgrid { display:grid; grid-template-columns: repeat(3,1fr); gap:26px; }
+  .f-card { border-radius: var(--r-md); overflow:hidden; background:#fff; box-shadow: var(--sh-sm); transition: transform .3s, box-shadow .3s; }
+  .f-card:hover { transform: translateY(-5px); box-shadow: var(--sh-md); }
+  .f-card .photo { aspect-ratio: 4/3; } .f-card-media { position:relative; }
+  .f-chip { position:absolute; top:14px; left:14px; background: rgba(8,26,48,.74); color:#fff; backdrop-filter:blur(4px); font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:6px 12px; border-radius:var(--r-pill); white-space:nowrap; }
+  .f-card-b { padding:20px 22px; }
+  .f-card .pr { font-family: var(--serif-cormorant); font-weight:700; font-size:24px; color: var(--ocean-700); }
+  .f-card h4 { font-size:16px; font-weight:700; margin:8px 0 3px; }
+  .f-card .ad { font-size:13.5px; color:var(--muted); }
+  .f-card .sp { display:flex; gap:14px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-size:13px; font-weight:600; color:var(--ink-soft); }
+
+  /* big quote */
+  .f-quote { text-align:center; padding: clamp(70px,9vw,120px) 0; }
+  .f-quote blockquote { font-family: var(--serif-cormorant); font-weight:500; font-style:italic; font-size: clamp(28px,4vw,52px); line-height:1.22; color: var(--ocean-900); margin:0 auto; max-width:20ch; }
+  .f-quote .who { margin-top:26px; font-weight:600; color:var(--muted); font-size:15px; }
+  .f-quote .stars { color: var(--sun); letter-spacing:3px; font-size:18px; margin-bottom:18px; }
+
+  /* CTA */
+  .f-cta { position:relative; overflow:hidden; color:#fff; min-height: 460px; display:flex; align-items:center; }
+  .f-cta .photo { position:absolute; inset:0; }
+  .f-cta-grad { position:absolute; inset:0; background: linear-gradient(120deg, rgba(8,26,48,.85), rgba(29,78,137,.55)); }
+  .f-cta-in { position:relative; z-index:2; max-width:640px; padding: 60px clamp(20px,5vw,56px); }
+  .f-cta-in h2 { font-family: var(--serif-cormorant); font-weight:600; font-size: clamp(32px,4.4vw,56px); line-height:1.08; margin:0 0 16px; }
+  .f-cta-in p { font-size:18px; color: rgba(255,255,255,.84); margin:0 0 30px; }
+  .f-cta-actions { display:flex; gap:14px; flex-wrap:wrap; }
+
+  /* footer */
+  .f-foot { background: var(--ocean-950); color: rgba(255,255,255,.62); }
+  .f-foot-in { display:grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap:40px; padding:60px 0 32px; }
+  .f-foot h4 { color:#fff; font-size:12px; letter-spacing:.14em; text-transform:uppercase; margin:0 0 16px; }
+  .f-foot ul { list-style:none; padding:0; margin:0; display:grid; gap:10px; font-size:14px; }
+  .f-foot a:hover { color: var(--seafoam-300); }
+  .f-foot-brand b { font-family: var(--serif-cormorant); font-weight:600; font-size:24px; color:#fff; }
+  .f-foot-brand p { font-size:14px; max-width:32ch; margin-top:12px; }
+  .f-foot-bot { border-top:1px solid rgba(255,255,255,.1); }
+  .f-foot-bot div { display:flex; justify-content:space-between; gap:20px; padding:18px 0; font-size:13px; flex-wrap:wrap; }
+
+  @media (max-width:900px){
+    .f-links{ display:none;} .f-nav-cta{ display:none;} .f-burger{ display:block;}
+    .f-intro-in{ grid-template-columns:1fr;}
+    .f-story{ grid-template-columns:1fr;} .f-story.rev .f-story-media{ order:0;}
+    .f-story-media{ max-width:480px; margin-inline:auto; width:100%;}
+    .f-lgrid{ grid-template-columns:1fr 1fr;}
+    .f-foot-in{ grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:560px){
+    .f-lgrid{ grid-template-columns:1fr;}
+    .f-foot-in{ grid-template-columns:1fr;}
+    .f-hero-meta{ flex-wrap:wrap; gap:14px; }
+    .f-hero-meta .ln{ flex:none; }
+    .f-hero-foot{ flex-direction:column; align-items:flex-start; gap:22px; }
+    .f-foot-bot div{ flex-direction:column; gap:8px; }
+  }
+</style>
+</head>
+<body>
+<div class="f-wrap">
+  <header class="f-nav" data-screen-label="Home F — Nav">
+    <a class="f-brand" href="#">MVP Realty</a>
+    <nav class="f-links"><a href="#">Buy</a><a href="#">Rent</a><a href="#">Neighborhoods</a><a href="#">Journal</a><a href="#">About</a></nav>
+    <a href="#" class="f-nav-cta">Contact</a>
+    <button class="f-burger" aria-label="Open menu" aria-expanded="false" aria-controls="f-mobile-menu"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+  </header>
+
+  <div class="f-menu" id="f-mobile-menu" hidden>
+    <div class="f-menu-back" data-close></div>
+    <nav class="f-menu-panel" aria-label="Mobile">
+      <div class="f-menu-top">
+        <b class="f-brand">MVP Realty</b>
+        <button class="f-menu-close" data-close aria-label="Close menu"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <a href="#" data-close>Buy</a>
+      <a href="#" data-close>Rent</a>
+      <a href="#" data-close>Neighborhoods</a>
+      <a href="#" data-close>Journal</a>
+      <a href="#" data-close>About</a>
+      <a href="#" class="f-menu-contact" data-close>Contact</a>
+    </nav>
+  </div>
+
+  <section class="f-hero" data-screen-label="Home F — Hero">
+    <div class="photo photo--deep" data-label="Coastal living"><img src="../assets/photos/hero-naples-waterfront.jpg" alt="Naples Gulf-Coast waterfront at dusk" loading="eager" fetchpriority="high" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1600&q=72'"></div>
+    <div class="f-hero-grad"></div>
+    <div class="f-hero-in">
+      <div class="f-hero-meta"><span class="ln"></span>The South Florida Journal · Issue 01</div>
+      <h1>A life measured in sunsets, not square feet.</h1>
+      <div class="f-hero-foot">
+        <p>MVP Realty curates coastal homes for people chasing a feeling — salt air, slow mornings, and water that never stops moving.</p>
+        <span class="f-scroll">Scroll to explore <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="f-intro">
+    <div class="f-container f-intro-in">
+      <div class="lbl">Our promise</div>
+      <h2>We don&rsquo;t sell houses. We help you find the backdrop for the next chapter of your life — and we treat the search like it matters, because <em>it does.</em></h2>
+    </div>
+  </section>
+
+  <div class="f-container">
+    <section class="f-story" data-screen-label="Home F — Story 1">
+      <div class="f-story-media"><div class="photo" data-label="Waterfront"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1100&q=72" alt="Sunlit waterfront estate with a pool overlooking the Gulf" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="tag">Waterfront</span></div>
+      <div>
+        <div class="num">01</div>
+        <h3>Homes that open to the water</h3>
+        <p>From Barefoot Beach estates to Gulf-front condos, our waterfront collection is hand-selected for light, views, and the way a place feels at golden hour.</p>
+        <a href="#" class="f-link">Explore waterfront <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+    <section class="f-story rev" data-screen-label="Home F — Story 2">
+      <div class="f-story-media"><div class="photo photo--sand" data-label="55+ living"><img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1100&q=72" alt="Resort-style 55+ community home with landscaped grounds" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="tag">55+ Communities</span></div>
+      <div>
+        <div class="num">02</div>
+        <h3>Room to begin again</h3>
+        <p>Valencia Trails, Bonita National, and beyond — resort-style 55+ communities built for a life of ease, with neighbors who become friends.</p>
+        <a href="#" class="f-link">Explore communities <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+  </div>
+
+  <section class="f-listings f-intro" style="margin-top:20px">
+    <div class="f-container">
+      <div class="f-lh">
+        <div class="eyebrow">From the collection</div>
+        <h2>This week&rsquo;s featured homes</h2>
+      </div>
+      <div class="f-lgrid">
+        <article class="f-card"><div class="f-card-media"><div class="photo photo--deep" data-label="Estate"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=900&q=72" alt="Barefoot Beach estate exterior in Bonita Springs" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="f-chip">Waterfront</span></div><div class="f-card-b"><div class="pr">$4,250,000</div><h4>Barefoot Beach Estate</h4><div class="ad">Bonita Springs, FL</div><div class="sp"><span>5 Beds</span><span>6 Baths</span><span>5,400 sqft</span></div></div></article>
+        <article class="f-card"><div class="f-card-media"><div class="photo" data-label="Condo"><img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=900&q=72" alt="Gulf Harbour residence with bright open interior" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="f-chip">New</span></div><div class="f-card-b"><div class="pr">$895,000</div><h4>Gulf Harbour Residence</h4><div class="ad">Fort Myers, FL</div><div class="sp"><span>3 Beds</span><span>2 Baths</span><span>1,980 sqft</span></div></div></article>
+        <article class="f-card"><div class="f-card-media"><div class="photo photo--sand" data-label="Villa"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=72" alt="Valencia Trails villa with manicured front yard in Naples" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="f-chip">55+ Community</span></div><div class="f-card-b"><div class="pr">$640,000</div><h4>Valencia Trails Villa</h4><div class="ad">Naples, FL</div><div class="sp"><span>2 Beds</span><span>2 Baths</span><span>1,640 sqft</span></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="f-quote">
+    <div class="f-container">
+      <div class="stars">★★★★★</div>
+      <blockquote>&ldquo;They didn&rsquo;t find us a house. They found us our mornings.&rdquo;</blockquote>
+      <div class="who">— The Alvarez Family, Bonita Springs</div>
+    </div>
+  </section>
+
+  <section class="f-cta" data-screen-label="Home F — CTA">
+    <div class="photo photo--deep" data-label="Sunset coast"><img src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=1600&q=72" alt="Golden-hour sunset over the South Florida coastline" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div>
+    <div class="f-cta-grad"></div>
+    <div class="f-cta-in">
+      <h2>Begin your South Florida story.</h2>
+      <p>Tell us how you want to live. We&rsquo;ll send a curated edit of homes that fit — within 24 hours.</p>
+      <div class="f-cta-actions"><a href="#" class="btn btn--aqua">Start your search</a><a href="#" class="btn btn--light">Read the Journal</a></div>
+    </div>
+  </section>
+
+  <footer class="f-foot">
+    <div class="f-container">
+      <div class="f-foot-in">
+        <div class="f-foot-brand"><b>MVP Realty</b><p>Coastal South Florida living, curated like a magazine and delivered with care.</p></div>
+        <div><h4>Explore</h4><ul><li><a href="#">Buy</a></li><li><a href="#">Rent</a></li><li><a href="#">Neighborhoods</a></li><li><a href="#">Journal</a></li></ul></div>
+        <div><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Agents</a></li><li><a href="#">Reviews</a></li><li><a href="#">Contact</a></li></ul></div>
+        <div><h4>Contact</h4><ul><li>239-555-0142</li><li>hello@mvprealty.com</li><li>Bonita Springs, FL</li></ul></div>
+      </div>
+      <div class="f-foot-bot"><div><span>© 2026 MVP Realty. Equal Housing Opportunity.</span><span>Privacy · Terms · Accessibility</span></div></div>
+    </div>
+  </footer>
+</div>
+<script>
+  (function () {
+    var burger = document.querySelector('.f-burger');
+    var menu = document.getElementById('f-mobile-menu');
+    if (!burger || !menu) return;
+    function open() {
+      menu.hidden = false;
+      void menu.offsetWidth; /* commit the closed transform before animating in */
+      document.body.classList.add('menu-open');
+      burger.setAttribute('aria-expanded', 'true');
+      var first = menu.querySelector('a, button');
+      if (first) first.focus();
+    }
+    function close() {
+      document.body.classList.remove('menu-open');
+      burger.setAttribute('aria-expanded', 'false');
+      window.setTimeout(function () { menu.hidden = true; }, 300);
+      burger.focus();
+    }
+    burger.addEventListener('click', open);
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('[data-close]')) close();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && document.body.classList.contains('menu-open')) close();
+    });
+  })();
+</script>
+</body>
+</html>

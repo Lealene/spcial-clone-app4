@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP Realty — Home Page Directions</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  body { background: #eef2f5; color: var(--ink); }
+  .l-top { background: linear-gradient(160deg, var(--ocean-700), var(--ocean-950)); color:#fff; padding: clamp(40px,6vw,72px) clamp(20px,5vw,56px) clamp(56px,7vw,90px); }
+  .l-top-in { max-width: 1180px; margin:0 auto; }
+  .l-brand { display:flex; align-items:center; gap:12px; margin-bottom: 40px; }
+  .l-mark { width:42px; height:42px; border-radius:11px; background: rgba(95,211,208,.16); display:grid; place-items:center; box-shadow: inset 0 0 0 1px rgba(95,211,208,.4); }
+  .l-mark svg { width:23px; height:23px; }
+  .l-brand b { font-family: var(--serif-cormorant); font-weight:600; font-size:24px; }
+  .l-brand span { font-size:10px; letter-spacing:.3em; text-transform:uppercase; opacity:.7; display:block; }
+  .l-top h1 { font-family: var(--serif-cormorant); font-weight:500; font-size: clamp(34px,5vw,62px); line-height:1.06; margin:0 0 18px; max-width:20ch; }
+  .l-top h1 em { font-style:italic; color: var(--seafoam-300); }
+  .l-top .lede { font-size: clamp(16px,1.4vw,19px); color: rgba(255,255,255,.8); max-width: 60ch; margin:0; }
+
+  /* system summary */
+  .l-system { display:grid; grid-template-columns: repeat(4,1fr); gap:18px; margin-top: 44px; }
+  .l-sys { background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius: var(--r-md); padding:18px 20px; }
+  .l-sys h4 { margin:0 0 12px; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color: var(--seafoam-300); }
+  .l-swatches { display:flex; gap:7px; margin-bottom:6px; }
+  .l-swatch { width:26px; height:26px; border-radius:7px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+  .l-sys p { margin:0; font-size:13px; color: rgba(255,255,255,.76); line-height:1.5; }
+  .l-sys .big { font-family: var(--serif-cormorant); font-size:30px; line-height:1; }
+  .l-sys .big.sans { font-family: var(--sans); font-weight:700; font-size:22px; }
+
+  /* directions */
+  .l-main { max-width: 1180px; margin: 0 auto; padding: clamp(40px,6vw,72px) clamp(20px,5vw,56px) 90px; }
+  .l-main-head { display:flex; align-items:baseline; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom: 32px; }
+  .l-main-head h2 { font-family: var(--serif-cormorant); font-weight:600; font-size: clamp(26px,3vw,38px); margin:0; color: var(--ocean-900); }
+  .l-main-head p { margin:0; color: var(--muted); font-size:15px; max-width: 42ch; }
+  .l-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .l-card { background:#fff; border-radius: var(--r-lg); overflow:hidden; box-shadow: var(--sh-sm); transition: transform .3s, box-shadow .3s; text-decoration:none; color:inherit; display:block; }
+  .l-card:hover { transform: translateY(-6px); box-shadow: var(--sh-lg); }
+  .l-prev { position:relative; height: 300px; overflow:hidden; border-bottom:1px solid var(--line); background: linear-gradient(155deg, var(--seafoam-200), var(--ocean-400) 70%, var(--ocean-700)); }
+  .l-prev iframe { width: 1440px; height: 980px; border:0; transform: scale(.392); transform-origin: top left; pointer-events:none; }
+  .l-prev .grab { position:absolute; inset:0; }
+  .l-badge { position:absolute; top:14px; left:14px; white-space:nowrap; z-index:2; background: rgba(8,26,48,.78); color:#fff; backdrop-filter:blur(4px); font-size:12px; font-weight:700; letter-spacing:.05em; padding:7px 13px; border-radius:var(--r-pill); }
+  .l-card-body { padding: 22px 24px 26px; }
+  .l-card-body .k { font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color: var(--seafoam-700); }
+  .l-card-body h3 { font-family: var(--serif-cormorant); font-weight:600; font-size:27px; color: var(--ocean-900); margin:8px 0 8px; line-height:1.05; }
+  .l-card-body p { margin:0 0 18px; color: var(--muted); font-size:14.5px; line-height:1.55; }
+  .l-tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+  .l-tag { font-size:12px; font-weight:600; white-space:nowrap; color: var(--ocean-700); background: var(--mist); padding:5px 12px; border-radius: var(--r-pill); }
+  .l-open { display:inline-flex; align-items:center; gap:8px; white-space:nowrap; font-weight:700; font-size:15px; color: var(--ocean-600); }
+  .l-open svg { transition: transform .3s; } .l-card:hover .l-open svg { transform: translateX(5px); }
+
+  .l-note { margin-top: 44px; background:#fff; border:1px solid var(--line); border-radius: var(--r-lg); padding: 26px 28px; display:flex; gap:18px; align-items:flex-start; }
+  .l-note .ic { flex:none; width:42px; height:42px; border-radius:11px; background: var(--seafoam-100); display:grid; place-items:center; }
+  .l-note .ic svg { width:22px; height:22px; stroke: var(--seafoam-700); }
+  .l-note h4 { margin:0 0 6px; font-size:16px; color: var(--ocean-900); }
+  .l-note p { margin:0; color: var(--muted); font-size:14.5px; line-height:1.6; }
+  .l-note b { color: var(--ink); }
+
+  .l-section-head { margin: 56px 0 24px; }
+  .l-section-head h2 { font-family: var(--serif-cormorant); font-weight:600; font-size: clamp(24px,2.6vw,34px); color: var(--ocean-900); margin:0; }
+  .l-section-head p { margin:6px 0 0; color: var(--muted); font-size:15px; }
+  .l-pages { display:grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .l-prev--sm { height: 210px; }
+  @media (max-width: 860px) { .l-pages { grid-template-columns: 1fr; } }
+
+  @media (max-width: 860px) {
+    .l-system { grid-template-columns: 1fr 1fr; }
+    .l-grid { grid-template-columns: 1fr; }
+    .l-prev { height: 260px; }
+    .l-prev iframe { transform: scale(.46); }
+  }
+  @media (max-width: 480px) {
+    .l-system { grid-template-columns: 1fr; }
+    .l-prev iframe { transform: scale(.3); }
+    .l-prev { height: 220px; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="l-top">
+    <div class="l-top-in">
+      <div class="l-brand">
+        <span class="l-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#5FD3D0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 11.5V19h13v-7.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <b>MVP Realty<span>Design Exploration · v1</span></b>
+      </div>
+      <h1>Seventeen directions for the <em>home page.</em></h1>
+      <p class="lede">All share one coastal system — your Palette 3 (aqua + deep ocean blue) and the Gulf-of-Mexico calm you described — but differ in personality, layout, and energy. The newest six (J&ndash;O) are tuned for the <b style="color:var(--seafoam-300)">55+ retiree buyer</b>, each adding on-homepage featured listings and an amenities module. Click any one to experience it live, and adjust it yourself with the floating Tweaks panel.</p>
+
+      <div class="l-system">
+        <div class="l-sys">
+          <h4>Palette 3</h4>
+          <div class="l-swatches">
+            <span class="l-swatch" style="background:#5FD3D0"></span>
+            <span class="l-swatch" style="background:#1D4E89"></span>
+            <span class="l-swatch" style="background:#EAF4F4"></span>
+            <span class="l-swatch" style="background:#FFB703"></span>
+          </div>
+          <p>Seafoam &amp; Ocean Blue lead. Mist grounds. Sun accent used sparingly.</p>
+        </div>
+        <div class="l-sys">
+          <h4>Display type</h4>
+          <div class="big">Coastal living</div>
+          <p>Elegant serif headlines — Cormorant, Playfair &amp; Lora across the set.</p>
+        </div>
+        <div class="l-sys">
+          <h4>UI type</h4>
+          <div class="big sans">Manrope 600</div>
+          <p>Clean, modern sans for body, labels &amp; controls.</p>
+        </div>
+        <div class="l-sys">
+          <h4>Tone</h4>
+          <p style="margin-top:4px">Tranquil, premium &amp; trustworthy — water, light &amp; space. Built to capture leads into Wise Agent.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="l-main">
+    <div class="l-main-head">
+      <h2>Pick a direction</h2>
+      <p>Each preview is live — hover to feel the motion, click to open the full scrolling page.</p>
+    </div>
+
+    <div class="l-grid">
+      <a class="l-card" href="home/direction-i3.html">
+        <div class="l-prev" style="background: linear-gradient(155deg, var(--ocean-800), var(--ocean-950));"><span class="l-badge" style="background: var(--seafoam-600); color: var(--ocean-950);">I3 · Coastal Noir</span><iframe src="home/direction-i3.html" scrolling="no" tabindex="-1" title="Direction I3"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k" style="color: var(--seafoam-700);">Cleaner · Dark · Monochrome</div>
+          <h3>Bold Coastal — Coastal Noir</h3>
+          <p>The most restrained sibling: one locked dark-ocean theme, near-monochrome, sharp edges. Seafoam survives only as a 1px hairline and on the numerals. Communities read as a clean divided index, not boxes.</p>
+          <div class="l-tags"><span class="l-tag">Dark premium</span><span class="l-tag">Monochrome</span><span class="l-tag">Hairline accents</span></div>
+          <span class="l-open">Open Direction I3 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <div style="grid-column:1 / -1; margin:18px 0 -10px; display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <h3 style="font-family:var(--serif-cormorant); font-weight:600; font-size:clamp(22px,2.4vw,30px); color:var(--ocean-900); margin:0;">New &middot; Tuned for the 55+ buyer <span style="font-weight:500; color:var(--seafoam-700);">(J&ndash;O)</span></h3>
+        <p style="margin:0; color:var(--muted); font-size:14.5px; max-width:46ch;">Six fresh tones &mdash; each adds <b style="color:var(--ink)">on-homepage listings</b> + an <b style="color:var(--ink)">amenities</b> module, and is live-adjustable via its Tweaks panel.</p>
+      </div>
+
+      <a class="l-card" href="home/direction-j.html">
+        <div class="l-prev"><span class="l-badge" style="background: var(--sun); color: var(--ocean-950);">J · Sunlit Friendly</span><iframe src="home/direction-j.html" scrolling="no" tabindex="-1" title="Direction J"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k" style="color: var(--sun-600);">Warm · Welcoming · Sunny</div>
+          <h3>Sunlit Friendly</h3>
+          <p>The most approachable take &mdash; cream-and-sand surfaces, big pillowy rounded cards, and a true sun-gold accent under friendly Lora serif headlines sized up for 55+ eyes. The warmest, easiest welcome of the set.</p>
+          <div class="l-tags"><span class="l-tag">Warm cream</span><span class="l-tag">Pillow corners</span><span class="l-tag">Sun accent</span><span class="l-tag">Featured listings</span><span class="l-tag">55+ legible</span></div>
+          <span class="l-open">Open Direction J <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-k.html">
+        <div class="l-prev" style="background: linear-gradient(155deg, var(--seafoam-300), var(--seafoam-700) 80%);"><span class="l-badge" style="background: var(--seafoam-700);">K · Coastal Botanical</span><iframe src="home/direction-k.html" scrolling="no" tabindex="-1" title="Direction K"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k" style="color: var(--seafoam-700);">Nature · Calm · Rooted</div>
+          <h3>Coastal Botanical</h3>
+          <p>A nature-and-wellness take &mdash; walking trails, mangrove preserves, and sunrise yoga alongside the resort amenities. Lora serif, organic radii, and tidal reveals over a sage-seafoam-sand palette. Serene and earthy.</p>
+          <div class="l-tags"><span class="l-tag">Nature-led</span><span class="l-tag">Organic radii</span><span class="l-tag">Sage + seafoam</span><span class="l-tag">Wellness</span><span class="l-tag">Featured listings</span></div>
+          <span class="l-open">Open Direction K <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-l.html">
+        <div class="l-prev" style="background: linear-gradient(155deg, var(--ocean-800), var(--ocean-950));"><span class="l-badge" style="background: var(--sun); color: var(--ocean-950);">L · Elegant Concierge</span><iframe src="home/direction-l.html" scrolling="no" tabindex="-1" title="Direction L"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k" style="color: var(--sun-600);">Elegant · Premium · Refined</div>
+          <h3>Elegant Concierge</h3>
+          <p>A white-glove luxury homepage for the affluent buyer &mdash; Playfair Display serif over deep navy and ivory, with gold rationed to accents and hairlines. Concierge-voiced copy in slow, restrained reveals.</p>
+          <div class="l-tags"><span class="l-tag">Luxury concierge</span><span class="l-tag">Serif display</span><span class="l-tag">Navy + gold</span><span class="l-tag">Tailored corners</span><span class="l-tag">Featured listings</span></div>
+          <span class="l-open">Open Direction L <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-m.html">
+        <div class="l-prev"><span class="l-badge" style="background: var(--seafoam-600); color: var(--ocean-950);">M · Cool Smooth Modern</span><iframe src="home/direction-m.html" scrolling="no" tabindex="-1" title="Direction M"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k" style="color: var(--ocean-600);">Cool · Smooth · Sleek</div>
+          <h3>Cool Smooth Modern</h3>
+          <p>A cool, glassy take &mdash; airy blue gradients, smooth medium-large radii, frosted surfaces, and content that glides in with gentle hero parallax. Premium-tech and smooth as water, yet high-contrast for 55+ eyes.</p>
+          <div class="l-tags"><span class="l-tag">Glassmorphism</span><span class="l-tag">Cool blue</span><span class="l-tag">Smooth springs</span><span class="l-tag">Featured listings</span><span class="l-tag">55+ legible</span></div>
+          <span class="l-open">Open Direction M <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-n.html">
+        <div class="l-prev" style="background: linear-gradient(155deg, var(--ocean-600), var(--ocean-900));"><span class="l-badge" style="background: var(--ocean-600);">N · Bold Reassurance</span><iframe src="home/direction-n.html" scrolling="no" tabindex="-1" title="Direction N"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k" style="color: var(--ocean-600);">Bold · Trustworthy · Accessible</div>
+          <h3>Bold Reassurance</h3>
+          <p>Accessibility-first &mdash; deep ocean blue, generous white space, extra-large type, and oversized buttons. Every section leads with trust signals, plus a live text-size control in the Tweaks panel.</p>
+          <div class="l-tags"><span class="l-tag">Accessibility-first</span><span class="l-tag">High-contrast</span><span class="l-tag">Trust-led</span><span class="l-tag">Large type</span><span class="l-tag">Featured listings</span></div>
+          <span class="l-open">Open Direction N <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-o.html">
+        <div class="l-prev" style="background: linear-gradient(155deg, var(--seafoam-100), var(--seafoam-300));"><span class="l-badge" style="background: var(--seafoam-300); color: var(--ocean-900);">O · Serene Retreat</span><iframe src="home/direction-o.html" scrolling="no" tabindex="-1" title="Direction O"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k" style="color: var(--seafoam-700);">Relaxing · Serene · Airy</div>
+          <h3>Serene Retreat</h3>
+          <p>The calmest direction &mdash; light Cormorant serif headlines, pillowy rounded forms, and pale seafoam-and-mist surfaces that breathe. Slow, gentle motion and generous whitespace around listings and wellness amenities.</p>
+          <div class="l-tags"><span class="l-tag">Spa-calm</span><span class="l-tag">Very rounded</span><span class="l-tag">Wellness-led</span><span class="l-tag">Whitespace</span><span class="l-tag">Featured listings</span></div>
+          <span class="l-open">Open Direction O <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <div style="grid-column:1 / -1; margin:18px 0 -10px;">
+        <h3 style="font-family:var(--serif-cormorant); font-weight:600; font-size:clamp(22px,2.4vw,30px); color:var(--ocean-900); margin:0;">Earlier explorations <span style="font-weight:500; color:var(--muted);">(A&ndash;H)</span></h3>
+      </div>
+
+      <a class="l-card" href="home/direction-a.html">
+        <div class="l-prev"><span class="l-badge">A · Tranquil Editorial</span><iframe src="home/direction-a.html" scrolling="no" tabindex="-1" title="Direction A"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Airy · Magazine</div>
+          <h3>Tranquil Editorial</h3>
+          <p>A full-bleed ocean hero with a floating search, lots of white space, and a magazine-style listings grid. Calm and confident.</p>
+          <div class="l-tags"><span class="l-tag">Full-bleed hero</span><span class="l-tag">Whitespace</span><span class="l-tag">Editorial grid</span></div>
+          <span class="l-open">Open Direction A <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-b.html">
+        <div class="l-prev"><span class="l-badge">B · Bold Confident</span><iframe src="home/direction-b.html" scrolling="no" tabindex="-1" title="Direction B"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Big type · Split</div>
+          <h3>Bold Confident</h3>
+          <p>A split-screen hero with oversized Playfair headlines and a gold accent rhythm. Punchy, modern, and unmistakably premium.</p>
+          <div class="l-tags"><span class="l-tag">Split-screen</span><span class="l-tag">Oversized type</span><span class="l-tag">Gold accents</span></div>
+          <span class="l-open">Open Direction B <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-c.html">
+        <div class="l-prev"><span class="l-badge">C · Boutique Warm</span><iframe src="home/direction-c.html" scrolling="no" tabindex="-1" title="Direction C"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Warm · Personal</div>
+          <h3>Boutique Warm</h3>
+          <p>Soft sand tones, a friendly arch-shaped hero, and prominent testimonials. Agent-forward and inviting — for a relationship-led brand.</p>
+          <div class="l-tags"><span class="l-tag">Warm sand</span><span class="l-tag">Agent-forward</span><span class="l-tag">Testimonials</span></div>
+          <span class="l-open">Open Direction C <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-d.html">
+        <div class="l-prev"><span class="l-badge">D · Sleek Modern Luxury</span><iframe src="home/direction-d.html" scrolling="no" tabindex="-1" title="Direction D"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Dark · Glassy</div>
+          <h3>Sleek Modern Luxury</h3>
+          <p>A dark navy canvas with a glassy search, seafoam glow, and a gallery wall of residences. High-contrast, quiet, and very high-end.</p>
+          <div class="l-tags"><span class="l-tag">Dark mode</span><span class="l-tag">Glass UI</span><span class="l-tag">Luxury</span></div>
+          <span class="l-open">Open Direction D <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-e.html">
+        <div class="l-prev"><span class="l-badge">E · Portal / Search-First</span><iframe src="home/direction-e.html" scrolling="no" tabindex="-1" title="Direction E"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Utility · Map</div>
+          <h3>Portal / Search-First</h3>
+          <p>A premium real-estate portal — split hero with a live coastal map, pins, and an instant search panel. Functional, like the sites you shared, but elevated.</p>
+          <div class="l-tags"><span class="l-tag">Map search</span><span class="l-tag">Filters</span><span class="l-tag">Portal feel</span></div>
+          <span class="l-open">Open Direction E <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-f.html">
+        <div class="l-prev"><span class="l-badge">F · Lifestyle Magazine</span><iframe src="home/direction-f.html" scrolling="no" tabindex="-1" title="Direction F"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Editorial · Story</div>
+          <h3>Lifestyle Magazine</h3>
+          <p>A full-bleed cover hero and a scrolling story — numbered editorial blocks, a big pull-quote, and a journal feel. Sells the lifestyle, not the square footage.</p>
+          <div class="l-tags"><span class="l-tag">Full-bleed cover</span><span class="l-tag">Storytelling</span><span class="l-tag">Big imagery</span></div>
+          <span class="l-open">Open Direction F <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-g.html">
+        <div class="l-prev"><span class="l-badge">G · Refined Minimal</span><iframe src="home/direction-g.html" scrolling="no" tabindex="-1" title="Direction G"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Classic · Centered</div>
+          <h3>Refined Minimal</h3>
+          <p>Symmetric, centered, and quiet — thin gold rules, generous air, and a restrained classic-luxury voice. For a brand that whispers rather than shouts.</p>
+          <div class="l-tags"><span class="l-tag">Centered</span><span class="l-tag">Whitespace</span><span class="l-tag">Classic luxury</span></div>
+          <span class="l-open">Open Direction G <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+
+      <a class="l-card" href="home/direction-h.html">
+        <div class="l-prev"><span class="l-badge">H · Coastal Vibrant</span><iframe src="home/direction-h.html" scrolling="no" tabindex="-1" title="Direction H"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Friendly · Energetic</div>
+          <h3>Coastal Vibrant</h3>
+          <p>Seafoam-forward and upbeat — rounded shapes, floating stat cards, and a sunny, approachable tone. The warmest, most modern-friendly of the set.</p>
+          <div class="l-tags"><span class="l-tag">Seafoam-led</span><span class="l-tag">Rounded</span><span class="l-tag">Energetic</span></div>
+          <span class="l-open">Open Direction H <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="l-section-head">
+      <h2>The site pages</h2>
+      <p>The core inner pages, built in a shared light system — ready to restyle to match whichever home direction you pick. Fully clickable: listings link to the property page.</p>
+    </div>
+    <div class="l-pages">
+      <a class="l-card" href="pages/listings.html">
+        <div class="l-prev l-prev--sm"><span class="l-badge">PLP</span><iframe src="pages/listings.html" scrolling="no" tabindex="-1" title="Listings"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Search results</div>
+          <h3>Property Listings</h3>
+          <p>Filters, sort, results grid + a live map panel you can toggle.</p>
+          <span class="l-open">Open listings <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+      <a class="l-card" href="pages/property.html">
+        <div class="l-prev l-prev--sm"><span class="l-badge">PDP</span><iframe src="pages/property.html" scrolling="no" tabindex="-1" title="Property"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Listing detail</div>
+          <h3>Property Detail</h3>
+          <p>Gallery, key facts, floor plan, map &amp; an agent lead form.</p>
+          <span class="l-open">Open property <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+      <a class="l-card" href="pages/agents.html">
+        <div class="l-prev l-prev--sm"><span class="l-badge">Agents</span><iframe src="pages/agents.html" scrolling="no" tabindex="-1" title="Agents"></iframe><span class="grab"></span></div>
+        <div class="l-card-body">
+          <div class="k">Team &amp; profile</div>
+          <h3>Agents</h3>
+          <p>Team grid, a featured broker profile, listings &amp; testimonials.</p>
+          <span class="l-open">Open agents <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="l-note">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9"><path d="M12 2 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <div>
+        <h4>How to use this</h4>
+        <p>The <b>eight home directions</b> explore distinct looks for the landing page; the <b>three site pages</b> show the inner experience in a shared light system. Placeholders/stock photos stand in for real photography. Tell me which home direction you like (you can mix — e.g. "F's hero with E's map search"), and I'll unify everything — plus add the remaining pages: <b>Neighborhood Guides</b> and <b>Contact</b>.</p>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

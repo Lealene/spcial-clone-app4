@@ -1,0 +1,32 @@
+import { cn } from '@mvp-realty/ui/lib/utils';
+
+/** The MVP Realty house mark — gold roofline over a navy tile. */
+export function BrandMark({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        'bg-primary grid size-[42px] place-items-center rounded-md shadow-[inset_0_0_0_1px_rgba(255,183,3,0.4)]',
+        className,
+      )}
+    >
+      <svg viewBox="0 0 24 24" fill="none" className="size-[23px]" aria-hidden="true">
+        <path d="M3 13.5 12 5l9 8.5" stroke="var(--accent)" strokeWidth="1.9" />
+        <path d="M5.5 11.5V19h13v-7.5" stroke="#fff" strokeWidth="1.9" />
+      </svg>
+    </span>
+  );
+}
+
+/** "MVP Realty" wordmark with the gold accent on "Realty". */
+export function BrandWordmark({ className }: { className?: string }) {
+  return (
+    <b
+      className={cn(
+        'text-primary font-serif text-[23px] leading-none font-bold tracking-[0.005em]',
+        className,
+      )}
+    >
+      MVP <i className="text-accent-deep not-italic">Realty</i>
+    </b>
+  );
+}

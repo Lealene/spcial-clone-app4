@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9181 SW 91st Cir, Ocala — MVP Realty</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  /* ===========================================================
+     PROPERTY DETAIL (PDP) — "Elegant Concierge" system
+     Aligned 1:1 with the homepage (Direction L):
+       navy + ivory/cream surfaces, rationed gold accent,
+       Playfair Display display serif, Manrope UI/body,
+       tailored small radii, slow refined motion.
+     Homepage primitives reused verbatim: .l-wrap tokens,
+     .l-nav, .l-foot, .l-listing, .btn--gold/navy/outline,
+     .l-kicker, .l-reveal. PDP-only classes namespaced `p-`.
+     ========================================================== */
+
+  /* inherit every Direction-L token by wrapping in .l-wrap */
+  .l-wrap{
+    --l-r-sm:6px; --l-r:10px; --l-r-lg:12px;
+    --l-ivory:#f7f3ea; --l-cream:#fbf8f1; --l-paper:#ffffff;
+    --l-navy:#0c2540; --l-navy-deep:#081a30;
+    --l-line:#e7ded0; --l-line-soft:#efe8db;
+    --l-gold:#FFB703; --l-gold-deep:#8f6606; --l-gold-soft:#f0d9a6;
+    --l-ink:#142436; --l-ink-soft:#3a4d63; --l-muted:#6a7a8c;
+    --l-sh:0 30px 70px -34px rgba(8,26,48,.34);
+    --l-sh-sm:0 16px 38px -22px rgba(8,26,48,.26);
+    --l-display:var(--serif-playfair);
+    color:var(--l-ink); background:var(--l-paper); overflow-x:clip;
+  }
+  .l-container{ max-width:1480px; margin:0 auto; padding-inline:clamp(22px,5vw,76px); }
+  .l-wrap a:focus-visible,.l-wrap button:focus-visible,.l-wrap input:focus-visible,
+  .l-wrap select:focus-visible,.l-wrap textarea:focus-visible{
+    outline:2px solid var(--l-gold-deep); outline-offset:3px; }
+  .l-kicker{ font-family:var(--sans); font-weight:700; font-size:13px; letter-spacing:.28em;
+    text-transform:uppercase; color:var(--l-gold-deep); display:inline-flex; align-items:center; gap:12px; }
+  .l-kicker::before{ content:''; width:26px; height:1px; background:var(--l-gold-deep); display:inline-block; }
+  .l-hair{ height:1px; background:var(--l-line); border:none; }
+
+  /* ---- buttons (verbatim from homepage) ---- */
+  .l-wrap .btn{ border-radius:var(--l-r-sm); font-family:var(--sans); font-weight:700; font-size:15.5px;
+    letter-spacing:.02em; padding:17px 30px; box-shadow:none;
+    transition:transform .2s cubic-bezier(.23,1,.32,1), background .3s ease, color .3s ease, box-shadow .3s ease; }
+  .l-wrap .btn svg{ width:16px; height:16px; transition:transform .3s cubic-bezier(.23,1,.32,1); }
+  .l-wrap .btn:active{ transform:scale(.98); }
+  .l-wrap .btn--gold{ background:var(--l-gold); color:var(--l-navy-deep); }
+  .l-wrap .btn--gold:hover{ background:var(--l-gold-deep); color:#fff; box-shadow:var(--l-sh-sm); transform:translateY(-2px); }
+  .l-wrap .btn--gold:hover svg{ transform:translateX(4px); }
+  .l-wrap .btn--navy{ background:var(--l-navy); color:#fff; }
+  .l-wrap .btn--navy:hover{ background:var(--l-navy-deep); box-shadow:var(--l-sh-sm); transform:translateY(-2px); }
+  .l-wrap .btn--navy:hover svg{ transform:translateX(4px); }
+  .l-wrap .btn--outline{ background:transparent; color:var(--l-ink); box-shadow:inset 0 0 0 1.5px var(--l-line); }
+  .l-wrap .btn--outline:hover{ box-shadow:inset 0 0 0 1.5px var(--l-gold-deep); transform:translateY(-2px); }
+
+  /* ---------- nav (verbatim) ---------- */
+  .l-nav{ position:sticky; top:0; z-index:60; background:rgba(251,248,241,.82);
+    backdrop-filter:blur(16px) saturate(150%); border-bottom:1px solid var(--l-line-soft);
+    transition:box-shadow .35s ease; }
+  .l-nav.scrolled{ box-shadow:0 1px 0 var(--l-line-soft), 0 16px 34px -28px rgba(8,26,48,.4); }
+  .l-nav-in{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding:16px 0; }
+  .l-brand{ display:flex; align-items:center; gap:13px; }
+  .l-mark{ width:42px; height:42px; border-radius:var(--l-r-sm); background:var(--l-navy);
+    display:grid; place-items:center; box-shadow:inset 0 0 0 1px rgba(255,183,3,.4); }
+  .l-mark svg{ width:23px; height:23px; }
+  .l-brand b{ font-family:var(--l-display); font-weight:700; font-size:23px; letter-spacing:.005em; color:var(--l-navy); line-height:1; }
+  .l-brand b i{ font-style:normal; color:var(--l-gold-deep); }
+  .l-links{ display:flex; align-items:center; gap:32px; }
+  .l-links a{ font-family:var(--sans); font-weight:600; font-size:15px; letter-spacing:.01em;
+    color:var(--l-ink-soft); position:relative; padding:6px 0; }
+  .l-links a::after{ content:''; position:absolute; left:0; right:100%; bottom:0; height:1.5px;
+    background:var(--l-gold-deep); transition:right .35s cubic-bezier(.23,1,.32,1); }
+  .l-links a:hover{ color:var(--l-navy); } .l-links a:hover::after{ right:0; }
+  .l-nav-cta{ display:flex; align-items:center; gap:16px; }
+  .l-burger{ display:none; background:none; border:none; color:var(--l-navy); }
+
+  /* ---------- breadcrumb ---------- */
+  .p-crumb{ background:var(--l-cream); border-bottom:1px solid var(--l-line-soft); }
+  .p-crumb-in{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:14px 0;
+    font-family:var(--sans); font-size:13.5px; font-weight:600; color:var(--l-muted); }
+  .p-crumb-in a{ color:var(--l-ink-soft); transition:color .2s; }
+  .p-crumb-in a:hover{ color:var(--l-gold-deep); }
+  .p-crumb-in .sep{ color:var(--l-line); }
+  .p-crumb-in .cur{ color:var(--l-navy); }
+
+  /* ---------- gallery ---------- */
+  .p-gallery-sec{ padding:clamp(22px,3vw,34px) 0 0; }
+  .p-gallery{ display:grid; grid-template-columns:1.6fr 1fr 1fr; grid-template-rows:1fr 1fr;
+    gap:14px; height:clamp(440px,48vw,640px); border-radius:var(--l-r-lg); overflow:hidden; }
+  .p-shot{ position:relative; overflow:hidden; cursor:pointer; margin:0; }
+  .p-shot .photo{ position:absolute; inset:0; }
+  .p-shot img{ width:100%; height:100%; object-fit:cover; transition:transform .9s cubic-bezier(.23,1,.32,1); }
+  .p-shot:hover img{ transform:scale(1.05); }
+  .p-shot.main{ grid-row:span 2; }
+  .p-shot::after{ content:''; position:absolute; inset:0; box-shadow:inset 0 0 0 0 var(--l-gold);
+    transition:box-shadow .2s ease; pointer-events:none; }
+  .p-shot:hover::after{ box-shadow:inset 0 0 0 3px var(--l-gold); }
+  .p-gbadges{ position:absolute; top:16px; left:16px; z-index:3; display:flex; gap:9px; flex-wrap:wrap; }
+  .p-badge{ display:inline-flex; align-items:center; gap:7px; font-family:var(--sans); font-size:11.5px;
+    font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:7px 13px; border-radius:var(--l-r-sm);
+    box-shadow:var(--l-sh-sm); }
+  .p-badge.sale{ background:var(--l-gold); color:var(--l-navy-deep); }
+  .p-badge.sale::before{ content:''; width:7px; height:7px; border-radius:50%; background:var(--l-navy-deep);
+    box-shadow:0 0 0 3px rgba(8,26,48,.18); }
+  .p-badge.verified{ background:rgba(251,248,241,.94); color:var(--l-navy); border:1px solid rgba(143,102,6,.4); }
+  .p-badge.verified svg{ width:14px; height:14px; color:var(--l-gold-deep); }
+  .p-allphotos{ position:absolute; right:16px; bottom:16px; z-index:3; display:inline-flex; align-items:center; gap:9px;
+    background:rgba(8,26,48,.8); backdrop-filter:blur(8px); color:#fff; font-family:var(--sans); font-weight:700;
+    font-size:13.5px; padding:11px 16px; border-radius:var(--l-r-sm); border:1px solid rgba(255,255,255,.18);
+    box-shadow:var(--l-sh-sm); transition:background .25s, transform .25s; }
+  .p-allphotos:hover{ background:var(--l-navy); transform:translateY(-2px); }
+  .p-allphotos svg{ width:16px; height:16px; }
+
+  /* ---------- title bar ---------- */
+  .p-headbar{ display:flex; align-items:flex-end; justify-content:space-between; gap:28px;
+    flex-wrap:wrap; padding:clamp(26px,3vw,38px) 0 0; }
+  .p-headbar .meta{ min-width:0; }
+  .p-status{ font-family:var(--sans); font-weight:700; font-size:12.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--l-gold-deep); display:inline-flex; align-items:center; gap:9px; }
+  .p-status::before{ content:''; width:8px; height:8px; border-radius:50%; background:var(--l-gold);
+    box-shadow:0 0 0 4px rgba(255,183,3,.2); }
+  .p-price{ font-family:var(--l-display); font-weight:600; font-size:clamp(40px,5.2vw,62px);
+    color:var(--l-navy); line-height:1; letter-spacing:-.01em; margin:12px 0 0; }
+  .p-price .per{ font-family:var(--sans); font-weight:600; font-size:16px; color:var(--l-muted);
+    letter-spacing:0; margin-left:14px; }
+  .p-addr{ font-family:var(--l-display); font-weight:600; font-size:clamp(21px,2vw,26px);
+    color:var(--l-ink); margin:16px 0 0; line-height:1.2; }
+  .p-addr-sub{ font-family:var(--sans); font-size:15.5px; color:var(--l-muted); margin-top:6px;
+    display:flex; align-items:center; gap:8px; }
+  .p-addr-sub svg{ width:16px; height:16px; color:var(--l-gold-deep); flex-shrink:0; }
+  .p-addr-sub a{ color:var(--l-navy); font-weight:700; border-bottom:1.5px solid var(--l-gold-soft);
+    transition:border-color .2s; }
+  .p-addr-sub a:hover{ border-color:var(--l-gold-deep); }
+  .p-headactions{ display:flex; gap:11px; flex-wrap:wrap; }
+  .p-iconbtn{ display:inline-flex; align-items:center; gap:9px; font-family:var(--sans); font-weight:700;
+    font-size:14px; color:var(--l-ink-soft); background:var(--l-paper); border:1px solid var(--l-line);
+    border-radius:var(--l-r-sm); padding:12px 18px; cursor:pointer; transition:border-color .2s, color .2s, background .2s; }
+  .p-iconbtn:hover{ border-color:var(--l-gold-deep); color:var(--l-navy); }
+  .p-iconbtn svg{ width:17px; height:17px; transition:transform .2s; }
+  .p-iconbtn.on{ color:var(--l-gold-deep); border-color:var(--l-gold); background:var(--l-cream); }
+  .p-iconbtn.on svg{ fill:var(--l-gold); stroke:var(--l-gold-deep); transform:scale(1.06); }
+
+  /* ---------- key-facts ribbon ---------- */
+  .p-facts{ display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--l-line);
+    border:1px solid var(--l-line); border-radius:var(--l-r-lg); overflow:hidden; margin-top:clamp(24px,3vw,34px); }
+  .p-fact{ background:var(--l-paper); padding:20px 22px; display:flex; flex-direction:column; gap:8px;
+    transition:background .3s ease; }
+  .p-fact:hover{ background:var(--l-cream); }
+  .p-fact .ic{ width:36px; height:36px; border-radius:var(--l-r-sm); background:var(--l-ivory);
+    display:grid; place-items:center; box-shadow:inset 0 0 0 1px var(--l-line); }
+  .p-fact .ic svg{ width:19px; height:19px; color:var(--l-navy); }
+  .p-fact b{ font-family:var(--sans); font-weight:800; font-size:18px; color:var(--l-navy); line-height:1; margin-top:4px; }
+  .p-fact span{ font-family:var(--sans); font-size:11.5px; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--l-muted); }
+
+  /* ---------- body two-col ---------- */
+  .p-body{ display:grid; grid-template-columns:1fr 384px; gap:clamp(34px,4.4vw,72px);
+    align-items:start; padding:clamp(48px,6vw,90px) 0; }
+  .p-main{ min-width:0; }
+  .p-sec{ padding:clamp(34px,4vw,52px) 0; border-top:1px solid var(--l-line); }
+  .p-sec:first-child{ border-top:none; padding-top:0; }
+  .p-sec h2{ font-family:var(--l-display); font-weight:600; font-size:clamp(27px,3vw,38px);
+    color:var(--l-navy); line-height:1.1; letter-spacing:-.01em; margin:14px 0 0; }
+  .p-sec .lede{ font-family:var(--sans); color:var(--l-ink-soft); font-size:17px; line-height:1.75; margin:20px 0 0; }
+  .p-sec .lede p{ margin:0 0 16px; } .p-sec .lede p:last-child{ margin-bottom:0; }
+  .p-sec .lede strong{ color:var(--l-navy); font-weight:700; }
+
+  /* highlight chips */
+  .p-highlights{ display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+  .p-highlights span{ font-family:var(--sans); font-size:13.5px; font-weight:700; color:var(--l-ink-soft);
+    background:var(--l-ivory); border:1px solid var(--l-line); padding:9px 15px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:9px; }
+  .p-highlights span svg{ width:15px; height:15px; color:var(--l-gold-deep); }
+
+  /* spec groups (interior / exterior / community) */
+  .p-specs{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(26px,3vw,44px) clamp(34px,4vw,64px);
+    margin-top:28px; }
+  .p-grp h4{ font-family:var(--sans); font-weight:800; font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--l-gold-deep); margin:0 0 14px; padding-bottom:11px;
+    border-bottom:1px solid var(--l-line); }
+  .p-grp ul{ list-style:none; margin:0; padding:0; display:grid; gap:11px; }
+  .p-grp li{ display:flex; align-items:flex-start; gap:11px; font-family:var(--sans);
+    font-size:15px; color:var(--l-ink-soft); line-height:1.4; }
+  .p-grp li svg{ width:16px; height:16px; color:var(--l-gold-deep); flex-shrink:0; margin-top:2px; }
+  .p-grp li b{ color:var(--l-navy); font-weight:700; }
+  .p-grp.kv li{ justify-content:space-between; gap:18px; }
+  .p-grp.kv li > span:first-child{ color:var(--l-muted); }
+  .p-grp.kv li > span:last-child{ color:var(--l-navy); font-weight:700; text-align:right; }
+
+  /* floor plan schematic */
+  .p-floor{ background:var(--l-cream); border:1px solid var(--l-line); border-radius:var(--l-r-lg);
+    padding:clamp(22px,2.6vw,32px); margin-top:28px; }
+  .p-floor-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr; grid-template-rows:repeat(4,62px); gap:9px;
+    grid-template-areas:
+      "great  great  kit"
+      "great  great  nook"
+      "primary office bed2"
+      "primary lanai  bed3"; }
+  .p-room{ border:1.5px solid var(--l-line); background:var(--l-paper); border-radius:var(--l-r-sm);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    padding:4px; gap:2px; transition:border-color .25s, background .25s; }
+  .p-room:hover{ border-color:var(--l-gold); background:var(--l-ivory); }
+  .p-room b{ font-family:var(--sans); font-size:13px; font-weight:700; color:var(--l-navy); line-height:1.15; }
+  .p-room span{ font-family:var(--sans); font-size:11px; color:var(--l-muted); }
+  .p-room.great{ grid-area:great; background:var(--l-ivory); }
+  .p-room.primary{ grid-area:primary; background:var(--l-gold-soft); border-color:rgba(143,102,6,.35); }
+  .p-room.kit{ grid-area:kit; } .p-room.nook{ grid-area:nook; }
+  .p-room.office{ grid-area:office; } .p-room.bed2{ grid-area:bed2; }
+  .p-room.bed3{ grid-area:bed3; } .p-room.lanai{ grid-area:lanai; background:var(--l-ivory); }
+  .p-floor-legend{ display:flex; gap:22px; margin-top:18px; flex-wrap:wrap;
+    font-family:var(--sans); font-size:13px; color:var(--l-muted); }
+  .p-floor-legend .k{ display:inline-flex; align-items:center; gap:8px; }
+  .p-floor-legend .sw{ width:13px; height:13px; border-radius:4px; border:1.5px solid var(--l-line); }
+  .p-floor-legend .sw.pr{ background:var(--l-gold-soft); border-color:rgba(143,102,6,.35); }
+  .p-floor-legend .sw.cm{ background:var(--l-ivory); }
+
+  /* location map */
+  .p-map{ position:relative; height:340px; border-radius:var(--l-r-lg); overflow:hidden; margin-top:28px;
+    border:1px solid var(--l-line); box-shadow:var(--l-sh-sm);
+    background:radial-gradient(130% 90% at 100% 0%, var(--l-paper), var(--l-ivory) 64%); }
+  .p-map .green{ position:absolute; border-radius:48% 52% 46% 54%; background:rgba(95,211,208,.14); }
+  .p-map .g1{ width:46%; height:54%; left:8%; top:14%; transform:rotate(-8deg); }
+  .p-map .g2{ width:38%; height:44%; right:6%; bottom:8%; transform:rotate(10deg); background:rgba(255,183,3,.1); }
+  .p-map .road{ position:absolute; height:2px; background:rgba(143,102,6,.4); }
+  .p-map .r1{ width:60%; left:14%; top:48%; transform:rotate(8deg); }
+  .p-map .r2{ width:36%; left:40%; top:30%; transform:rotate(-58deg); }
+  .p-map-pin{ position:absolute; left:46%; top:46%; transform:translate(-50%,-100%); z-index:2; }
+  .p-map-pin .dot{ width:34px; height:34px; border-radius:50% 50% 50% 0; transform:rotate(-45deg);
+    background:var(--l-navy); box-shadow:0 10px 22px -8px rgba(8,26,48,.7), inset 0 0 0 2px var(--l-gold);
+    display:grid; place-items:center; }
+  .p-map-pin .dot svg{ width:15px; height:15px; color:var(--l-gold); transform:rotate(45deg); }
+  .p-map-tip{ position:absolute; left:18px; top:18px; background:var(--l-navy); color:#fff;
+    font-family:var(--sans); font-size:13px; font-weight:600; padding:9px 14px; border-radius:var(--l-r-sm);
+    box-shadow:var(--l-sh-sm); z-index:3; }
+  .p-map-tip b{ color:var(--l-gold); display:block; font-size:12px; letter-spacing:.04em; }
+  .p-map-cta{ position:absolute; right:16px; bottom:16px; z-index:3; }
+
+  /* mls / courtesy */
+  .p-courtesy{ margin-top:8px; padding:22px 24px; background:var(--l-ivory); border:1px solid var(--l-line);
+    border-radius:var(--l-r); }
+  .p-courtesy .row{ display:flex; align-items:center; gap:12px; font-family:var(--sans); font-size:14px;
+    color:var(--l-ink-soft); flex-wrap:wrap; }
+  .p-courtesy .row b{ color:var(--l-navy); font-weight:700; }
+  .p-courtesy .mls{ font-family:var(--sans); font-size:12.5px; color:var(--l-muted); margin:10px 0 0; line-height:1.6; }
+
+  /* ---------- aside (sticky agent + tour) ---------- */
+  .p-aside{ position:sticky; top:96px; display:grid; gap:18px; }
+  .p-agent{ background:var(--l-navy); color:#fff; border-radius:var(--l-r-lg); overflow:hidden;
+    box-shadow:var(--l-sh); border:1px solid rgba(255,183,3,.18); }
+  .p-agent-top{ display:flex; align-items:center; gap:16px; padding:24px 24px 0; }
+  .p-agent-ph{ width:66px; height:66px; border-radius:50%; overflow:hidden; flex-shrink:0;
+    box-shadow:inset 0 0 0 2px var(--l-gold); }
+  .p-agent-ph img{ width:100%; height:100%; object-fit:cover; }
+  .p-agent-top .who b{ font-family:var(--l-display); font-weight:600; font-size:21px; color:#fff; display:block; line-height:1.1; }
+  .p-agent-top .who .role{ font-family:var(--sans); font-size:13px; color:var(--l-gold-soft); font-weight:600; margin-top:4px; }
+  .p-agent-top .who .lic{ font-family:var(--sans); font-size:12px; color:rgba(255,255,255,.55); margin-top:3px; }
+  .p-agent-stats{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(255,255,255,.1);
+    margin:22px 0 0; border-top:1px solid rgba(255,255,255,.1); }
+  .p-agent-stats .st{ background:var(--l-navy); padding:15px 24px; }
+  .p-agent-stats .st b{ font-family:var(--l-display); font-weight:600; font-size:22px; color:var(--l-gold); display:block; line-height:1; }
+  .p-agent-stats .st span{ font-family:var(--sans); font-size:12px; color:rgba(255,255,255,.6); margin-top:6px; display:block; }
+  .p-agent-rating{ display:flex; align-items:center; gap:8px; padding:14px 24px;
+    border-top:1px solid rgba(255,255,255,.1); font-family:var(--sans); font-size:13.5px; color:rgba(255,255,255,.8); }
+  .p-agent-rating .stars{ display:inline-flex; gap:2px; }
+  .p-agent-rating .stars svg{ width:15px; height:15px; color:var(--l-gold); }
+  .p-agent-rating b{ color:#fff; }
+
+  .p-form{ background:var(--l-paper); border:1px solid var(--l-line); border-radius:var(--l-r-lg);
+    padding:clamp(22px,2.4vw,28px); box-shadow:var(--l-sh-sm); }
+  .p-form .hd{ font-family:var(--l-display); font-weight:600; font-size:22px; color:var(--l-navy); margin:0 0 4px; }
+  .p-form .sub{ font-family:var(--sans); font-size:14px; color:var(--l-muted); margin:0 0 18px; }
+  .p-form label{ display:block; font-family:var(--sans); font-weight:700; font-size:13px; color:var(--l-ink); margin:0 0 7px; }
+  .p-form label:not(:first-of-type){ margin-top:15px; }
+  .p-form input,.p-form textarea{ width:100%; font-family:var(--sans); font-weight:500; font-size:15px;
+    color:var(--l-ink); padding:13px 15px; border:1px solid var(--l-line); border-radius:var(--l-r-sm);
+    background:var(--l-cream); outline:none; transition:border-color .25s, background .25s; }
+  .p-form textarea{ resize:vertical; min-height:78px; }
+  .p-form input::placeholder,.p-form textarea::placeholder{ color:var(--l-muted); }
+  .p-form input:focus,.p-form textarea:focus{ border-color:var(--l-gold-deep); background:var(--l-paper); }
+  .p-form .btn{ width:100%; justify-content:center; margin-top:18px; }
+  .p-form .btn + .btn{ margin-top:10px; }
+  .p-form .fine{ font-family:var(--sans); font-size:12px; color:var(--l-muted); margin:14px 0 0; line-height:1.5; }
+  .p-call{ display:flex; align-items:center; justify-content:center; gap:10px; padding:15px;
+    font-family:var(--sans); font-weight:700; font-size:15px; color:var(--l-navy);
+    background:var(--l-ivory); border:1px solid var(--l-line); border-radius:var(--l-r-lg); transition:border-color .25s, background .25s; }
+  .p-call:hover{ border-color:var(--l-gold-deep); background:var(--l-cream); }
+  .p-call svg{ width:18px; height:18px; color:var(--l-gold-deep); }
+
+  /* ---------- community key facts band ---------- */
+  .p-comm{ background:var(--l-navy-deep); color:#fff; position:relative; overflow:hidden; }
+  .p-comm::before{ content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+    background:radial-gradient(120% 90% at 88% 6%, rgba(255,183,3,.1), transparent 55%); }
+  .p-comm .l-container{ position:relative; z-index:1; padding-block:clamp(56px,6vw,86px); }
+  .p-comm .l-kicker,.p-comm .l-kicker::before{ color:var(--l-gold); background:var(--l-gold); }
+  .p-comm .l-kicker{ background:none; }
+  .p-comm h2{ font-family:var(--l-display); font-weight:600; font-size:clamp(28px,3.4vw,44px);
+    color:#fff; line-height:1.08; margin:14px 0 0; }
+  .p-comm h2 em{ font-style:italic; color:var(--l-gold-soft); }
+  .p-comm .sub{ font-family:var(--sans); color:rgba(255,255,255,.82); font-size:17px; line-height:1.7;
+    max-width:54ch; margin:18px 0 0; }
+  .p-comm-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.14); border-radius:var(--l-r-lg); overflow:hidden;
+    margin-top:clamp(34px,4vw,52px); }
+  .p-comm-cell{ background:var(--l-navy-deep); padding:26px 24px; }
+  .p-comm-cell .ic{ width:42px; height:42px; border-radius:50%; display:grid; place-items:center;
+    background:linear-gradient(155deg, rgba(255,255,255,.13), rgba(255,255,255,.03));
+    box-shadow:inset 0 0 0 1.5px rgba(255,183,3,.6); margin-bottom:16px; }
+  .p-comm-cell .ic svg{ width:21px; height:21px; color:var(--l-gold); }
+  .p-comm-cell b{ font-family:var(--l-display); font-weight:600; font-size:21px; color:#fff; display:block; line-height:1.1; }
+  .p-comm-cell span{ font-family:var(--sans); font-size:14px; color:rgba(255,255,255,.66); margin-top:7px; display:block; line-height:1.5; }
+  .p-comm-actions{ display:flex; gap:14px; flex-wrap:wrap; margin-top:clamp(30px,3.4vw,42px); }
+  .l-wrap .p-comm .btn--outline{ color:#fff; box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4); }
+  .l-wrap .p-comm .btn--outline:hover{ box-shadow:inset 0 0 0 1.5px var(--l-gold); }
+
+  /* ---------- similar homes (reuse l-listing) ---------- */
+  .l-sec{ padding:clamp(64px,8vw,120px) 0; }
+  .l-sec.ivory{ background:var(--l-ivory); }
+  .l-head{ max-width:62ch; margin-bottom:clamp(36px,4vw,52px); }
+  .l-head-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:28px; flex-wrap:wrap; }
+  .l-head h2{ font-family:var(--l-display); font-weight:600; font-size:clamp(30px,3.8vw,48px);
+    line-height:1.06; letter-spacing:-.01em; margin:16px 0 0; max-width:20ch; }
+  .l-more{ font-family:var(--sans); font-weight:700; font-size:15px; letter-spacing:.02em; color:var(--l-navy);
+    display:inline-flex; align-items:center; gap:10px; white-space:nowrap; padding-bottom:5px;
+    border-bottom:1.5px solid var(--l-gold); transition:gap .3s, border-color .3s; }
+  .l-more svg{ width:17px; height:17px; transition:transform .3s cubic-bezier(.23,1,.32,1); }
+  .l-more:hover{ gap:14px; } .l-more:hover svg{ transform:translateX(4px); }
+  .l-listings{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(20px,2.2vw,30px); }
+  .l-listing{ background:var(--l-paper); border:1px solid var(--l-line); border-radius:var(--l-r-lg);
+    overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--l-sh-sm);
+    transition:transform .4s cubic-bezier(.23,1,.32,1), box-shadow .4s ease; }
+  .l-listing:hover{ transform:translateY(-5px); box-shadow:var(--l-sh); }
+  .l-listing .ph{ position:relative; aspect-ratio:4/3; overflow:hidden; }
+  .l-listing .ph .photo{ position:absolute; inset:0; }
+  .l-listing .ph img{ transition:transform .9s cubic-bezier(.23,1,.32,1); }
+  .l-listing:hover .ph img{ transform:scale(1.06); }
+  .l-listing .badge{ position:absolute; top:14px; left:14px; z-index:2; background:rgba(251,248,241,.94);
+    color:var(--l-navy); font-family:var(--sans); font-size:11.5px; font-weight:800; letter-spacing:.1em;
+    text-transform:uppercase; padding:7px 13px; border-radius:var(--l-r-sm); box-shadow:var(--l-sh-sm);
+    border:1px solid rgba(201,138,10,.4); }
+  .l-listing .b{ padding:24px 26px 26px; display:flex; flex-direction:column; flex:1; }
+  .l-listing .price{ font-family:var(--sans); font-weight:800; font-size:21px; color:var(--l-ink); margin:0; }
+  .l-listing .city{ font-family:var(--sans); font-size:14.5px; color:var(--l-muted); font-weight:500;
+    margin-top:8px; display:flex; align-items:center; gap:7px; }
+  .l-listing .city svg{ width:15px; height:15px; color:var(--l-gold-deep); flex-shrink:0; }
+  .l-listing .stats{ display:flex; gap:0; margin-top:16px; padding-top:16px; border-top:1px solid var(--l-line-soft); }
+  .l-listing .stats .s{ flex:1; text-align:left; border-left:1px solid var(--l-line-soft); padding-left:14px; }
+  .l-listing .stats .s:first-child{ border-left:none; padding-left:0; }
+  .l-listing .stats .s b{ display:block; font-family:var(--sans); font-weight:800; font-size:18px; color:var(--l-navy); line-height:1; }
+  .l-listing .stats .s span{ display:block; font-size:12px; font-weight:600; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--l-muted); margin-top:6px; }
+  .l-listing .view{ margin-top:22px; font-family:var(--sans); font-weight:700; font-size:15px;
+    color:var(--l-navy); display:inline-flex; align-items:center; gap:9px; }
+  .l-listing .view svg{ width:16px; height:16px; color:var(--l-gold-deep); transition:transform .3s cubic-bezier(.23,1,.32,1); }
+  .l-listing:hover .view svg{ transform:translateX(4px); }
+
+  /* ---------- footer (verbatim) ---------- */
+  .l-foot{ background:var(--l-navy-deep); color:rgba(255,255,255,.66); }
+  .l-foot-top{ display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:46px; padding:78px 0 50px; }
+  .l-foot h4{ color:#fff; font-family:var(--sans); font-size:13px; letter-spacing:.14em; text-transform:uppercase; margin:0 0 20px; }
+  .l-foot ul{ list-style:none; padding:0; margin:0; display:grid; gap:13px; font-size:15.5px; }
+  .l-foot a{ transition:color .25s; } .l-foot a:hover{ color:var(--l-gold); }
+  .l-foot-brand b{ font-family:var(--l-display); font-weight:700; font-size:24px; color:#fff; }
+  .l-foot-brand b i{ font-style:normal; color:var(--l-gold); }
+  .l-foot-brand p{ font-family:var(--sans); font-size:15.5px; max-width:36ch; margin:16px 0 0; line-height:1.65; }
+  .l-foot-bot{ border-top:1px solid rgba(255,255,255,.1); }
+  .l-foot-bot div{ display:flex; justify-content:space-between; gap:22px; padding:24px 0; font-size:13.5px; flex-wrap:wrap; }
+
+  /* ---------- mobile sticky CTA ---------- */
+  .p-stickybar{ position:fixed; left:0; right:0; bottom:0; z-index:70; display:none;
+    align-items:center; justify-content:space-between; gap:14px; padding:13px clamp(16px,5vw,28px);
+    background:rgba(251,248,241,.94); backdrop-filter:blur(14px); border-top:1px solid var(--l-line);
+    box-shadow:0 -10px 30px -16px rgba(8,26,48,.3); transform:translateY(110%); transition:transform .35s cubic-bezier(.23,1,.32,1); }
+  .p-stickybar.in{ transform:none; }
+  .p-stickybar .pr{ font-family:var(--l-display); font-weight:600; font-size:22px; color:var(--l-navy); line-height:1; }
+  .p-stickybar .pr small{ display:block; font-family:var(--sans); font-size:12px; font-weight:600; color:var(--l-muted); margin-top:3px; }
+  .p-stickybar .btn{ padding:14px 22px; font-size:14.5px; }
+
+  /* reveal */
+  .l-reveal{ opacity:0; transform:translateY(26px); transition:opacity .9s cubic-bezier(.23,1,.32,1), transform .9s cubic-bezier(.23,1,.32,1); }
+  .l-reveal.in{ opacity:1; transform:none; }
+  .l-reveal.d1{ transition-delay:.1s; } .l-reveal.d2{ transition-delay:.2s; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1080px){
+    .p-facts{ grid-template-columns:repeat(3,1fr); }
+    .p-body{ grid-template-columns:1fr; }
+    .p-aside{ position:static; grid-template-columns:1fr 1fr; align-items:start; }
+    .p-comm-grid{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:960px){
+    .l-links{ display:none; } .l-burger{ display:block; }
+    .l-nav-cta .btn{ display:none; }
+    .l-listings{ grid-template-columns:1fr 1fr; }
+    .l-foot-top{ grid-template-columns:1fr 1fr; }
+    .p-stickybar{ display:flex; }
+  }
+  @media (max-width:680px){
+    .p-gallery{ grid-template-columns:1fr; grid-template-rows:1.4fr 1fr; height:auto; }
+    .p-shot.main{ grid-row:auto; aspect-ratio:4/3; }
+    .p-shot:not(.main){ display:none; }
+    .p-shot.t1{ display:block; aspect-ratio:16/9; }
+    .p-headbar{ align-items:flex-start; }
+    .p-facts{ grid-template-columns:1fr 1fr; }
+    .p-specs{ grid-template-columns:1fr; }
+    .p-aside{ grid-template-columns:1fr; }
+    .p-comm-grid{ grid-template-columns:1fr; }
+    .l-listings{ grid-template-columns:1fr; }
+    .l-foot-top{ grid-template-columns:1fr; }
+    .p-floor-grid{ grid-template-rows:repeat(4,54px); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .l-reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="l-wrap">
+
+  <!-- Nav (shared with homepage) -->
+  <header class="l-nav" data-screen-label="PDP — Nav">
+    <div class="l-container l-nav-in">
+      <a class="l-brand" href="index.html"><span class="l-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#FFB703" stroke-width="1.9"/><path d="M5.5 11.5V19h13v-7.5" stroke="#fff" stroke-width="1.9"/></svg></span><b>MVP <i>Realty</i></b></a>
+      <nav class="l-links">
+        <a href="index.html#lifestyle">The Life</a>
+        <a href="index.html#amenities">Amenities</a>
+        <a href="index.html#communities">Communities</a>
+        <a href="index.html#listings">Residences</a>
+      </nav>
+      <div class="l-nav-cta">
+        <a href="#tour" class="btn btn--navy">Request a Tour</a>
+        <button class="l-burger" aria-label="Menu"><svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Breadcrumb -->
+  <nav class="p-crumb" aria-label="Breadcrumb" data-screen-label="PDP — Breadcrumb">
+    <div class="l-container p-crumb-in">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="#">Florida</a><span class="sep">/</span>
+      <a href="#">Ocala</a><span class="sep">/</span>
+      <a href="#">On Top of the World</a><span class="sep">/</span>
+      <span class="cur">9181 SW 91st Cir</span>
+    </div>
+  </nav>
+
+  <!-- Gallery -->
+  <section class="p-gallery-sec" data-screen-label="PDP — Gallery">
+    <div class="l-container">
+      <div class="p-gallery">
+        <figure class="p-shot main">
+          <div class="p-gbadges">
+            <span class="p-badge sale">For Sale</span>
+            <span class="p-badge verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg> Verified 3 days ago</span>
+          </div>
+          <div class="photo photo--deep"><img id="p-hero" src="assets/photos/listing-otow-front.jpg" alt="Front exterior of the Jefferson model home at 9181 SW 91st Circle, framed by a mature live oak" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1600&q=72'"></div>
+        </figure>
+        <figure class="p-shot t1">
+          <div class="photo photo--sand"><img src="assets/photos/listing-otow-great.jpg" alt="Light-filled great room with vaulted ceilings" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=72'"></div>
+        </figure>
+        <figure class="p-shot t2">
+          <div class="photo photo--sand"><img src="assets/photos/listing-otow-kitchen.jpg" alt="Kitchen with breakfast nook and ample cabinetry" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=900&q=72'"></div>
+        </figure>
+        <figure class="p-shot t3">
+          <div class="photo photo--deep"><img src="assets/photos/listing-otow-garage.jpg" alt="Two-car garage with epoxy floors and golf-cart bay" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1558036117-15d82a90b9b1?auto=format&fit=crop&w=900&q=72'"></div>
+        </figure>
+        <figure class="p-shot t4">
+          <div class="photo photo--deep"><img src="assets/photos/listing-otow-lanai.jpg" alt="Private courtyard overlooking the golf course" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=900&q=72'"></div>
+          <button type="button" class="p-allphotos" aria-label="View all 55 photos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            All 55 photos
+          </button>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Title bar -->
+  <section class="l-container" data-screen-label="PDP — Title & Key Facts">
+    <div class="p-headbar">
+      <div class="meta">
+        <span class="p-status">For Sale · On Top of the World</span>
+        <div class="p-price">$239,000<span class="per">$118 / sq ft</span></div>
+        <h1 class="p-addr">9181 SW 91st Circle</h1>
+        <p class="p-addr-sub">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+          Ocala, FL 34481 · <a href="#community">On Top of the World</a>
+        </p>
+      </div>
+      <div class="p-headactions">
+        <button type="button" class="p-iconbtn" data-toggle="save">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Save
+        </button>
+        <button type="button" class="p-iconbtn" data-toggle="share">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+          Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Key facts ribbon -->
+    <div class="p-facts">
+      <div class="p-fact">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7v11h18V7M3 7l9-4 9 4M7 18v-5h4v5"/></svg></span>
+        <b>Single&nbsp;Family</b><span>Home Type</span>
+      </div>
+      <div class="p-fact">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16M3 9h18M9 21V9"/></svg></span>
+        <b>6,970 sf</b><span>Lot Size</span>
+      </div>
+      <div class="p-fact">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M6 6h6a3 3 0 0 1 0 6H8a3 3 0 0 0 0 6h10"/></svg></span>
+        <b>$118</b><span>Price / Sq Ft</span>
+      </div>
+      <div class="p-fact">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg></span>
+        <b>$4,869</b><span>Taxes / Yr</span>
+      </div>
+      <div class="p-fact">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></span>
+        <b>$479</b><span>HOA / Mo</span>
+      </div>
+      <div class="p-fact">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></span>
+        <b>1995</b><span>Year Built</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Body -->
+  <div class="l-container">
+    <div class="p-body">
+
+      <!-- Main column -->
+      <div class="p-main">
+
+        <!-- Overview -->
+        <section class="p-sec l-reveal" data-screen-label="PDP — Overview">
+          <span class="l-kicker">Overview</span>
+          <h2>The Jefferson model, in Williamsburg.</h2>
+          <div class="lede">
+            <p><strong>Motivated seller.</strong> A lovingly maintained Jefferson model in the Williamsburg neighborhood of On Top of the World. Just over 2,000 square feet, with three bedrooms, two baths, and a dedicated office/flex room — no carpet anywhere.</p>
+            <p>The kitchen is finished with generous counter and cabinet space, a breakfast nook, and a separate dining room ideal for entertaining. Take in golf-course views from the Florida room, and start your mornings with coffee in the private courtyard. The functional two-car garage adds epoxy floors and a dedicated golf-cart bay.</p>
+            <p>The HOA has the home scheduled for fresh exterior paint in August, and the seller will let the new owner choose the colors.</p>
+          </div>
+          <div class="p-highlights">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> 3 Bed · 2 Bath</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> 2,021 Sq Ft</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Office / Flex Room</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Golf-Course View</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Private Courtyard</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Golf-Cart Garage</span>
+          </div>
+        </section>
+
+        <!-- Interior -->
+        <section class="p-sec l-reveal" data-screen-label="PDP — Interior">
+          <span class="l-kicker">Interior</span>
+          <h2>Inside the home.</h2>
+          <div class="p-specs">
+            <div class="p-grp">
+              <h4>Bedrooms &amp; Baths</h4>
+              <ul>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 12V7a2 2 0 0 1 2-2h6v7M21 12v6M3 18h18"/></svg><span><b>3</b> bedrooms · <b>2</b> full baths</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12V6a2 2 0 0 1 2-2 2 2 0 0 1 2 2M2 12h20v3a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"/></svg><span>Vaulted ceilings &amp; eat-in kitchen</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M9 3v6"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg><span>Office / flex room</span></li>
+              </ul>
+            </div>
+            <div class="p-grp">
+              <h4>Appliances</h4>
+              <ul>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>Dishwasher &amp; microwave</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>Range, refrigerator</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>Washer, dryer &amp; electric water heater</span></li>
+              </ul>
+            </div>
+            <div class="p-grp">
+              <h4>Heating &amp; Cooling</h4>
+              <ul>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M5 5l14 14M19 5 5 19"/></svg><span>Central air conditioning</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M8 7l4-4 4 4"/></svg><span>Central, electric heat</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg><span>Thermostat-controlled</span></li>
+              </ul>
+            </div>
+            <div class="p-grp">
+              <h4>Laundry &amp; Layout</h4>
+              <ul>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>Inside laundry closet</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>Single-level living</span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span>2,021 sq ft total</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Floor plan -->
+        <section class="p-sec l-reveal" data-screen-label="PDP — Floor Plan">
+          <span class="l-kicker">Floor Plan</span>
+          <h2>How it lives.</h2>
+          <div class="p-floor">
+            <div class="p-floor-grid" role="img" aria-label="Single-level floor plan: great room opening to kitchen and breakfast nook, primary suite, office, two further bedrooms, and a lanai.">
+              <div class="p-room great"><b>Great Room</b><span>vaulted</span></div>
+              <div class="p-room kit"><b>Kitchen</b><span>eat-in</span></div>
+              <div class="p-room nook"><b>Breakfast</b><span>nook</span></div>
+              <div class="p-room primary"><b>Primary Suite</b><span>en-suite bath</span></div>
+              <div class="p-room office"><b>Office</b><span>flex</span></div>
+              <div class="p-room bed2"><b>Bedroom 2</b></div>
+              <div class="p-room lanai"><b>Florida Room</b><span>golf view</span></div>
+              <div class="p-room bed3"><b>Bedroom 3</b></div>
+            </div>
+            <div class="p-floor-legend">
+              <span class="k"><span class="sw pr"></span> Primary suite</span>
+              <span class="k"><span class="sw cm"></span> Common living</span>
+              <span class="k"><span class="sw"></span> Bedrooms &amp; flex</span>
+              <span class="k">Schematic — not to scale</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Exterior -->
+        <section class="p-sec l-reveal" data-screen-label="PDP — Exterior">
+          <span class="l-kicker">Exterior &amp; Construction</span>
+          <h2>The lot and the build.</h2>
+          <div class="p-specs">
+            <div class="p-grp kv">
+              <h4>Structure</h4>
+              <ul>
+                <li><span>Year built</span><span>1995</span></li>
+                <li><span>Roof</span><span>Shingle</span></li>
+                <li><span>Private pool</span><span>No</span></li>
+                <li><span>Garage</span><span>2 attached</span></li>
+                <li><span>Carport</span><span>None</span></li>
+              </ul>
+            </div>
+            <div class="p-grp kv">
+              <h4>Lot &amp; Utilities</h4>
+              <ul>
+                <li><span>Lot size</span><span>0.16 ac · 6,970 sf</span></li>
+                <li><span>Waterfront</span><span>No</span></li>
+                <li><span>Water source</span><span>None / community</span></li>
+                <li><span>Sewer</span><span>Public sewer</span></li>
+                <li><span>County</span><span>Marion · Twp 16S</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Location -->
+        <section class="p-sec l-reveal" data-screen-label="PDP — Location">
+          <span class="l-kicker">Location</span>
+          <h2>On Top of the World, Ocala.</h2>
+          <p class="lede">Set in the Williamsburg neighborhood, minutes from clubhouses, golf, and the community's shopping village — with Ocala's downtown and the Gulf beaches both within an easy drive.</p>
+          <div class="p-map" role="img" aria-label="Stylized map showing the home's location within On Top of the World, Ocala.">
+            <div class="green g1"></div><div class="green g2"></div>
+            <div class="road r1"></div><div class="road r2"></div>
+            <div class="p-map-tip"><b>Williamsburg</b>On Top of the World · Ocala</div>
+            <div class="p-map-pin"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="10" r="3"/></svg></span></div>
+            <a href="#tour" class="p-map-cta btn btn--navy">Ask about the area</a>
+          </div>
+        </section>
+
+        <!-- Listing courtesy / MLS -->
+        <section class="p-sec l-reveal" data-screen-label="PDP — Listing Courtesy">
+          <div class="p-courtesy">
+            <div class="row">
+              <b>Listing courtesy of</b> Robert Forrest, RE/MAX Premier Realty · <b>MLS&nbsp;ID</b> OM724140
+            </div>
+            <p class="mls">Listings courtesy of Stellar MLS as distributed by MLS GRID. Based on information submitted to the MLS GRID as of Jun 8, 2026. All data is obtained from various sources and may not have been verified by broker or MLS GRID. Supplied open-house information is subject to change without notice. Information should be independently reviewed and verified for accuracy.</p>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Sticky aside -->
+      <aside class="p-aside" id="tour" data-screen-label="PDP — Agent & Tour">
+        <div class="p-agent">
+          <div class="p-agent-top">
+            <span class="p-agent-ph"><img src="assets/photos/kim.jpg" alt="Portrait of Eleanor Voss, Broker and Owner of MVP Realty" referrerpolicy="no-referrer"></span>
+            <div class="who">
+              <b>Eleanor Voss</b>
+              <div class="role">Your On Top of the World Concierge</div>
+              <div class="lic">Broker &amp; Owner · MVP Realty · Lic. SL3300105</div>
+            </div>
+          </div>
+          <div class="p-agent-rating">
+            <span class="stars" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.7 6.1 20l1.2-6.5L2.5 8.9l6.6-.9z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.7 6.1 20l1.2-6.5L2.5 8.9l6.6-.9z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.7 6.1 20l1.2-6.5L2.5 8.9l6.6-.9z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.7 6.1 20l1.2-6.5L2.5 8.9l6.6-.9z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.7 6.1 20l1.2-6.5L2.5 8.9l6.6-.9z"/></svg>
+            </span>
+            <b>5.0</b> · 63 resident reviews
+          </div>
+          <div class="p-agent-stats">
+            <div class="st"><b>90</b><span>Sold in this community</span></div>
+            <div class="st"><b>3 min</b><span>Avg. response time</span></div>
+          </div>
+        </div>
+
+        <form class="p-form" onsubmit="return false" data-screen-label="PDP — Tour Form">
+          <p class="hd">Tour this home</p>
+          <p class="sub">No obligation. Your concierge replies within minutes, not days.</p>
+          <label for="p-name">Name</label>
+          <input id="p-name" type="text" placeholder="Jane &amp; Robert Ellison" autocomplete="name">
+          <label for="p-email">Email</label>
+          <input id="p-email" type="email" placeholder="you@example.com" autocomplete="email">
+          <label for="p-phone">Phone</label>
+          <input id="p-phone" type="tel" placeholder="(352) 555-0148" autocomplete="tel">
+          <label for="p-msg">How can we help?</label>
+          <textarea id="p-msg" placeholder="I'd love to tour 9181 SW 91st Circle this weekend."></textarea>
+          <button type="submit" class="btn btn--gold">Request a Tour <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <button type="submit" class="btn btn--outline">Message the Concierge</button>
+          <p class="fine">By requesting information you agree MVP Realty may call, text, or email you about this property. Consent is not a condition of purchase. MVP Realty does not maintain community HOA information.</p>
+        </form>
+
+        <a class="p-call" href="tel:+13527807325">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.6a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7A2 2 0 0 1 22 16.9z"/></svg>
+          Prefer to call? (352) 780-7325
+        </a>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Community key facts -->
+  <section class="p-comm" id="community" data-screen-label="PDP — Community Key Facts">
+    <div class="l-container">
+      <div class="l-reveal">
+        <span class="l-kicker">The Community</span>
+        <h2>Life inside <em>On Top of the World.</em></h2>
+        <p class="sub">One of Florida's largest 55+ communities — gated, golf-rich, and built for an active, social life with clubhouses, courts, pools, and a calendar that's always full.</p>
+      </div>
+      <div class="p-comm-grid l-reveal d1">
+        <div class="p-comm-cell">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+          <b>55+</b><span>Age-restricted community</span>
+        </div>
+        <div class="p-comm-cell">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          <b>Gated</b><span>Manned &amp; secured access</span>
+        </div>
+        <div class="p-comm-cell">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></span>
+          <b>10,000 homes</b><span>Single-family &amp; attached</span>
+        </div>
+        <div class="p-comm-cell">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 22V4l9-2v20M4 22h16M13 22V8l7 2v12"/></svg></span>
+          <b>Since 1981</b><span>Built by On Top of the World Communities</span>
+        </div>
+      </div>
+      <div class="p-comm-actions l-reveal d1">
+        <a href="#" class="btn btn--gold">Explore the community <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#" class="btn btn--outline">Amenities &amp; clubs</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Similar homes -->
+  <section class="l-sec ivory" data-screen-label="PDP — Similar Homes">
+    <div class="l-container">
+      <div class="l-head l-head-row l-reveal">
+        <div style="max-width:46ch">
+          <span class="l-kicker">Similar Homes</span>
+          <h2>More residences in On Top of the World.</h2>
+        </div>
+        <a href="#" class="l-more">View all homes here <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="l-listings">
+        <a class="l-listing l-reveal" href="#">
+          <div class="ph"><span class="badge">Now Selling</span><div class="photo photo--deep"><img src="assets/photos/listing-otow-sim1.jpg" alt="Single-family home at 9326 SW 97th Circle" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1100&q=72'"></div></div>
+          <div class="b">
+            <div class="price">$349,900</div>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg> 9326 SW 97th Cir · Ocala</div>
+            <div class="stats">
+              <div class="s"><b>2</b><span>Beds</span></div>
+              <div class="s"><b>2</b><span>Baths</span></div>
+              <div class="s"><b>1,979</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View property <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <a class="l-listing l-reveal d1" href="#">
+          <div class="ph"><span class="badge">55+ Living</span><div class="photo photo--sand"><img src="assets/photos/listing-otow-sim2.jpg" alt="Single-family home at 7948 SW 89th Loop" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1576941089067-2de3c901e126?auto=format&fit=crop&w=1100&q=72'"></div></div>
+          <div class="b">
+            <div class="price">$358,900</div>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg> 7948 SW 89th Loop · Ocala</div>
+            <div class="stats">
+              <div class="s"><b>2</b><span>Beds</span></div>
+              <div class="s"><b>2</b><span>Baths</span></div>
+              <div class="s"><b>1,737</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View property <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <a class="l-listing l-reveal d2" href="#">
+          <div class="ph"><span class="badge">New to Market</span><div class="photo photo--deep"><img src="assets/photos/listing-otow-sim3.jpg" alt="Single-family home at 8540 SW 90th Place A" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=1100&q=72'"></div></div>
+          <div class="b">
+            <div class="price">$157,900</div>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg> 8540 SW 90th Pl A · Ocala</div>
+            <div class="stats">
+              <div class="s"><b>2</b><span>Beds</span></div>
+              <div class="s"><b>2</b><span>Baths</span></div>
+              <div class="s"><b>1,503</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View property <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (shared with homepage) -->
+  <footer class="l-foot" data-screen-label="PDP — Footer">
+    <div class="l-container">
+      <div class="l-foot-top">
+        <div class="l-foot-brand">
+          <b>MVP <i>Realty</i></b>
+          <p>Florida's Gulf-Coast concierge for luxury gated communities and beachfront residences, minutes from the sand.</p>
+        </div>
+        <div><h4>This Home</h4><ul><li><a href="#tour">Request a Tour</a></li><li><a href="#community">The Community</a></li><li><a href="#">Mortgage Estimate</a></li><li><a href="#">Schedule a Call</a></li></ul></div>
+        <div><h4>Explore</h4><ul><li><a href="index.html#amenities">Amenities</a></li><li><a href="index.html#communities">Communities</a></li><li><a href="index.html#lifestyle">The Life</a></li><li><a href="index.html#listings">Residences</a></li></ul></div>
+        <div><h4>Concierge</h4><ul><li><a href="#tour">Speak With Us</a></li><li><a href="tel:+13527807325">(352) 780-7325</a></li><li><a href="#">By Appointment</a></li><li><a href="index.html#concierge">About MVP</a></li></ul></div>
+      </div>
+      <div class="l-foot-bot"><div><span>© 2026 MVP Realty. All rights reserved.</span><span>Equal Housing Opportunity · Privacy · Terms</span></div></div>
+    </div>
+  </footer>
+
+  <!-- Mobile sticky CTA -->
+  <div class="p-stickybar" id="p-stickybar">
+    <div class="pr">$239,000<small>9181 SW 91st Cir · 3bd · 2ba</small></div>
+    <a href="#tour" class="btn btn--gold">Request a Tour</a>
+  </div>
+
+</div>
+<noscript><style>.l-reveal{opacity:1!important;transform:none!important;}</style></noscript>
+<script>
+  (function(){
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // sticky nav shadow
+    var nav = document.querySelector('.l-nav');
+    if (nav){
+      var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 8); };
+      document.addEventListener('scroll', onScroll, { passive:true }); onScroll();
+    }
+
+    // reveals
+    var reveals = document.querySelectorAll('.l-reveal');
+    if(!('IntersectionObserver' in window) || reduce){
+      reveals.forEach(function(r){ r.classList.add('in'); });
+    } else {
+      var ro = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }); }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(r){ ro.observe(r); });
+      setTimeout(function(){ reveals.forEach(function(r){ r.classList.add('in'); }); }, 2600);
+    }
+
+    // gallery — swap thumbnail into the hero slot
+    var hero = document.getElementById('p-hero');
+    document.querySelectorAll('.p-shot:not(.main) img').forEach(function(img){
+      img.closest('.p-shot').addEventListener('click', function(e){
+        if (e.target.closest('.p-allphotos')) return;
+        if (!hero) return;
+        var cur = hero.getAttribute('src');
+        var curOn = hero.getAttribute('onerror');
+        hero.setAttribute('src', img.getAttribute('src'));
+        hero.setAttribute('onerror', img.getAttribute('onerror') || '');
+        img.setAttribute('src', cur);
+        img.setAttribute('onerror', curOn || '');
+      });
+    });
+
+    // save / share toggles
+    document.querySelectorAll('.p-iconbtn[data-toggle]').forEach(function(b){
+      b.addEventListener('click', function(){
+        if (b.getAttribute('data-toggle') === 'save'){
+          b.classList.toggle('on');
+          b.lastChild.textContent = b.classList.contains('on') ? ' Saved' : ' Save';
+        } else if (navigator.share){
+          navigator.share({ title: document.title, url: location.href }).catch(function(){});
+        } else {
+          b.classList.add('on'); setTimeout(function(){ b.classList.remove('on'); }, 900);
+        }
+      });
+    });
+
+    // mobile sticky CTA — show after the title scrolls past
+    var bar = document.getElementById('p-stickybar');
+    var anchor = document.querySelector('.p-headbar');
+    if (bar && anchor && 'IntersectionObserver' in window){
+      var so = new IntersectionObserver(function(es){
+        bar.classList.toggle('in', !es[0].isIntersecting);
+      }, { rootMargin:'-40% 0px 0px 0px' });
+      so.observe(anchor);
+    }
+  })();
+</script>
+
+<!-- Tweaks panel (shared with homepage) -->
+<div id="tweaks-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useEffect } = React;
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{ "accent":"Gold", "corners":"Tailored", "serif":"Playfair" }/*EDITMODE-END*/;
+const ACCENTS = {
+  "Gold":   { gold:"#FFB703", deep:"#c98a0a", soft:"#f0d9a6" },
+  "Ivory":  { gold:"#d9c9a4", deep:"#9c8348", soft:"#ece0c6" },
+  "Coastal":{ gold:"#3cb6b3", deep:"#1f7a78", soft:"#9ee4e2" },
+  "Bronze": { gold:"#cf9f5d", deep:"#a06f2c", soft:"#e6cfa0" }
+};
+const CORNERS = { "Square":["2px","3px","4px"], "Tailored":["6px","10px","12px"], "Soft":["10px","16px","20px"] };
+const SERIFS = {
+  "Playfair":  "'Playfair Display', Georgia, serif",
+  "Cormorant": "'Cormorant Garamond', Georgia, serif",
+  "Lora":      "'Lora', Georgia, serif"
+};
+function applyTweaks(t){
+  const el = document.querySelector('.l-wrap'); if(!el) return;
+  const a = ACCENTS[t.accent] || ACCENTS["Gold"];
+  const c = CORNERS[t.corners] || CORNERS["Tailored"];
+  const f = SERIFS[t.serif] || SERIFS["Playfair"];
+  const S=(k,v)=>el.style.setProperty(k,v);
+  S('--l-gold',a.gold); S('--l-gold-deep',a.deep); S('--l-gold-soft',a.soft);
+  S('--l-r-sm',c[0]); S('--l-r',c[1]); S('--l-r-lg',c[2]);
+  S('--l-display',f);
+}
+function App(){
+  const [t,setTweak] = useTweaks(TWEAK_DEFAULTS);
+  useEffect(()=>{ applyTweaks(t); }, [t.accent, t.corners, t.serif]);
+  return (<TweaksPanel title="Elegant Concierge — PDP">
+    <TweakSection label="Accent" />
+    <TweakRadio label="Color" value={t.accent} options={["Gold","Ivory","Coastal","Bronze"]} onChange={(v)=>setTweak('accent',v)} />
+    <TweakSection label="Edges" />
+    <TweakRadio label="Corners" value={t.corners} options={["Square","Tailored","Soft"]} onChange={(v)=>setTweak('corners',v)} />
+    <TweakSection label="Display Type" />
+    <TweakRadio label="Serif" value={t.serif} options={["Playfair","Cormorant","Lora"]} onChange={(v)=>setTweak('serif',v)} />
+  </TweaksPanel>);
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App />);
+</script>
+</body>
+</html>

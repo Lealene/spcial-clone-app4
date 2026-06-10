@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP Realty - Cool Smooth Modern (M)</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  /* ===========================================================
+     DIRECTION M - "Cool Smooth Modern"
+     Cool blues + seafoam glow on a soft, airy duotone base.
+     Tasteful glassmorphism with REAL contrast for 55+ legibility:
+       - generous type, high-contrast ink, large tap targets
+       - medium-large smooth radii (~18-24px)
+       - smooth spring transitions, gentle parallax-lite hero,
+         soft hover lifts, content gliding in
+     Every custom class is namespaced `m-`. All look built on
+     tokens.css variables. VARIANCE 7 / MOTION 6 / DENSITY 3.
+     ========================================================== */
+
+  .m-wrap{
+    /* tweakable variables (driven by the tweaks panel) */
+    --m-accent:#5FD3D0;        /* seafoam glow accent          */
+    --m-accent-deep:#2a9c99;   /* readable accent for text     */
+    --m-primary:#1D4E89;       /* CTA / deep ocean             */
+    --m-primary-700:#16406f;
+    --m-radius:22px;           /* smooth medium-large corners  */
+    --m-radius-sm:14px;
+    --m-glass-alpha:0.62;      /* surface opacity (solid<->glass) */
+    --m-glass-blur:20px;
+
+    /* airy cool base */
+    --m-base:#f3f8fb;
+    --m-base-2:#e8f2f6;
+    --m-ink:#0e2740;           /* high-contrast body ink       */
+    --m-ink-soft:#33506e;
+    --m-line:rgba(29,78,137,.12);
+    --m-card-shadow:0 26px 60px -30px rgba(16,44,72,.40);
+    --m-card-shadow-sm:0 14px 34px -22px rgba(16,44,72,.30);
+
+    color:var(--m-ink);
+    background:
+      radial-gradient(120% 80% at 8% -8%, rgba(95,211,208,.20), transparent 55%),
+      radial-gradient(120% 90% at 100% 0%, rgba(29,78,137,.14), transparent 52%),
+      linear-gradient(180deg, var(--m-base) 0%, #ffffff 38%, var(--m-base) 100%);
+    overflow-x:clip;
+    font-size:17px;            /* larger base for 55+ */
+  }
+  .m-wrap *{ box-sizing:border-box; }
+  .m-container{ max-width:1240px; margin:0 auto; padding-inline:clamp(20px,5vw,64px); }
+  .m-wrap a:focus-visible,.m-wrap button:focus-visible,.m-wrap input:focus-visible{
+    outline:3px solid var(--m-accent-deep); outline-offset:3px; border-radius:6px; }
+
+  /* ---- type system: clean modern sans, tight tracking, confident ---- */
+  .m-ey{ font-family:var(--sans); font-weight:700; font-size:13px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--m-accent-deep); }
+  .m-h{ font-family:var(--sans); font-weight:800; letter-spacing:-.022em; line-height:1.04;
+    color:var(--ocean-900); margin:0; }
+  .m-lede{ color:var(--m-ink-soft); font-size:clamp(18px,1.35vw,21px); line-height:1.6; max-width:54ch; }
+
+  /* ---- smooth buttons: large tap targets, spring press ---- */
+  .m-btn{ display:inline-flex; align-items:center; justify-content:center; gap:11px;
+    font-family:var(--sans); font-weight:700; font-size:17px; letter-spacing:-.01em;
+    border:none; border-radius:var(--m-radius); padding:18px 30px; min-height:58px;
+    cursor:pointer; white-space:nowrap;
+    transition:transform .42s cubic-bezier(.22,1,.36,1), box-shadow .42s cubic-bezier(.22,1,.36,1), background .3s ease; }
+  .m-btn svg{ width:19px; height:19px; transition:transform .42s cubic-bezier(.22,1,.36,1); }
+  .m-btn:active{ transform:scale(.975); }
+  .m-btn--primary{ background:var(--m-primary); color:#fff; box-shadow:0 16px 34px -16px rgba(29,78,137,.65); }
+  .m-btn--primary:hover{ background:var(--m-primary-700); transform:translateY(-3px); box-shadow:0 24px 48px -18px rgba(29,78,137,.6); }
+  .m-btn--primary:hover svg{ transform:translateX(4px); }
+  .m-btn--accent{ background:var(--m-accent); color:#08303a; box-shadow:0 16px 36px -16px rgba(95,211,208,.75); }
+  .m-btn--accent:hover{ transform:translateY(-3px); box-shadow:0 24px 52px -18px rgba(95,211,208,.7); }
+  .m-btn--glass{ background:rgba(255,255,255,.16); color:#fff; backdrop-filter:blur(10px);
+    box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55); }
+  .m-btn--glass:hover{ background:rgba(255,255,255,.26); transform:translateY(-3px); }
+
+  /* ---- shared glass surface (always over a tint => readable) ---- */
+  .m-glass{
+    position:relative; isolation:isolate; border-radius:var(--m-radius);
+    background:linear-gradient(160deg, rgba(255,255,255,.78), rgba(255,255,255,var(--m-glass-alpha)));
+    backdrop-filter:blur(var(--m-glass-blur)) saturate(150%);
+    -webkit-backdrop-filter:blur(var(--m-glass-blur)) saturate(150%);
+    border:1px solid rgba(255,255,255,.7);
+    box-shadow:var(--m-card-shadow), inset 0 1px 0 rgba(255,255,255,.85);
+  }
+
+  /* ---- nav ---- */
+  .m-nav{ position:sticky; top:0; z-index:60; transition:box-shadow .4s ease, background .4s ease; }
+  .m-nav-bar{ display:flex; align-items:center; justify-content:space-between; gap:24px;
+    margin-top:14px; padding:12px 14px 12px 20px; border-radius:var(--m-radius);
+    background:linear-gradient(160deg, rgba(255,255,255,.72), rgba(255,255,255,.5));
+    backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%);
+    border:1px solid rgba(255,255,255,.65); box-shadow:0 10px 30px -20px rgba(16,44,72,.4); }
+  .m-nav.scrolled .m-nav-bar{ box-shadow:0 18px 40px -24px rgba(16,44,72,.5); }
+  .m-brand{ display:flex; align-items:center; gap:12px; }
+  .m-mark{ width:44px; height:44px; border-radius:13px; display:grid; place-items:center;
+    background:linear-gradient(150deg, var(--m-primary), var(--m-accent-deep));
+    box-shadow:0 8px 18px -8px rgba(29,78,137,.7); }
+  .m-mark svg{ width:24px; height:24px; }
+  .m-brand b{ font-family:var(--sans); font-weight:800; font-size:20px; letter-spacing:-.01em; color:var(--ocean-900); }
+  .m-links{ display:flex; align-items:center; gap:30px; }
+  .m-links a{ font-weight:600; font-size:16px; color:var(--m-ink-soft); position:relative; padding:6px 0; transition:color .25s; }
+  .m-links a::after{ content:''; position:absolute; left:0; right:100%; bottom:0; height:2px;
+    border-radius:2px; background:var(--m-accent-deep); transition:right .35s cubic-bezier(.22,1,.36,1); }
+  .m-links a:hover{ color:var(--ocean-900); } .m-links a:hover::after{ right:0; }
+  .m-nav .m-btn{ font-size:15px; min-height:48px; padding:13px 22px; border-radius:var(--m-radius-sm); }
+  .m-burger{ display:none; background:none; border:none; color:var(--ocean-800); }
+
+  /* ---- hero ---- */
+  .m-hero{ position:relative; padding:clamp(40px,6vw,72px) 0 clamp(56px,7vw,104px); overflow:hidden; }
+  .m-hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(28px,4vw,56px); align-items:center; }
+  .m-hero-copy{ position:relative; z-index:2; }
+  .m-hero-pill{ display:inline-flex; align-items:center; gap:10px; padding:9px 16px 9px 12px;
+    border-radius:var(--m-radius-sm); font-weight:700; font-size:14px; color:var(--m-primary);
+    background:rgba(255,255,255,.7); border:1px solid rgba(255,255,255,.8);
+    backdrop-filter:blur(10px); box-shadow:var(--m-card-shadow-sm); }
+  .m-hero-pill i{ width:9px; height:9px; border-radius:50%; background:var(--m-accent); box-shadow:0 0 0 4px rgba(95,211,208,.28); }
+  .m-hero h1{ font-family:var(--sans); font-weight:800; letter-spacing:-.03em; line-height:1.02;
+    font-size:clamp(40px,5.6vw,72px); color:var(--ocean-900); margin:22px 0 0; max-width:15ch; }
+  .m-hero h1 em{ font-style:italic; font-weight:800; color:var(--m-accent-deep); }
+  .m-hero p{ margin:22px 0 0; color:var(--m-ink-soft); font-size:clamp(18px,1.4vw,22px); line-height:1.55; max-width:42ch; }
+  .m-hero-actions{ display:flex; gap:14px; flex-wrap:wrap; margin-top:34px; }
+  .m-hero-media{ position:relative; z-index:1; }
+  .m-hero-photo{ position:relative; border-radius:28px; overflow:hidden; aspect-ratio:4/4.6;
+    box-shadow:var(--m-card-shadow); border:1px solid rgba(255,255,255,.6); }
+  .m-hero-photo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; will-change:transform; }
+  .m-hero-photo::after{ content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 50%, rgba(8,26,48,.34) 100%); }
+  /* floating glass stat card on hero photo */
+  .m-hero-stat{ position:absolute; left:-22px; bottom:26px; z-index:3; padding:18px 22px;
+    border-radius:var(--m-radius); display:flex; gap:20px; }
+  .m-hero-stat .s b{ display:block; font-family:var(--sans); font-weight:800; font-size:26px;
+    color:var(--ocean-900); line-height:1; letter-spacing:-.02em; }
+  .m-hero-stat .s span{ display:block; margin-top:6px; font-size:13.5px; font-weight:600; color:var(--m-ink-soft); }
+  .m-hero-stat .s + .s{ padding-left:20px; border-left:1px solid var(--m-line); }
+  .m-hero-glow{ position:absolute; inset:-20% 0 auto -10%; height:60%; z-index:0; pointer-events:none;
+    background:radial-gradient(60% 60% at 30% 40%, rgba(95,211,208,.35), transparent 70%); filter:blur(20px); }
+
+  /* ---- section scaffold ---- */
+  .m-sec{ padding:clamp(64px,8vw,120px) 0; position:relative; }
+  .m-sec-head{ max-width:62ch; margin-bottom:clamp(36px,4vw,56px); }
+  .m-sec-head h2{ font-size:clamp(30px,3.8vw,50px); margin:14px 0 0; }
+  .m-sec-head p{ margin:18px 0 0; }
+  .m-head-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;
+    margin-bottom:clamp(34px,4vw,52px); }
+  .m-head-row .t{ max-width:30ch; } .m-head-row .t h2{ font-size:clamp(30px,3.8vw,50px); margin:14px 0 0; }
+  .m-more{ font-weight:700; font-size:16px; color:var(--m-primary); display:inline-flex; align-items:center; gap:10px;
+    white-space:nowrap; padding:6px 0; border-bottom:2px solid transparent; transition:border-color .3s, gap .3s; }
+  .m-more svg{ width:18px; height:18px; transition:transform .35s cubic-bezier(.22,1,.36,1); }
+  .m-more:hover{ border-color:var(--m-accent-deep); } .m-more:hover svg{ transform:translateX(5px); }
+
+  /* ---- featured listings ---- */
+  .m-listings{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .m-listing{ display:flex; flex-direction:column; overflow:hidden; border-radius:var(--m-radius);
+    transition:transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s cubic-bezier(.22,1,.36,1); }
+  .m-listing:hover{ transform:translateY(-6px); box-shadow:0 38px 70px -32px rgba(16,44,72,.5), inset 0 1px 0 rgba(255,255,255,.85); }
+  .m-listing .ph{ position:relative; aspect-ratio:16/11; overflow:hidden; border-radius:var(--m-radius-sm); margin:10px 10px 0; }
+  .m-listing .ph img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    transition:transform .9s cubic-bezier(.22,1,.36,1); }
+  .m-listing:hover .ph img{ transform:scale(1.07); }
+  .m-listing .ph .badge{ position:absolute; top:12px; left:12px; z-index:2; font-size:12.5px; font-weight:700;
+    letter-spacing:.04em; text-transform:uppercase; color:#08303a; padding:7px 13px; border-radius:10px;
+    background:rgba(255,255,255,.86); backdrop-filter:blur(8px); box-shadow:0 6px 16px -8px rgba(16,44,72,.5); }
+  .m-listing .ph .price{ position:absolute; bottom:12px; right:12px; z-index:2; font-family:var(--sans);
+    font-weight:800; font-size:17px; color:#fff; padding:8px 14px; border-radius:11px;
+    background:linear-gradient(150deg, rgba(29,78,137,.92), rgba(22,64,111,.92)); backdrop-filter:blur(6px);
+    box-shadow:0 8px 20px -8px rgba(16,44,72,.7); }
+  .m-listing .body{ padding:18px 20px 20px; }
+  .m-listing h3{ font-family:var(--sans); font-weight:800; font-size:21px; letter-spacing:-.01em; color:var(--ocean-900); margin:0; }
+  .m-listing .city{ display:flex; align-items:center; gap:7px; margin-top:6px; font-size:15.5px; font-weight:600; color:var(--m-ink-soft); }
+  .m-listing .city svg{ width:16px; height:16px; color:var(--m-accent-deep); }
+  .m-listing .stats{ display:flex; gap:0; margin-top:16px; padding-top:15px; border-top:1px solid var(--m-line); }
+  .m-listing .stats .st{ flex:1; text-align:center; }
+  .m-listing .stats .st + .st{ border-left:1px solid var(--m-line); }
+  .m-listing .stats .st b{ display:block; font-family:var(--sans); font-weight:800; font-size:18px; color:var(--ocean-900); }
+  .m-listing .stats .st span{ display:block; margin-top:3px; font-size:12.5px; font-weight:600; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--m-ink-soft); }
+  .m-listing .view{ display:flex; align-items:center; justify-content:space-between; margin-top:18px;
+    font-weight:700; font-size:16px; color:var(--m-primary); }
+  .m-listing .view svg{ width:18px; height:18px; transition:transform .35s cubic-bezier(.22,1,.36,1); }
+  .m-listing:hover .view svg{ transform:translateX(5px); }
+
+  /* ---- amenities ---- */
+  .m-amen-sec{ position:relative; }
+  .m-amen-grid{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:1fr; gap:20px; }
+  .m-amen{ padding:26px 24px; border-radius:var(--m-radius);
+    transition:transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s cubic-bezier(.22,1,.36,1); }
+  .m-amen:hover{ transform:translateY(-5px); }
+  .m-amen .ic{ width:54px; height:54px; border-radius:16px; display:grid; place-items:center;
+    background:linear-gradient(150deg, rgba(95,211,208,.22), rgba(29,78,137,.14)); color:var(--m-primary); margin-bottom:16px; }
+  .m-amen .ic svg{ width:28px; height:28px; }
+  .m-amen h3{ font-family:var(--sans); font-weight:800; font-size:19px; letter-spacing:-.01em; color:var(--ocean-900); margin:0; }
+  .m-amen p{ margin:8px 0 0; font-size:15.5px; line-height:1.5; color:var(--m-ink-soft); }
+  /* feature amenity tile spans 2 cols with photo */
+  .m-amen-feat{ grid-column:span 2; grid-row:span 2; position:relative; overflow:hidden; padding:0;
+    border-radius:var(--m-radius); box-shadow:var(--m-card-shadow); }
+  .m-amen-feat img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .m-amen-feat::after{ content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(8,26,48,.05) 30%, rgba(8,26,48,.82) 100%); }
+  .m-amen-feat .cap{ position:absolute; left:26px; right:26px; bottom:24px; z-index:2; color:#fff; }
+  .m-amen-feat .cap h3{ color:#fff; font-size:clamp(22px,2.4vw,30px); }
+  .m-amen-feat .cap p{ color:rgba(255,255,255,.9); font-size:16px; margin-top:8px; max-width:36ch; }
+
+  /* ---- communities (map-lite, glass pills) ---- */
+  .m-comm-sec{ position:relative; }
+  .m-comm-wrap{ display:grid; grid-template-columns:1fr 1.1fr; gap:clamp(32px,5vw,72px); align-items:center; }
+  .m-comm-stats{ display:flex; gap:0; margin-top:30px; }
+  .m-comm-stats .s{ padding-right:26px; margin-right:26px; border-right:1px solid var(--m-line); }
+  .m-comm-stats .s:last-child{ border-right:none; }
+  .m-comm-stats .s b{ display:block; font-family:var(--sans); font-weight:800; font-size:clamp(30px,3.4vw,42px);
+    color:var(--m-primary); line-height:1; letter-spacing:-.02em; }
+  .m-comm-stats .s span{ display:block; margin-top:8px; font-size:13.5px; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--m-ink-soft); }
+  .m-comm-card{ padding:clamp(28px,3vw,40px); }
+  .m-comm-list{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .m-comm-list a{ display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:16px 18px; border-radius:var(--m-radius-sm); background:rgba(255,255,255,.55);
+    border:1px solid var(--m-line); font-weight:700; font-size:16.5px; color:var(--ocean-900);
+    transition:transform .35s cubic-bezier(.22,1,.36,1), background .3s, box-shadow .35s; }
+  .m-comm-list a:hover{ transform:translateX(3px); background:#fff; box-shadow:var(--m-card-shadow-sm); }
+  .m-comm-list a .mi{ font-size:13px; font-weight:700; color:var(--m-accent-deep); display:flex; align-items:center; gap:6px; }
+  .m-comm-list a .mi svg{ width:15px; height:15px; }
+
+  /* ---- lifestyle / social band ---- */
+  .m-life{ position:relative; border-radius:clamp(22px,3vw,36px); overflow:hidden; color:#fff;
+    box-shadow:var(--m-card-shadow); }
+  .m-life-photo{ position:absolute; inset:0; z-index:0; }
+  .m-life-photo img{ width:100%; height:100%; object-fit:cover; will-change:transform; }
+  .m-life-veil{ position:absolute; inset:0; z-index:1;
+    background:linear-gradient(105deg, rgba(8,26,48,.9) 0%, rgba(8,26,48,.66) 46%, rgba(8,26,48,.2) 100%); }
+  .m-life-in{ position:relative; z-index:2; padding:clamp(48px,6vw,88px); max-width:64ch; }
+  .m-life-in .m-ey{ color:var(--m-accent); }
+  .m-life-in h2{ font-family:var(--sans); font-weight:800; letter-spacing:-.025em; line-height:1.03;
+    font-size:clamp(30px,4.2vw,56px); color:#fff; margin:14px 0 0; max-width:18ch; }
+  .m-life-in p{ color:rgba(255,255,255,.92); font-size:clamp(18px,1.4vw,21px); line-height:1.6; max-width:46ch; margin:20px 0 0; }
+  .m-social{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:36px; }
+  .m-social .it{ padding:20px 22px; border-radius:var(--m-radius-sm);
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.24); backdrop-filter:blur(10px); }
+  .m-social .it b{ display:block; font-family:var(--sans); font-weight:800; font-size:17px; color:#fff; }
+  .m-social .it span{ display:block; margin-top:8px; font-size:15px; line-height:1.45; color:rgba(255,255,255,.86); }
+
+  /* ---- stay & tour ---- */
+  .m-stay{ display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(28px,4vw,56px); align-items:center; }
+  .m-stay-copy .price{ display:inline-flex; align-items:baseline; gap:8px; margin-top:18px;
+    font-family:var(--sans); font-weight:800; font-size:clamp(24px,2.4vw,30px); color:var(--m-primary); }
+  .m-stay-copy .price small{ font-size:16px; font-weight:700; color:var(--m-ink-soft); }
+  .m-stay-copy h2{ font-size:clamp(30px,3.8vw,50px); margin:14px 0 0; }
+  .m-stay-copy p{ margin:18px 0 30px; }
+  .m-stay-media{ position:relative; border-radius:28px; overflow:hidden; aspect-ratio:4/3.4;
+    box-shadow:var(--m-card-shadow); border:1px solid rgba(255,255,255,.6); }
+  .m-stay-media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    transition:transform 1s cubic-bezier(.22,1,.36,1); }
+  .m-stay-media:hover img{ transform:scale(1.05); }
+
+  /* ---- lead capture + footer ---- */
+  .m-cap{ padding:clamp(40px,5vw,64px); text-align:center; border-radius:clamp(22px,3vw,36px); }
+  .m-cap h2{ font-size:clamp(28px,3.4vw,46px); margin:0 auto; max-width:18ch; }
+  .m-cap p{ margin:18px auto 0; max-width:50ch; }
+  .m-cap form{ display:flex; gap:12px; max-width:560px; margin:30px auto 0; flex-wrap:wrap; }
+  .m-cap input{ flex:1; min-width:240px; height:60px; padding:0 22px; font-family:var(--sans);
+    font-weight:600; font-size:17px; color:var(--m-ink); border:1px solid var(--m-line);
+    border-radius:var(--m-radius); background:#fff; outline:none; transition:border-color .25s, box-shadow .25s; }
+  .m-cap input::placeholder{ color:#6c8298; }
+  .m-cap input:focus{ border-color:var(--m-accent-deep); box-shadow:0 0 0 4px rgba(95,211,208,.22); }
+  .m-cap .fine{ margin:16px auto 0; font-size:14.5px; color:var(--m-ink-soft); max-width:46ch; }
+
+  .m-foot{ margin-top:clamp(48px,6vw,80px); padding-top:clamp(48px,5vw,64px); padding-bottom:36px; border-top:1px solid var(--m-line); }
+  .m-foot-top{ display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:40px; }
+  .m-foot-brand b{ font-family:var(--sans); font-weight:800; font-size:20px; color:var(--ocean-900); }
+  .m-foot-brand p{ margin:14px 0 0; font-size:15.5px; line-height:1.6; color:var(--m-ink-soft); max-width:34ch; }
+  .m-foot h4{ font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--m-accent-deep); margin:0 0 16px; }
+  .m-foot ul{ list-style:none; padding:0; margin:0; display:grid; gap:12px; }
+  .m-foot a{ font-size:16px; color:var(--m-ink-soft); transition:color .2s; }
+  .m-foot a:hover{ color:var(--ocean-900); }
+  .m-foot-bot{ display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:44px;
+    padding-top:24px; border-top:1px solid var(--m-line); font-size:14.5px; color:var(--m-ink-soft); }
+
+  /* ---- reveal motion (content gliding in) ---- */
+  .m-reveal{ opacity:0; transform:translateY(30px); filter:blur(6px);
+    transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1), filter .8s ease; }
+  .m-reveal.in{ opacity:1; transform:none; filter:none; }
+  .m-reveal.d1{ transition-delay:.08s; } .m-reveal.d2{ transition-delay:.16s; }
+  .m-reveal.d3{ transition-delay:.24s; } .m-reveal.d4{ transition-delay:.32s; }
+
+  /* ---- responsive ---- */
+  @media (max-width:960px){
+    .m-links{ display:none; } .m-burger{ display:block; }
+    .m-hero-grid{ grid-template-columns:1fr; gap:36px; }
+    .m-hero-media{ order:-1; } .m-hero-photo{ aspect-ratio:16/12; }
+    .m-listings{ grid-template-columns:1fr 1fr; }
+    .m-amen-grid{ grid-template-columns:1fr 1fr; }
+    .m-amen-feat{ grid-column:span 2; grid-row:auto; aspect-ratio:16/10; }
+    .m-comm-wrap{ grid-template-columns:1fr; gap:40px; }
+    .m-social{ grid-template-columns:1fr; }
+    .m-stay{ grid-template-columns:1fr; } .m-stay-media{ order:-1; }
+    .m-foot-top{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:560px){
+    .m-wrap{ font-size:16px; }
+    .m-listings{ grid-template-columns:1fr; }
+    .m-amen-grid{ grid-template-columns:1fr; }
+    .m-amen-feat{ grid-column:span 1; }
+    .m-comm-list{ grid-template-columns:1fr; }
+    .m-hero-stat{ left:12px; right:12px; }
+    .m-foot-top{ grid-template-columns:1fr; }
+    .m-comm-stats{ flex-wrap:wrap; gap:18px 0; }
+    .m-comm-stats .s{ border-right:none; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .m-reveal{ opacity:1 !important; transform:none !important; filter:none !important; transition:none !important; }
+    .m-hero-photo img,.m-life-photo img{ transform:none !important; }
+    .m-btn,.m-listing,.m-amen,.m-comm-list a{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="m-wrap">
+
+  <!-- Nav -->
+  <header class="m-nav" data-screen-label="Home M — Nav">
+    <div class="m-container">
+      <div class="m-nav-bar">
+        <a class="m-brand" href="#">
+          <span class="m-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#EAF4F4" stroke-width="2"/><path d="M5.5 11.5V19h13v-7.5" stroke="#fff" stroke-width="2"/></svg></span>
+          <b>MVP Realty</b>
+        </a>
+        <nav class="m-links">
+          <a href="#listings">Listings</a>
+          <a href="#amenities">Amenities</a>
+          <a href="#communities">Communities</a>
+          <a href="#lifestyle">Lifestyle</a>
+          <a href="#stay">Stay &amp; Tour</a>
+        </nav>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <a href="#capture" class="m-btn m-btn--primary">Request Pricing</a>
+          <button class="m-burger" aria-label="Menu"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="m-hero" data-screen-label="Home M — Hero">
+    <div class="m-hero-glow" aria-hidden="true"></div>
+    <div class="m-container m-hero-grid">
+      <div class="m-hero-copy">
+        <span class="m-hero-pill m-reveal"><i></i> Now Selling · Seaside Cove, Naples</span>
+        <h1 class="m-reveal d1">Your best years, <em>by the Gulf.</em></h1>
+        <p class="m-reveal d2">Luxury gated communities minutes from the beach, built for an easy, social, resort-style retirement.</p>
+        <div class="m-hero-actions m-reveal d3">
+          <a href="#listings" class="m-btn m-btn--primary">Explore Homes &amp; Pricing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a href="#stay" class="m-btn m-btn--accent">Stay &amp; Tour for $99</a>
+        </div>
+      </div>
+      <div class="m-hero-media m-reveal d2">
+        <div class="m-hero-photo">
+          <img id="m-hero-img" src="../assets/photos/hero-naples-waterfront.jpg" alt="Naples bayfront marina at golden hour on Florida's Gulf Coast" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1572331165267-854da2b10ccc?auto=format&fit=crop&w=1400&q=72'">
+        </div>
+        <div class="m-hero-stat m-glass">
+          <div class="s"><b><span data-count="9">0</span></b><span>Communities</span></div>
+          <div class="s"><b><span data-count="30" data-suffix=" min">0</span></b><span>Max to beach</span></div>
+          <div class="s"><b>$600s</b><span>Homes from</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Listings -->
+  <section class="m-sec" id="listings" data-screen-label="Home M — Featured Listings">
+    <div class="m-container">
+      <div class="m-head-row">
+        <div class="t m-reveal">
+          <div class="m-ey">Featured Homes</div>
+          <h2 class="m-h">Move-in-ready, minutes from the sand</h2>
+        </div>
+        <a href="#" class="m-more m-reveal d1">View all listings <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="m-listings">
+
+        <a class="m-listing m-glass m-reveal d1" href="#">
+          <div class="ph">
+            <img src="../assets/photos/home-exterior.jpg" alt="Seaside Cove single-story coastal home framed by palms" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1100&q=72'">
+            <span class="badge">Now Selling</span>
+            <span class="price">$1,395,000</span>
+          </div>
+          <div class="body">
+            <h3>Seaside Cove</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg> Naples, FL</div>
+            <div class="stats">
+              <div class="st"><b>3</b><span>Beds</span></div>
+              <div class="st"><b>3.5</b><span>Baths</span></div>
+              <div class="st"><b>2,840</b><span>Sq Ft</span></div>
+            </div>
+            <div class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          </div>
+        </a>
+
+        <a class="m-listing m-glass m-reveal d2" href="#">
+          <div class="ph">
+            <img src="../assets/photos/home-rendering.jpg" alt="Mangrove Bay lakefront home with covered lanai" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1100&q=72'">
+            <span class="badge">55+ Living</span>
+            <span class="price">$845,000</span>
+          </div>
+          <div class="body">
+            <h3>Mangrove Bay</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg> Bonita Springs, FL</div>
+            <div class="stats">
+              <div class="st"><b>3</b><span>Beds</span></div>
+              <div class="st"><b>2.5</b><span>Baths</span></div>
+              <div class="st"><b>2,410</b><span>Sq Ft</span></div>
+            </div>
+            <div class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          </div>
+        </a>
+
+        <a class="m-listing m-glass m-reveal d3" href="#">
+          <div class="ph">
+            <img src="../assets/photos/kitchen-model.jpg" alt="Coral Lagoon bright decorated model kitchen" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1100&q=72'">
+            <span class="badge">New Model Open</span>
+            <span class="price">$789,000</span>
+          </div>
+          <div class="body">
+            <h3>Coral Lagoon</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg> Estero, FL</div>
+            <div class="stats">
+              <div class="st"><b>2</b><span>Beds</span></div>
+              <div class="st"><b>2</b><span>Baths</span></div>
+              <div class="st"><b>1,960</b><span>Sq Ft</span></div>
+            </div>
+            <div class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Amenities -->
+  <section class="m-sec m-amen-sec" id="amenities" data-screen-label="Home M — Amenities">
+    <div class="m-container">
+      <div class="m-sec-head m-reveal">
+        <div class="m-ey">Resort Amenities</div>
+        <h2 class="m-h">Everything for an active day, steps from home</h2>
+        <p class="m-lede">Wake up to a clubhouse, pools, courts, and a calendar that keeps you moving and connected all year.</p>
+      </div>
+      <div class="m-amen-grid">
+
+        <div class="m-amen-feat m-reveal d1">
+          <img src="../assets/photos/clubhouse-aerial.jpg" alt="Aerial view of the resort clubhouse, pools, and racquet courts" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1400&q=72'">
+          <div class="cap">
+            <h3>The Grand Clubhouse</h3>
+            <p>Dining, events, and a resort pool deck at the heart of every community.</p>
+          </div>
+        </div>
+
+        <div class="m-amen m-glass m-reveal d1">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18c2-2 4-2 6 0M14 18c2-2 4-2 6 0M3 12h18M5 7c2-2 4-2 6 0"/></svg></div>
+          <h3>Resort Pools</h3>
+          <p>Zero-entry lagoon pools, hot tubs, and shaded cabanas.</p>
+        </div>
+
+        <div class="m-amen m-glass m-reveal d2">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3c4 3 4 15 0 18M3 12h18M5 6c3 2 11 2 14 0M5 18c3-2 11-2 14 0"/></svg></div>
+          <h3>Pickleball &amp; Tennis</h3>
+          <p>Lighted courts with daily open play and friendly leagues.</p>
+        </div>
+
+        <div class="m-amen m-glass m-reveal d2">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6M19 9v6M7 12h10M3 10v4M21 10v4"/></svg></div>
+          <h3>Fitness &amp; Wellness</h3>
+          <p>State-of-the-art gym, yoga studio, and spa treatments.</p>
+        </div>
+
+        <div class="m-amen m-glass m-reveal d3">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v8a3 3 0 0 0 6 0V3M8 11v10M16 3c-1.5 1-2 3-2 5s.5 4 2 5v8"/></svg></div>
+          <h3>Dining &amp; Social</h3>
+          <p>On-site restaurants, bars, and a full weekly events calendar.</p>
+        </div>
+
+        <div class="m-amen m-glass m-reveal d3">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20s3-2 4-6 3-9 6-9 2 4 0 7-5 4-5 4M14 8c2 0 4 1 5 3"/></svg></div>
+          <h3>Trails &amp; Nature</h3>
+          <p>Miles of walking and biking trails along the water.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Communities -->
+  <section class="m-sec m-comm-sec" id="communities" data-screen-label="Home M — Communities">
+    <div class="m-container m-comm-wrap">
+      <div class="m-comm-copy m-reveal">
+        <div class="m-ey">Florida's Gulf Coast</div>
+        <h2 class="m-h" style="font-size:clamp(30px,3.8vw,50px); margin-top:14px;">Nine communities, all minutes from the beach</h2>
+        <p class="m-lede" style="margin-top:18px;">Every address sits within a thirty-minute drive of white-sand Gulf beaches, marinas, and dining. Pick your place, then come live it for a weekend.</p>
+        <div class="m-comm-stats">
+          <div class="s"><b><span data-count="9">0</span></b><span>Communities</span></div>
+          <div class="s"><b><span data-count="30" data-suffix=" min">0</span></b><span>Max to beach</span></div>
+          <div class="s"><b>$600s</b><span>Homes from</span></div>
+        </div>
+      </div>
+      <div class="m-comm-card m-glass m-reveal d1">
+        <div class="m-comm-list">
+          <a href="#"><span>Seaside Cove</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Naples</span></a>
+          <a href="#"><span>Mangrove Bay</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Bonita</span></a>
+          <a href="#"><span>Coral Lagoon</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Estero</span></a>
+          <a href="#"><span>Harbor Pointe</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Fort Myers</span></a>
+          <a href="#"><span>Palm Sands</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Sarasota</span></a>
+          <a href="#"><span>Egret Landing</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Venice</span></a>
+          <a href="#"><span>Tidewater Club</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Punta Gorda</span></a>
+          <a href="#"><span>Sunray Cove</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Cape Coral</span></a>
+          <a href="#"><span>Banyan Shores</span><span class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>Marco Island</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lifestyle / Social band -->
+  <section class="m-sec" id="lifestyle" data-screen-label="Home M — Lifestyle">
+    <div class="m-container">
+      <div class="m-life">
+        <div class="m-life-photo">
+          <img id="m-life-img" src="../assets/photos/lanai-pool.jpg" alt="Friends gathered on a screened lanai by the pool at golden hour" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1600&q=72'">
+        </div>
+        <div class="m-life-veil"></div>
+        <div class="m-life-in m-reveal">
+          <div class="m-ey">The Social Life</div>
+          <h2>You buy the home. You stay for the people.</h2>
+          <p>For our buyers, the deciding factor is the life inside the gates. The neighbors, the standing plans, the feeling that there is always something to do.</p>
+          <div class="m-social">
+            <div class="it m-reveal d1"><b>Built-in friends</b><span>Pickleball and tennis leagues that turn neighbors into a friend group.</span></div>
+            <div class="it m-reveal d2"><b>A full calendar</b><span>Wine nights, live music, food trucks, and fitness classes every week.</span></div>
+            <div class="it m-reveal d3"><b>Clubhouse life</b><span>Social hubs with dining, events, and a pool deck at the center.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stay & Tour -->
+  <section class="m-sec" id="stay" data-screen-label="Home M — Stay & Tour">
+    <div class="m-container m-stay">
+      <div class="m-stay-copy m-reveal">
+        <div class="m-ey">Try Before You Buy</div>
+        <h2 class="m-h">Stay &amp; tour the lifestyle</h2>
+        <div class="price">$99 <small>· 3 days / 2 nights</small></div>
+        <p class="m-lede">Spend a weekend inside the gates. Play the courts, meet the neighbors, tour the models, and catch sunset on the lanai. The best way to know it is home is to live it.</p>
+        <a href="#capture" class="m-btn m-btn--primary">Book Your Stay <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="m-stay-media m-reveal d1">
+        <img src="../assets/photos/clubhouse-aerial.jpg" alt="Couple enjoying a resort getaway by the water" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1400&q=72'">
+      </div>
+    </div>
+  </section>
+
+  <!-- Lead capture + footer -->
+  <section class="m-sec" id="capture" style="padding-top:0;" data-screen-label="Home M — Lead Capture">
+    <div class="m-container">
+      <div class="m-cap m-glass m-reveal">
+        <div class="m-ey" style="display:block;">First Looks</div>
+        <h2 class="m-h" style="margin-top:14px;">Get pricing, incentives, and new releases</h2>
+        <p class="m-lede" style="color:var(--m-ink-soft);">Be first to see coming-soon communities and current move-in incentives. No pressure, no spam.</p>
+        <form onsubmit="return false">
+          <input type="email" placeholder="Your email address" aria-label="Email address">
+          <button type="submit" class="m-btn m-btn--accent">Send Me Pricing</button>
+        </form>
+        <p class="fine">We never sell your information. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="m-foot" data-screen-label="Home M — Footer">
+    <div class="m-container">
+      <div class="m-foot-top">
+        <div class="m-foot-brand">
+          <a class="m-brand" href="#" style="margin-bottom:0;">
+            <span class="m-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#EAF4F4" stroke-width="2"/><path d="M5.5 11.5V19h13v-7.5" stroke="#fff" stroke-width="2"/></svg></span>
+            <b>MVP Realty</b>
+          </a>
+          <p>Florida's Gulf-Coast specialists, matching buyers with luxury gated communities and beachfront residences minutes from the sand.</p>
+        </div>
+        <div><h4>Communities</h4><ul><li><a href="#">Seaside Cove</a></li><li><a href="#">Mangrove Bay</a></li><li><a href="#">Coral Lagoon</a></li><li><a href="#">Harbor Pointe</a></li></ul></div>
+        <div><h4>Explore</h4><ul><li><a href="#listings">Listings</a></li><li><a href="#amenities">Amenities</a></li><li><a href="#lifestyle">Lifestyle</a></li><li><a href="#stay">Stay &amp; Tour</a></li></ul></div>
+        <div><h4>Contact</h4><ul><li><a href="tel:+12395551234">(239) 555-1234</a></li><li><a href="mailto:hello@mvprealty.com">hello@mvprealty.com</a></li><li><a href="#">Visit a Model</a></li></ul></div>
+      </div>
+      <div class="m-foot-bot">
+        <span>© 2026 MVP Realty. All rights reserved.</span>
+        <span>Equal Housing Opportunity · Privacy · Terms</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<noscript><style>.m-reveal{opacity:1!important;transform:none!important;filter:none!important;}</style></noscript>
+<script>
+  (function(){
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // sticky nav shadow
+    var nav = document.querySelector('.m-nav');
+    if (nav){
+      var onNav = function(){ nav.classList.toggle('scrolled', window.scrollY > 8); };
+      document.addEventListener('scroll', onNav, { passive:true }); onNav();
+    }
+
+    // reveal on scroll (content gliding in)
+    var reveals = document.querySelectorAll('.m-reveal');
+    if(!('IntersectionObserver' in window) || reduce){
+      reveals.forEach(function(r){ r.classList.add('in'); });
+    } else {
+      var ro = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+      }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(r){ ro.observe(r); });
+      setTimeout(function(){ reveals.forEach(function(r){ r.classList.add('in'); }); }, 2600);
+    }
+
+    // gentle parallax-lite on hero + lifestyle photos
+    if (!reduce){
+      var heroImg = document.getElementById('m-hero-img');
+      var lifeImg = document.getElementById('m-life-img');
+      var ticking = false;
+      var onScroll = function(){
+        if (ticking) return; ticking = true;
+        requestAnimationFrame(function(){
+          var y = window.scrollY;
+          if (heroImg) heroImg.style.transform = 'scale(1.06) translateY(' + (y * 0.04) + 'px)';
+          if (lifeImg){
+            var rect = lifeImg.getBoundingClientRect();
+            var prog = (window.innerHeight - rect.top) * 0.03;
+            lifeImg.style.transform = 'scale(1.08) translateY(' + (-prog) + 'px)';
+          }
+          ticking = false;
+        });
+      };
+      if (heroImg) heroImg.style.transform = 'scale(1.06)';
+      if (lifeImg) lifeImg.style.transform = 'scale(1.08)';
+      document.addEventListener('scroll', onScroll, { passive:true }); onScroll();
+    }
+
+    // count-up
+    function runCount(el){
+      var t = parseFloat(el.dataset.count), suf = el.dataset.suffix || '';
+      if (reduce){ el.textContent = t + suf; return; }
+      var dur = 1400, s = performance.now();
+      (function tick(now){
+        var p = Math.min(1,(now-s)/dur), e = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(t*e) + suf;
+        if (p<1) requestAnimationFrame(tick);
+      })(s);
+    }
+    var counters = document.querySelectorAll('[data-count]');
+    if(!('IntersectionObserver' in window)){ counters.forEach(runCount); }
+    else {
+      var co = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){ runCount(e.target); co.unobserve(e.target); } });
+      }, { threshold:0.6 });
+      counters.forEach(function(c){ co.observe(c); });
+      setTimeout(function(){ counters.forEach(function(c){ if(c.textContent==='0') runCount(c); }); }, 2800);
+    }
+  })();
+</script>
+
+<!-- Tweaks panel -->
+<div id="tweaks-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useEffect } = React;
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{ "accent":"Seafoam", "corners":"Smooth", "surface":"Glass", "base":"Light" }/*EDITMODE-END*/;
+const ACCENTS = {
+  "Seafoam":  { accent:"#5FD3D0", deep:"#2a9c99", primary:"#1D4E89", p700:"#16406f" },
+  "Ocean":    { accent:"#5b87bd", deep:"#1D4E89", primary:"#16406f", p700:"#11355c" },
+  "Lagoon":   { accent:"#3cb6b3", deep:"#1f7a78", primary:"#11355c", p700:"#0c2540" },
+  "Glacier":  { accent:"#8fd0e6", deep:"#2e7da6", primary:"#1D4E89", p700:"#16406f" }
+};
+const CORNERS = { "Sharp":["10px","8px"], "Smooth":["22px","14px"], "Round":["30px","20px"] };
+const SURFACE = { "Glass":[0.62,"20px"], "Frosted":[0.78,"14px"], "Solid":[0.98,"0px"] };
+const BASES = {
+  "Light": { base:"#f3f8fb", base2:"#e8f2f6" },
+  "Duotone": { base:"#e3eef6", base2:"#d6e8f1" }
+};
+function applyTweaks(t){
+  const el = document.querySelector('.m-wrap'); if(!el) return;
+  const a = ACCENTS[t.accent] || ACCENTS["Seafoam"];
+  const r = CORNERS[t.corners] || CORNERS["Smooth"];
+  const s = SURFACE[t.surface] || SURFACE["Glass"];
+  const b = BASES[t.base] || BASES["Light"];
+  const S = (k,v)=>el.style.setProperty(k,v);
+  S('--m-accent',a.accent); S('--m-accent-deep',a.deep);
+  S('--m-primary',a.primary); S('--m-primary-700',a.p700);
+  S('--m-radius',r[0]); S('--m-radius-sm',r[1]);
+  S('--m-glass-alpha',s[0]); S('--m-glass-blur',s[1]);
+  S('--m-base',b.base); S('--m-base-2',b.base2);
+}
+function App(){
+  const [t,setTweak] = useTweaks(TWEAK_DEFAULTS);
+  useEffect(()=>{ applyTweaks(t); }, [t.accent, t.corners, t.surface, t.base]);
+  return (<TweaksPanel>
+    <TweakSection label="Accent" />
+    <TweakColor label="Color" value={ACCENTS[t.accent].accent}
+      options={["#5FD3D0","#5b87bd","#3cb6b3","#8fd0e6"]}
+      onChange={(hex)=>{
+        const name = Object.keys(ACCENTS).find(k=>ACCENTS[k].accent.toLowerCase()===hex.toLowerCase());
+        if(name) setTweak('accent', name);
+      }} />
+    <TweakSection label="Form" />
+    <TweakRadio label="Corners" value={t.corners} options={["Sharp","Smooth","Round"]} onChange={(v)=>setTweak('corners',v)} />
+    <TweakRadio label="Surface" value={t.surface} options={["Glass","Frosted","Solid"]} onChange={(v)=>setTweak('surface',v)} />
+    <TweakSection label="Base" />
+    <TweakRadio label="Tint" value={t.base} options={["Light","Duotone"]} onChange={(v)=>setTweak('base',v)} />
+  </TweaksPanel>);
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App />);
+</script>
+</body>
+</html>

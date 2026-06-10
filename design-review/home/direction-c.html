@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP Realty — Boutique Warm</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  body { background: var(--sand-100); color: var(--ink); }
+  .c-wrap { overflow-x: clip; }
+  .c-container { max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,5vw,48px); }
+
+  /* ---------- Header ---------- */
+  .c-nav { position: sticky; top:0; z-index:50; background: rgba(250,246,240,.82); backdrop-filter: blur(12px); }
+  .c-nav-in { display:flex; align-items:center; justify-content:space-between; padding: 18px clamp(20px,5vw,48px); max-width:1200px; margin:0 auto; }
+  .c-brand { display:flex; align-items:center; gap:12px; }
+  .c-mark { width:40px; height:40px; border-radius:50%; background: var(--seafoam-500); display:grid; place-items:center; box-shadow: var(--sh-sm); }
+  .c-mark svg { width:21px; height:21px; }
+  .c-brand b { font-family: var(--serif-lora); font-weight:600; font-size:22px; color: var(--ocean-700); white-space:nowrap; }
+  .c-links { display:flex; gap:30px; align-items:center; }
+  .c-links a { font-weight:500; font-size:15px; color: var(--ink-soft); white-space:nowrap; }
+  .c-links a:hover { color: var(--seafoam-700); }
+  .c-burger { display:none; background:none; border:none; color: var(--ocean-700); padding:6px; border-radius: var(--r-sm); }
+  .c-burger:hover { background: var(--seafoam-100); }
+  .c-mobile-menu { display:none; }
+
+  /* ---------- Hero ---------- */
+  .c-hero { padding: clamp(30px,5vw,56px) 0 clamp(50px,7vw,90px); }
+  .c-hero-grid { display:grid; grid-template-columns: 1.02fr .98fr; gap: clamp(36px,5vw,72px); align-items:center; }
+  .c-hello { display:inline-flex; align-items:center; gap:10px; background:#fff; border-radius: var(--r-pill); padding:8px 16px 8px 8px; box-shadow: var(--sh-sm); font-size:13px; font-weight:600; color: var(--ink-soft); margin-bottom:26px; }
+  .c-hello .dot { width:26px; height:26px; border-radius:50%; background: var(--seafoam-200); display:grid; place-items:center; }
+  .c-hello .dot svg { width:15px; height:15px; stroke: var(--seafoam-700); }
+  .c-hero h1 { font-family: var(--serif-lora); font-weight:600; font-size: clamp(38px,4.6vw,62px); line-height:1.16; letter-spacing:-.01em; color: var(--ocean-900); margin:0 0 26px; text-wrap:balance; }
+  .c-hero h1 em { font-style:italic; color: var(--seafoam-700); }
+  .c-hero p { font-size: clamp(16px,1.3vw,19px); color: var(--muted); max-width: 44ch; margin:0 0 32px; }
+  .c-hero-actions { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  .c-trust { display:flex; align-items:center; gap:16px; margin-top:38px; }
+  .c-avatars { display:flex; }
+  .c-avatars span { width:40px; height:40px; border-radius:50%; border:3px solid var(--sand-100); margin-left:-12px; background: linear-gradient(135deg, var(--seafoam-300), var(--ocean-400)); }
+  .c-avatars span:first-child { margin-left:0; }
+  .c-trust .t b { color: var(--ocean-700); }
+  .c-trust .t { font-size:13.5px; color: var(--muted); }
+  .c-trust .stars { color: var(--sun); letter-spacing:2px; }
+
+  .c-hero-media { position:relative; }
+  .c-hero-media .main { aspect-ratio: 4/5; border-radius: 200px 200px var(--r-xl) var(--r-xl); overflow:hidden; box-shadow: var(--sh-lg); }
+  .c-hero-media .main .photo { position:absolute; inset:0; }
+  .c-agent-card { position:absolute; left:-22px; bottom: 104px; background:#fff; border-radius: var(--r-lg); padding:14px 18px; box-shadow: var(--sh-lg); display:flex; align-items:center; gap:14px; }
+  .c-agent-card span.role { white-space:nowrap; }
+  .c-agent-card .av { width:48px; height:48px; border-radius:50%; flex:none; background: linear-gradient(135deg, var(--seafoam-300), var(--ocean-500)); }
+  .c-agent-card b { font-size:15px; display:block; }
+  .c-agent-card span { font-size:12.5px; color: var(--muted); }
+  .c-stat-bubble { position:absolute; right:-18px; top:34px; background: var(--ocean-700); color:#fff; border-radius: var(--r-lg); padding:16px 20px; box-shadow: var(--sh-lg); text-align:center; }
+  .c-stat-bubble .n { font-family: var(--serif-lora); font-weight:600; font-size:26px; line-height:1; }
+  .c-stat-bubble .l { font-size:11px; opacity:.85; margin-top:4px; }
+
+  /* ---------- Search card ---------- */
+  .c-search { background:#fff; border-radius: var(--r-xl); box-shadow: var(--sh-md); padding: 12px; display:flex; gap:8px; align-items:center; margin-top: -30px; position:relative; z-index:5; }
+  .c-search .f { flex:1; padding: 12px 20px; border-radius: var(--r-md); transition: box-shadow .2s; }
+  .c-search .f:focus-within { box-shadow: inset 0 0 0 1.5px var(--seafoam-300); }
+  .c-search .f + .f { border-left:1px solid var(--line); }
+  .c-search label { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color: var(--muted-2); }
+  .c-search input, .c-search select { border:none; background:none; font-family:var(--sans); font-weight:600; font-size:15px; color:var(--ink); outline:none; width:100%; padding-top:4px; }
+  .c-search .btn { padding: 15px 28px; }
+
+  /* ---------- Sections ---------- */
+  .c-sec { padding: clamp(56px,7vw,96px) 0; }
+  .c-sec-head { text-align:center; max-width: 620px; margin: 0 auto 48px; }
+  .c-eyebrow { font-weight:700; font-size:12px; letter-spacing:.2em; text-transform:uppercase; color: var(--seafoam-700); }
+  .c-sec-head h2 { font-family: var(--serif-lora); font-weight:600; font-size: clamp(30px,3.8vw,46px); line-height:1.14; color: var(--ocean-900); margin:12px 0 0; }
+  .c-sec-head p { color: var(--muted); font-size:17px; margin: 14px 0 0; }
+
+  /* listings cards (soft) */
+  .c-grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 26px; }
+  .c-card { background:#fff; border-radius: var(--r-lg); overflow:hidden; box-shadow: var(--sh-sm); transition: transform .35s, box-shadow .35s; }
+  .c-card:hover { transform: translateY(-6px); box-shadow: var(--sh-md); }
+  .c-card-media { position:relative; }
+  .c-card .photo { aspect-ratio: 4/3; }
+  .c-card-chip { position:absolute; top:14px; left:14px; background:#fff; color: var(--ocean-700); font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:6px 12px; border-radius:var(--r-pill); box-shadow: var(--sh-sm); }
+  .c-fav { position:absolute; top:12px; right:12px; width:36px; height:36px; border-radius:50%; border:none; background:rgba(255,255,255,.92); display:grid; place-items:center; box-shadow: var(--sh-sm); transition: transform .2s, background .2s; }
+  .c-fav:hover { background:#fff; transform: scale(1.08); }
+  .c-fav svg { width:17px; height:17px; stroke: var(--ocean-600); fill:none; }
+  .c-fav.is-on svg { fill: var(--sun); stroke: var(--sun-600); }
+  .c-card-body { padding: 20px 22px 22px; }
+  .c-card .price { font-family: var(--serif-lora); font-weight:600; font-size:24px; color: var(--ocean-700); }
+  .c-card h3 { font-size:16px; font-weight:700; margin:8px 0 3px; }
+  .c-card .addr { font-size:13.5px; color:var(--muted); }
+  .c-card .specs { display:flex; gap:14px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-size:13px; font-weight:600; color:var(--ink-soft); }
+
+  /* ---------- Agent feature (warm) ---------- */
+  .c-agentband { background:#fff; }
+  .c-agentband-in { display:grid; grid-template-columns: .9fr 1.1fr; gap: clamp(36px,5vw,72px); align-items:center; }
+  .c-agentband .media { position:relative; z-index:0; }
+  .c-agentband .media .photo { aspect-ratio: 1/1; border-radius: var(--r-xl); }
+  .c-agentband .media .ring { position:absolute; inset:-14px; border:1.5px solid var(--seafoam-300); border-radius: calc(var(--r-xl) + 14px); z-index:-1; }
+  .c-agentband h2 { font-family: var(--serif-lora); font-weight:600; font-size: clamp(28px,3.4vw,42px); line-height:1.16; color: var(--ocean-900); margin:14px 0 18px; }
+  .c-agentband p { color: var(--muted); font-size:16.5px; margin:0 0 20px; }
+  .c-agentband .sign { font-family: var(--serif-lora); font-style:italic; font-size:22px; color: var(--ocean-600); margin-top: 6px; }
+
+  /* ---------- Testimonials ---------- */
+  .c-testi-grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .c-quote { background:#fff; border-radius: var(--r-lg); padding: 28px 26px; box-shadow: var(--sh-sm); display:flex; flex-direction:column; }
+  .c-quote .stars { color: var(--sun); letter-spacing:2px; font-size:15px; margin-bottom:14px; }
+  .c-quote p { font-family: var(--serif-lora); font-size:18px; line-height:1.5; color: var(--ink); margin:0 0 22px; flex:1; }
+  .c-quote .who { display:flex; align-items:center; gap:12px; }
+  .c-quote .who .av { width:42px; height:42px; border-radius:50%; background: linear-gradient(135deg, var(--seafoam-300), var(--ocean-400)); }
+  .c-quote .who b { font-size:14.5px; display:block; }
+  .c-quote .who span { font-size:12.5px; color:var(--muted); }
+
+  /* ---------- CTA ---------- */
+  .c-cta { padding-bottom: clamp(56px,7vw,96px); }
+  .c-cta-in { background: linear-gradient(135deg, var(--seafoam-500), var(--ocean-600)); border-radius: var(--r-xl); padding: clamp(46px,6vw,76px) clamp(28px,5vw,64px); text-align:center; color:#fff; position:relative; overflow:hidden; }
+  .c-cta-in::after { content:''; position:absolute; left:-60px; bottom:-90px; width:300px; height:300px; border-radius:50%; background: rgba(255,255,255,.12); }
+  .c-cta-c { position:relative; z-index:2; max-width:600px; margin:0 auto; }
+  .c-cta-c h2 { font-family: var(--serif-lora); font-weight:600; font-size: clamp(30px,4vw,50px); line-height:1.12; margin:0 0 16px; }
+  .c-cta-c p { font-size:18px; opacity:.92; margin:0 0 30px; }
+  .c-cta-actions { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .btn--white { background:#fff; color: var(--ocean-700); }
+  .btn--white:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+
+  /* ---------- Footer ---------- */
+  .c-foot { background:#fff; border-top:1px solid var(--line); }
+  .c-foot-in { display:grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap:40px; padding: 56px 0 32px; }
+  .c-foot h4 { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color: var(--ocean-700); margin:0 0 16px; }
+  .c-foot ul { list-style:none; padding:0; margin:0; display:grid; gap:10px; font-size:14px; color: var(--muted); }
+  .c-foot a:hover { color: var(--seafoam-700); }
+  .c-foot-brand b { font-family: var(--serif-lora); font-weight:600; font-size:22px; color: var(--ocean-700); }
+  .c-foot-brand p { font-size:14px; color:var(--muted); max-width:30ch; margin-top:12px; }
+  .c-foot-bot { border-top:1px solid var(--line); }
+  .c-foot-bot div { display:flex; justify-content:space-between; gap:20px; padding:18px 0; font-size:13px; color:var(--muted); flex-wrap:wrap; }
+
+  @media (max-width: 920px) {
+    .c-links { display:none; } .c-burger { display:block; }
+    .c-nav-in .btn--aqua { display:none; }
+    .c-hero-grid { grid-template-columns: 1fr; }
+    .c-hero-media { max-width: 440px; margin-inline:auto; }
+    .c-grid { grid-template-columns: 1fr 1fr; }
+    .c-agentband-in { grid-template-columns: 1fr; }
+    .c-agentband .media { max-width:380px; margin-inline:auto; }
+    .c-testi-grid { grid-template-columns: 1fr; }
+    .c-foot-in { grid-template-columns: 1fr 1fr; }
+    .c-nav.is-open .c-mobile-menu { display:flex; }
+    .c-mobile-menu { flex-direction:column; gap:4px; padding: 8px clamp(20px,5vw,48px) 20px; max-width:1200px; margin:0 auto; border-top:1px solid var(--line); }
+    .c-mobile-menu a { padding:12px 4px; font-weight:500; font-size:16px; color: var(--ink-soft); }
+    .c-mobile-menu a:hover { color: var(--seafoam-700); }
+    .c-mobile-menu .btn--aqua { margin-top:10px; align-self:flex-start; }
+  }
+  @media (max-width: 600px) {
+    .c-search { flex-direction:column; align-items:stretch; }
+    .c-search .f + .f { border-left:none; border-top:1px solid var(--line); }
+    .c-search .btn { width:100%; }
+    .c-grid { grid-template-columns: 1fr; }
+    .c-foot-in { grid-template-columns: 1fr; }
+    .c-agent-card { left:0; bottom:18px; }
+    .c-stat-bubble { right:0; }
+  }
+</style>
+</head>
+<body>
+<div class="c-wrap">
+
+  <!-- NAV -->
+  <header class="c-nav" data-screen-label="Home C — Nav">
+    <div class="c-nav-in">
+      <a class="c-brand" href="#"><span class="c-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#0c2540" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 11.5V19h13v-7.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>MVP Realty</b></a>
+      <nav class="c-links"><a href="#">Buy</a><a href="#">Rent</a><a href="#">Neighborhoods</a><a href="#">Our Story</a></nav>
+      <a href="#" class="btn btn--aqua" style="padding:11px 22px;font-size:14px;">Say hello</a>
+      <button class="c-burger" aria-label="Menu" aria-expanded="false" aria-controls="c-mobile-menu"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+    <nav class="c-mobile-menu" id="c-mobile-menu">
+      <a href="#">Buy</a><a href="#">Rent</a><a href="#">Neighborhoods</a><a href="#">Our Story</a>
+      <a href="#" class="btn btn--aqua">Say hello</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="c-hero" data-screen-label="Home C — Hero">
+    <div class="c-container">
+      <div class="c-hero-grid">
+        <div>
+          <span class="c-hello"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg></span>Real people. Real local. Really yours.</span>
+          <h1>Coastal living, <em>made personal.</em></h1>
+          <p>We're a small, devoted South Florida team that treats your home search like it's our own — patient, honest, and always a phone call away.</p>
+          <div class="c-hero-actions">
+            <a href="#" class="btn btn--primary">Find your home</a>
+            <a href="#" class="btn btn--ghost">Meet the team</a>
+          </div>
+          <div class="c-trust">
+            <div class="c-avatars"><span></span><span></span><span></span><span></span></div>
+            <div class="t"><span class="stars">★★★★★</span><br><b>4.9/5</b> from 280+ happy families</div>
+          </div>
+        </div>
+        <div class="c-hero-media">
+          <div class="main"><div class="photo photo--sand" data-label="Coastal home"><img src="../assets/photos/hero-naples-waterfront.jpg" alt="Sunlit Naples Gulf-Coast waterfront" fetchpriority="high" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1100&q=70'"></div></div>
+          <div class="c-stat-bubble"><div class="n">18yrs</div><div class="l">on the coast</div></div>
+          <div class="c-agent-card"><span class="av"></span><div><b>Maria Vance</b><span class="role">Broker · MVP Realty</span></div></div>
+        </div>
+      </div>
+      <form class="c-search" onsubmit="return false">
+        <div class="f"><label>Where to?</label><input type="text" value="Bonita Springs, FL"></div>
+        <div class="f"><label>Home type</label><select><option>Any type</option><option>Single-family</option><option>Condo</option><option>Waterfront</option><option>55+ Community</option></select></div>
+        <div class="f"><label>Budget</label><select><option>Any budget</option><option>Up to $500k</option><option>$500k – $1M</option><option>$1M+</option></select></div>
+        <button class="btn btn--primary">Show me homes</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- LISTINGS -->
+  <section class="c-sec" style="padding-top: clamp(40px,5vw,64px)" data-screen-label="Home C — Listings">
+    <div class="c-container">
+      <div class="c-sec-head">
+        <span class="c-eyebrow">Just listed</span>
+        <h2>Homes we'd happily live in ourselves</h2>
+        <p>A small, hand-picked selection — refreshed daily from the MLS.</p>
+      </div>
+      <div class="c-grid">
+        <article class="c-card"><div class="c-card-media"><div class="photo" data-label="Condo"><img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1100&q=70" alt="Gulf Harbour Residence, Fort Myers" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="c-card-chip">New</span><button class="c-fav" data-fav><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.3 2 5 5.2 5c2 0 3.3 1.1 4.8 3 1.5-1.9 2.8-3 4.8-3C18 5 19.6 8.3 18 11.7 15.5 16.4 12 21 12 21Z" stroke-width="1.8"/></svg></button></div><div class="c-card-body"><div class="price">$895,000</div><h3>Gulf Harbour Residence</h3><div class="addr">14380 Riva Del Lago, Fort Myers</div><div class="specs"><span>3 Beds</span><span>2 Baths</span><span>1,980 sqft</span></div></div></article>
+        <article class="c-card"><div class="c-card-media"><div class="photo photo--sand" data-label="Villa"><img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1100&q=70" alt="Valencia Trails Villa, Naples" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="c-card-chip">55+ Community</span><button class="c-fav" data-fav><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.3 2 5 5.2 5c2 0 3.3 1.1 4.8 3 1.5-1.9 2.8-3 4.8-3C18 5 19.6 8.3 18 11.7 15.5 16.4 12 21 12 21Z" stroke-width="1.8"/></svg></button></div><div class="c-card-body"><div class="price">$640,000</div><h3>Valencia Trails Villa</h3><div class="addr">Valencia Trails, Naples, FL</div><div class="specs"><span>2 Beds</span><span>2 Baths</span><span>1,640 sqft</span></div></div></article>
+        <article class="c-card"><div class="c-card-media"><div class="photo photo--deep" data-label="Waterfront"><img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1100&q=70" alt="Vanderbilt Penthouse, Naples" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div><span class="c-card-chip">Waterfront</span><button class="c-fav" data-fav><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.3 2 5 5.2 5c2 0 3.3 1.1 4.8 3 1.5-1.9 2.8-3 4.8-3C18 5 19.6 8.3 18 11.7 15.5 16.4 12 21 12 21Z" stroke-width="1.8"/></svg></button></div><div class="c-card-body"><div class="price">$2,180,000</div><h3>Vanderbilt Penthouse</h3><div class="addr">9225 Gulf Shore Dr, Naples</div><div class="specs"><span>3 Beds</span><span>3 Baths</span><span>3,120 sqft</span></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- AGENT BAND -->
+  <section class="c-agentband c-sec" data-screen-label="Home C — Our Story">
+    <div class="c-container">
+      <div class="c-agentband-in">
+        <div class="media"><div class="ring"></div><div class="photo photo--sand" data-label="Maria Vance"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1100&q=70" alt="Maria Vance, Broker at MVP Realty" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div></div>
+        <div>
+          <span class="c-eyebrow">Our story</span>
+          <h2>We sell fewer homes, on purpose.</h2>
+          <p>Founded in Bonita Springs, MVP Realty was built around a simple idea: take on fewer clients so every family gets our full attention. We know these streets, these schools, and these sunsets — and we'll never rush you toward the wrong one.</p>
+          <p>Behind the warmth is a quiet engine: every message you send reaches us instantly, so you're never left waiting.</p>
+          <div class="sign">— Maria &amp; the MVP team</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="c-sec" style="padding-top: clamp(20px,4vw,48px)" data-screen-label="Home C — Testimonials">
+    <div class="c-container">
+      <div class="c-sec-head">
+        <span class="c-eyebrow">Kind words</span>
+        <h2>Families who found their place with us</h2>
+      </div>
+      <div class="c-testi-grid">
+        <div class="c-quote"><div class="stars">★★★★★</div><p>"They found us a home two streets from the beach and held our hand through every signature. It never felt like a transaction."</p><div class="who"><span class="av"></span><div><b>The Alvarez Family</b><span>Bought in Bonita Springs</span></div></div></div>
+        <div class="c-quote"><div class="stars">★★★★★</div><p>"As a 55+ buyer relocating from up north, I had a hundred questions. Maria answered every one — usually within minutes."</p><div class="who"><span class="av"></span><div><b>Linda P.</b><span>Bought in Valencia Trails</span></div></div></div>
+        <div class="c-quote"><div class="stars">★★★★★</div><p>"Sold our condo above asking in eleven days. The whole process felt calm, organized, and genuinely kind."</p><div class="who"><span class="av"></span><div><b>James &amp; Robert</b><span>Sold in Naples</span></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="c-cta" data-screen-label="Home C — CTA">
+    <div class="c-container">
+      <div class="c-cta-in">
+        <div class="c-cta-c">
+          <h2>Let's find the place that feels like yours.</h2>
+          <p>No pressure, no jargon — just a friendly conversation about what you're looking for.</p>
+          <div class="c-cta-actions">
+            <a href="#" class="btn btn--white">Book a chat</a>
+            <a href="#" class="btn btn--light">Browse homes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="c-foot">
+    <div class="c-container">
+      <div class="c-foot-in">
+        <div class="c-foot-brand"><b>MVP Realty</b><p>A boutique South Florida brokerage — coastal homes, found with care.</p></div>
+        <div><h4>Explore</h4><ul><li><a href="#">Buy</a></li><li><a href="#">Rent</a></li><li><a href="#">Neighborhoods</a></li><li><a href="#">Sold</a></li></ul></div>
+        <div><h4>Company</h4><ul><li><a href="#">Our Story</a></li><li><a href="#">The Team</a></li><li><a href="#">Reviews</a></li><li><a href="#">Contact</a></li></ul></div>
+        <div><h4>Say hello</h4><ul><li>239-555-0142</li><li>hello@mvprealty.com</li><li>Bonita Springs, FL</li></ul></div>
+      </div>
+      <div class="c-foot-bot"><div><span>© 2026 MVP Realty. Equal Housing Opportunity.</span><span>Privacy · Terms · Accessibility</span></div></div>
+    </div>
+  </footer>
+</div>
+<script>
+  document.querySelectorAll('[data-fav]').forEach(f => f.addEventListener('click', e => { e.preventDefault(); f.classList.toggle('is-on'); }));
+  (function () {
+    var nav = document.querySelector('.c-nav');
+    var burger = nav && nav.querySelector('.c-burger');
+    if (!burger) return;
+    burger.addEventListener('click', function () {
+      var open = nav.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.c-mobile-menu a').forEach(function (a) {
+      a.addEventListener('click', function () { nav.classList.remove('is-open'); burger.setAttribute('aria-expanded', 'false'); });
+    });
+  })();
+</script>
+</body>
+</html>

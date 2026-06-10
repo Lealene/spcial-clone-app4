@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP Realty — Sunlit Friendly (J)</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  /* ===========================================================
+     DIRECTION J — "Sunlit Friendly"
+     The most approachable of the set, built for affluent 55+
+     retirees relocating to Florida's Gulf Coast.
+       - warm + airy: sand/cream backgrounds, bright seafoam,
+         the sun #FFB703 used as a genuine warm highlight
+       - LARGE soft radius language: pill buttons, big rounded cards
+       - friendly, large type: Lora serif heads, body sized up
+         for older eyes, high contrast everywhere
+       - gentle, slightly bouncy easing; fully reduced-motion guarded
+     VARIANCE 6 / MOTION 5 / DENSITY 3.
+     Everything namespaced .j- to avoid collisions.
+     ========================================================== */
+
+  .j-wrap{
+    /* ---- tunable tokens (the tweaks panel writes these) ---- */
+    --j-accent:#FFB703;          /* sun — genuine warm highlight     */
+    --j-accent-deep:#e6a200;
+    --j-seafoam:#3cb6b3;         /* friendly bright seafoam          */
+    --j-seafoam-soft:#e2f7f6;
+    --j-r:28px;                  /* big soft corners                 */
+    --j-r-sm:18px;
+    --j-r-pill:999px;
+    /* ---- warm, airy surfaces ---- */
+    --j-cream:#fdf8f0;           /* sunny paper, never sterile white */
+    --j-sand:#f6ede0;
+    --j-sand-2:#efe3d2;
+    --j-line:#ecdfcc;
+    --j-ink:#26333f;             /* warm deep navy-charcoal body     */
+    --j-ink-soft:#4a5a68;
+    --j-muted:#6f7e8a;
+    /* warm sun-tinted shadows, never pure black */
+    --j-sh:0 26px 60px -28px rgba(120,86,20,.30);
+    --j-sh-sm:0 14px 34px -20px rgba(120,86,20,.24);
+    --j-ease:cubic-bezier(.34,1.4,.5,1);   /* gentle, slightly bouncy */
+    --j-ease-soft:cubic-bezier(.22,1,.36,1);
+
+    color:var(--j-ink);
+    background:var(--j-cream);
+    overflow-x:clip;
+    font-family:var(--sans);
+  }
+
+  .j-wrap ::selection{ background:var(--j-accent); color:var(--j-ink); }
+  .j-container{ max-width:1180px; margin:0 auto; padding-inline:clamp(20px,5vw,56px); }
+  .j-wrap a:focus-visible,.j-wrap button:focus-visible,.j-wrap input:focus-visible{
+    outline:3px solid var(--j-seafoam); outline-offset:3px; border-radius:6px;
+  }
+
+  /* ---- type system: friendly Lora serif heads, large + warm ---- */
+  .j-h{ font-family:var(--serif-lora); font-weight:600; color:var(--j-ink); line-height:1.08; letter-spacing:-.01em; margin:0; }
+  .j-kicker{ display:inline-flex; align-items:center; gap:9px; font-family:var(--sans); font-weight:700; font-size:14px; letter-spacing:.04em; text-transform:uppercase; color:var(--j-seafoam); }
+  .j-kicker::before{ content:''; width:22px; height:3px; border-radius:3px; background:var(--j-accent); }
+  .j-lede{ color:var(--j-ink-soft); font-size:clamp(18px,1.35vw,20px); line-height:1.65; max-width:54ch; }
+
+  /* ---- buttons: big friendly pills, tactile press ---- */
+  .j-wrap .j-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    font-family:var(--sans); font-weight:700; font-size:17px; white-space:nowrap;
+    border:none; border-radius:var(--j-r-pill); padding:17px 32px; cursor:pointer;
+    transition:transform .18s var(--j-ease), box-shadow .25s var(--j-ease-soft), background .25s ease, color .2s ease;
+  }
+  .j-wrap .j-btn svg{ width:19px; height:19px; transition:transform .3s var(--j-ease); }
+  .j-btn--sun{ background:var(--j-accent); color:var(--j-ink); box-shadow:0 14px 30px -12px rgba(255,183,3,.6); }
+  .j-btn--sun:hover{ background:var(--j-accent-deep); transform:translateY(-3px); box-shadow:0 20px 38px -12px rgba(255,183,3,.7); }
+  .j-btn--sun:hover svg{ transform:translateX(4px); }
+  .j-btn--soft{ background:#fff; color:var(--j-ink); box-shadow:var(--j-sh-sm), inset 0 0 0 1.5px var(--j-line); }
+  .j-btn--soft:hover{ transform:translateY(-3px); box-shadow:var(--j-sh), inset 0 0 0 1.5px var(--j-seafoam); }
+  .j-btn--light{ background:rgba(255,255,255,.16); color:#fff; box-shadow:inset 0 0 0 1.6px rgba(255,255,255,.6); backdrop-filter:blur(6px); }
+  .j-btn--light:hover{ background:rgba(255,255,255,.28); transform:translateY(-3px); }
+  .j-wrap .j-btn:active{ transform:translateY(0) scale(.975); }
+
+  /* =========================================================
+     NAV
+     ========================================================= */
+  .j-nav{ position:sticky; top:0; z-index:60; background:rgba(253,248,240,.84); backdrop-filter:blur(16px) saturate(150%); border-bottom:1px solid transparent; transition:box-shadow .3s ease, border-color .3s ease; }
+  .j-nav.j-scrolled{ border-color:var(--j-line); box-shadow:0 12px 30px -26px rgba(120,86,20,.5); }
+  .j-nav-in{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding:16px 0; }
+  .j-brand{ display:flex; align-items:center; gap:12px; }
+  .j-mark{ width:46px; height:46px; border-radius:14px; background:linear-gradient(150deg,var(--j-seafoam),var(--j-accent)); display:grid; place-items:center; box-shadow:var(--j-sh-sm); }
+  .j-mark svg{ width:25px; height:25px; }
+  .j-brand b{ font-family:var(--serif-lora); font-weight:700; font-size:23px; letter-spacing:.01em; color:var(--j-ink); }
+  .j-links{ display:flex; align-items:center; gap:30px; }
+  .j-links a{ font-family:var(--sans); font-weight:600; font-size:16.5px; color:var(--j-ink-soft); position:relative; padding:5px 0; transition:color .2s ease; }
+  .j-links a::after{ content:''; position:absolute; left:0; right:100%; bottom:-2px; height:2.5px; border-radius:3px; background:var(--j-accent); transition:right .3s var(--j-ease-soft); }
+  .j-links a:hover{ color:var(--j-ink); } .j-links a:hover::after{ right:0; }
+  .j-nav-cta{ display:flex; align-items:center; gap:14px; }
+  .j-nav-cta .j-btn{ font-size:16px; padding:13px 24px; }
+  .j-burger{ display:none; background:none; border:none; color:var(--j-ink); }
+
+  /* =========================================================
+     HERO
+     ========================================================= */
+  .j-hero{ position:relative; min-height:clamp(580px,84vh,840px); display:flex; align-items:flex-end; color:#fff; overflow:hidden; }
+  .j-hero .photo{ position:absolute; inset:0; z-index:0; } .j-hero .photo::after{ content:none; }
+  .j-hero .photo img{ animation:j-zoom 16s var(--j-ease-soft) forwards; }
+  @keyframes j-zoom{ from{ transform:scale(1.12); } to{ transform:scale(1); } }
+  .j-hero-veil{ position:absolute; inset:0; z-index:1; background:
+      linear-gradient(180deg, rgba(20,38,54,.36) 0%, rgba(20,38,54,.05) 32%, rgba(20,38,54,.28) 60%, rgba(20,38,54,.8) 100%); }
+  /* warm sun glow in the corner to push the friendly mood */
+  .j-hero-glow{ position:absolute; z-index:1; top:-12%; right:-6%; width:46%; aspect-ratio:1; border-radius:50%;
+      background:radial-gradient(circle, rgba(255,183,3,.42), transparent 66%); pointer-events:none; }
+  .j-hero-in{ position:relative; z-index:2; width:100%; padding-bottom:clamp(54px,6vw,92px); }
+  .j-hero-badge{ display:inline-flex; align-items:center; gap:9px; background:rgba(255,255,255,.92); color:var(--j-ink); font-weight:700; font-size:15px; padding:9px 18px; border-radius:var(--j-r-pill); margin-bottom:24px; box-shadow:var(--j-sh-sm); }
+  .j-hero-badge i{ width:9px; height:9px; border-radius:50%; background:var(--j-accent); box-shadow:0 0 0 4px rgba(255,183,3,.35); }
+  .j-hero h1{ font-family:var(--serif-lora); font-weight:600; font-size:clamp(40px,6vw,78px); line-height:1.02; letter-spacing:-.015em; margin:0; max-width:16ch; text-shadow:0 2px 30px rgba(20,38,54,.4); }
+  .j-hero h1 em{ font-style:italic; color:var(--j-accent); }
+  .j-hero p{ font-size:clamp(18px,1.4vw,21px); font-weight:500; color:rgba(255,255,255,.94); max-width:46ch; margin:22px 0 34px; line-height:1.6; text-shadow:0 1px 16px rgba(20,38,54,.5); }
+  .j-hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  /* hero load rise */
+  .j-rise{ opacity:0; transform:translateY(22px); }
+  .j-hero.j-ready .j-rise{ animation:j-riseIn .9s var(--j-ease-soft) forwards; }
+  .j-hero.j-ready .j-rise.r1{ animation-delay:.08s; } .j-hero.j-ready .j-rise.r2{ animation-delay:.2s; }
+  .j-hero.j-ready .j-rise.r3{ animation-delay:.32s; } .j-hero.j-ready .j-rise.r4{ animation-delay:.44s; }
+  @keyframes j-riseIn{ to{ opacity:1; transform:none; } }
+
+  /* =========================================================
+     SECTION SCAFFOLD
+     ========================================================= */
+  .j-sec{ padding:clamp(72px,9vw,128px) 0; }
+  .j-sec--sand{ background:var(--j-sand); }
+  .j-head{ max-width:62ch; }
+  .j-head h2{ font-size:clamp(32px,4.2vw,54px); margin:16px 0 0; }
+  .j-head .j-lede{ margin:20px 0 0; }
+  .j-head--row{ display:flex; align-items:flex-end; justify-content:space-between; gap:28px; flex-wrap:wrap; max-width:none; }
+  .j-more{ font-family:var(--sans); font-weight:700; font-size:16px; color:var(--j-seafoam); display:inline-flex; align-items:center; gap:9px; white-space:nowrap; padding:6px 0; border-bottom:2.5px solid transparent; transition:border-color .25s ease; }
+  .j-more svg{ width:18px; height:18px; transition:transform .3s var(--j-ease); }
+  .j-more:hover{ border-color:var(--j-accent); } .j-more:hover svg{ transform:translateX(5px); }
+
+  /* =========================================================
+     FEATURED LISTINGS  (homepage — new vs i2)
+     ========================================================= */
+  .j-listings{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:48px; }
+  .j-list-card{ background:#fff; border-radius:var(--j-r); overflow:hidden; box-shadow:var(--j-sh-sm); display:flex; flex-direction:column; transition:transform .4s var(--j-ease), box-shadow .4s var(--j-ease-soft); border:1px solid var(--j-line); }
+  .j-list-card:hover{ transform:translateY(-6px); box-shadow:var(--j-sh); }
+  .j-list-ph{ position:relative; aspect-ratio:4/3; overflow:hidden; }
+  .j-list-ph .photo{ position:absolute; inset:0; }
+  .j-list-ph img{ transition:transform .8s var(--j-ease-soft); }
+  .j-list-card:hover .j-list-ph img{ transform:scale(1.06); }
+  .j-list-tag{ position:absolute; top:14px; left:14px; z-index:2; background:var(--j-accent); color:var(--j-ink); font-weight:700; font-size:13px; letter-spacing:.02em; padding:7px 15px; border-radius:var(--j-r-pill); box-shadow:var(--j-sh-sm); }
+  .j-list-b{ padding:24px 26px 26px; display:flex; flex-direction:column; flex:1; }
+  .j-list-card h3{ font-family:var(--serif-lora); font-weight:600; font-size:24px; color:var(--j-ink); margin:0; line-height:1.15; }
+  .j-list-city{ display:flex; align-items:center; gap:6px; font-size:16px; color:var(--j-muted); font-weight:500; margin-top:6px; }
+  .j-list-city svg{ width:16px; height:16px; color:var(--j-seafoam); }
+  .j-list-price{ font-family:var(--sans); font-weight:800; font-size:24px; color:var(--j-ink); margin-top:16px; letter-spacing:-.01em; }
+  .j-list-stats{ display:flex; gap:18px; margin-top:18px; padding-top:18px; border-top:1px solid var(--j-line); }
+  .j-list-stats .st{ display:flex; flex-direction:column; gap:2px; }
+  .j-list-stats .st b{ font-family:var(--sans); font-weight:800; font-size:19px; color:var(--j-ink); line-height:1; }
+  .j-list-stats .st span{ font-size:13.5px; color:var(--j-muted); font-weight:600; }
+  .j-list-view{ margin-top:22px; display:inline-flex; align-items:center; gap:9px; font-weight:700; font-size:16.5px; color:var(--j-seafoam); align-self:flex-start; }
+  .j-list-view svg{ width:18px; height:18px; transition:transform .3s var(--j-ease); }
+  .j-list-card:hover .j-list-view svg{ transform:translateX(5px); }
+
+  /* =========================================================
+     AMENITIES
+     ========================================================= */
+  .j-amen{ display:grid; grid-template-columns:1.15fr 1fr; gap:clamp(36px,5vw,72px); align-items:center; }
+  .j-amen-media{ position:relative; border-radius:var(--j-r); overflow:hidden; aspect-ratio:5/4.6; box-shadow:var(--j-sh); }
+  .j-amen-media .photo{ position:absolute; inset:0; }
+  .j-amen-media img{ transition:transform 1.2s var(--j-ease-soft); }
+  .j-amen:hover .j-amen-media img{ transform:scale(1.05); }
+  .j-amen-float{ position:absolute; left:20px; bottom:20px; z-index:2; background:rgba(253,248,240,.94); backdrop-filter:blur(8px); border-radius:var(--j-r-sm); padding:16px 20px; box-shadow:var(--j-sh-sm); max-width:74%; }
+  .j-amen-float b{ display:block; font-family:var(--serif-lora); font-weight:600; font-size:20px; color:var(--j-ink); }
+  .j-amen-float span{ font-size:15px; color:var(--j-ink-soft); }
+  .j-amen-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:36px; }
+  .j-amen-card{ background:#fff; border-radius:var(--j-r-sm); padding:24px 22px; box-shadow:var(--j-sh-sm); border:1px solid var(--j-line); transition:transform .3s var(--j-ease), box-shadow .3s var(--j-ease-soft); }
+  .j-amen-card:hover{ transform:translateY(-4px); box-shadow:var(--j-sh); }
+  .j-amen-ico{ width:50px; height:50px; border-radius:14px; display:grid; place-items:center; background:var(--j-seafoam-soft); color:var(--j-seafoam); margin-bottom:14px; }
+  .j-amen-ico svg{ width:26px; height:26px; }
+  .j-amen-card.sun .j-amen-ico{ background:#fff3d6; color:var(--j-accent-deep); }
+  .j-amen-card h4{ font-family:var(--sans); font-weight:700; font-size:18px; color:var(--j-ink); margin:0 0 6px; }
+  .j-amen-card p{ font-size:15px; color:var(--j-ink-soft); margin:0; line-height:1.5; }
+
+  /* =========================================================
+     COMMUNITIES (nine, minutes to beach)
+     ========================================================= */
+  .j-comm-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:48px; }
+  .j-comm{ position:relative; display:flex; align-items:center; gap:16px; background:#fff; border:1px solid var(--j-line); border-radius:var(--j-r-sm); padding:18px 20px; box-shadow:var(--j-sh-sm); transition:transform .3s var(--j-ease), box-shadow .3s var(--j-ease-soft), border-color .3s ease; }
+  .j-comm:hover{ transform:translateY(-4px); box-shadow:var(--j-sh); border-color:var(--j-seafoam); }
+  .j-comm-dot{ flex-shrink:0; width:48px; height:48px; border-radius:14px; display:grid; place-items:center; background:var(--j-seafoam-soft); color:var(--j-seafoam); }
+  .j-comm-dot svg{ width:24px; height:24px; }
+  .j-comm b{ font-family:var(--serif-lora); font-weight:600; font-size:20px; color:var(--j-ink); display:block; line-height:1.1; }
+  .j-comm span{ font-size:14.5px; color:var(--j-muted); font-weight:500; }
+  .j-comm-go{ margin-left:auto; color:var(--j-muted); flex-shrink:0; transition:transform .3s var(--j-ease), color .2s ease; }
+  .j-comm:hover .j-comm-go{ transform:translateX(4px); color:var(--j-seafoam); }
+  .j-comm-go svg{ width:20px; height:20px; }
+
+  /* =========================================================
+     LIFESTYLE / SOCIAL BAND (full-bleed)
+     ========================================================= */
+  .j-life{ position:relative; min-height:560px; display:flex; align-items:center; color:#fff; overflow:hidden; }
+  .j-life .photo{ position:absolute; inset:0; z-index:0; } .j-life .photo::after{ content:none; }
+  .j-life .photo img{ transform:scale(1.06); transition:transform 13s var(--j-ease-soft); }
+  .j-life.j-in .photo img{ transform:scale(1); }
+  .j-life-veil{ position:absolute; inset:0; z-index:1; background:linear-gradient(95deg, rgba(20,38,54,.85) 0%, rgba(20,38,54,.55) 48%, rgba(20,38,54,.12) 100%); }
+  .j-life-in{ position:relative; z-index:2; max-width:60ch; padding:clamp(60px,7vw,100px) 0; }
+  .j-life h2{ font-family:var(--serif-lora); font-weight:600; font-size:clamp(32px,4.6vw,58px); line-height:1.05; letter-spacing:-.01em; margin:18px 0 0; max-width:17ch; }
+  .j-life h2 em{ font-style:italic; color:var(--j-accent); }
+  .j-life p{ color:rgba(255,255,255,.92); font-size:19px; line-height:1.65; max-width:46ch; margin:22px 0 0; }
+  .j-life-stats{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; margin-top:42px; max-width:620px; }
+  .j-life-stats .it b{ display:block; font-family:var(--serif-lora); font-weight:600; font-size:clamp(34px,3.4vw,44px); color:var(--j-accent); line-height:1; }
+  .j-life-stats .it span{ display:block; font-size:15.5px; color:rgba(255,255,255,.84); margin-top:9px; line-height:1.45; }
+
+  /* =========================================================
+     STAY & TOUR
+     ========================================================= */
+  .j-stay{ display:grid; grid-template-columns:1.05fr 1fr; gap:clamp(36px,5vw,72px); align-items:center; background:var(--j-seafoam-soft); border-radius:var(--j-r); padding:clamp(36px,5vw,64px); box-shadow:var(--j-sh-sm); }
+  .j-stay-copy .j-price{ font-family:var(--serif-lora); font-weight:600; font-size:26px; color:var(--j-accent-deep); margin:18px 0 0; }
+  .j-stay-copy h2{ font-size:clamp(30px,3.8vw,48px); margin:16px 0 0; }
+  .j-stay-copy p{ color:var(--j-ink-soft); font-size:18px; line-height:1.65; max-width:44ch; margin:18px 0 28px; }
+  .j-stay-media{ position:relative; border-radius:var(--j-r-sm); overflow:hidden; aspect-ratio:4/3.4; box-shadow:var(--j-sh); }
+  .j-stay-media .photo{ position:absolute; inset:0; }
+  .j-stay-media img{ transition:transform 1.2s var(--j-ease-soft); }
+  .j-stay:hover .j-stay-media img{ transform:scale(1.05); }
+
+  /* =========================================================
+     LEAD CAPTURE
+     ========================================================= */
+  .j-cap{ background:linear-gradient(150deg,var(--j-cream),var(--j-sand)); border:1px solid var(--j-line); border-radius:var(--j-r); padding:clamp(40px,5vw,68px); text-align:center; box-shadow:var(--j-sh-sm); }
+  .j-cap h2{ font-size:clamp(30px,3.8vw,48px); margin:16px auto 0; max-width:18ch; }
+  .j-cap p{ color:var(--j-ink-soft); font-size:18px; margin:16px auto 0; max-width:50ch; line-height:1.6; }
+  .j-cap-form{ display:flex; gap:12px; max-width:520px; margin:30px auto 0; flex-wrap:wrap; }
+  .j-cap-form input{ flex:1; min-width:220px; border:1.6px solid var(--j-line); background:#fff; border-radius:var(--j-r-pill); padding:16px 24px; font-family:var(--sans); font-weight:500; font-size:17px; color:var(--j-ink); outline:none; transition:border-color .25s ease; }
+  .j-cap-form input::placeholder{ color:var(--j-muted); }
+  .j-cap-form input:focus{ border-color:var(--j-seafoam); }
+  .j-cap-fine{ font-size:14.5px; color:var(--j-muted); margin:18px auto 0; max-width:46ch; line-height:1.5; }
+
+  /* =========================================================
+     FOOTER
+     ========================================================= */
+  .j-foot{ background:var(--j-ink); color:rgba(255,255,255,.7); }
+  .j-foot-top{ display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:40px; padding:72px 0 48px; }
+  .j-foot-brand .j-brand b{ color:#fff; }
+  .j-foot-brand p{ font-size:16px; max-width:36ch; margin:18px 0 0; line-height:1.65; color:rgba(255,255,255,.66); }
+  .j-foot h4{ color:#fff; font-family:var(--sans); font-weight:700; font-size:15px; letter-spacing:.02em; margin:0 0 18px; }
+  .j-foot ul{ list-style:none; padding:0; margin:0; display:grid; gap:13px; font-size:16px; }
+  .j-foot a{ transition:color .2s ease; } .j-foot a:hover{ color:var(--j-accent); }
+  .j-foot-bot{ border-top:1px solid rgba(255,255,255,.12); }
+  .j-foot-bot div{ display:flex; justify-content:space-between; gap:20px; padding:24px 0; font-size:14.5px; flex-wrap:wrap; }
+
+  /* =========================================================
+     REVEAL MOTION
+     ========================================================= */
+  .j-reveal{ opacity:0; transform:translateY(28px); transition:opacity .8s var(--j-ease-soft), transform .8s var(--j-ease-soft); }
+  .j-reveal.j-in{ opacity:1; transform:none; }
+  .j-reveal.d1{ transition-delay:.08s; } .j-reveal.d2{ transition-delay:.16s; } .j-reveal.d3{ transition-delay:.24s; }
+  /* staggered children (listing/community grids) */
+  .j-stagger > *{ opacity:0; transform:translateY(24px); transition:opacity .7s var(--j-ease-soft), transform .7s var(--j-ease); }
+  .j-stagger.j-in > *{ opacity:1; transform:none; }
+  .j-stagger.j-in > *:nth-child(1){ transition-delay:.04s; }
+  .j-stagger.j-in > *:nth-child(2){ transition-delay:.1s; }
+  .j-stagger.j-in > *:nth-child(3){ transition-delay:.16s; }
+  .j-stagger.j-in > *:nth-child(4){ transition-delay:.22s; }
+  .j-stagger.j-in > *:nth-child(5){ transition-delay:.28s; }
+  .j-stagger.j-in > *:nth-child(6){ transition-delay:.34s; }
+  .j-stagger.j-in > *:nth-child(7){ transition-delay:.4s; }
+  .j-stagger.j-in > *:nth-child(8){ transition-delay:.46s; }
+  .j-stagger.j-in > *:nth-child(9){ transition-delay:.52s; }
+
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width:960px){
+    .j-links{ display:none; } .j-burger{ display:block; }
+    .j-nav-cta .j-btn{ display:none; }
+    .j-listings{ grid-template-columns:1fr 1fr; }
+    .j-amen{ grid-template-columns:1fr; } .j-amen-media{ order:-1; aspect-ratio:16/10; }
+    .j-comm-grid{ grid-template-columns:1fr 1fr; }
+    .j-life-stats{ max-width:none; }
+    .j-stay{ grid-template-columns:1fr; } .j-stay-media{ order:-1; aspect-ratio:16/10; }
+    .j-foot-top{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:560px){
+    .j-listings{ grid-template-columns:1fr; }
+    .j-amen-grid{ grid-template-columns:1fr; }
+    .j-comm-grid{ grid-template-columns:1fr; }
+    .j-life-stats{ grid-template-columns:1fr; gap:20px; }
+    .j-cap-form{ flex-direction:column; } .j-cap-form .j-btn{ width:100%; }
+    .j-foot-top{ grid-template-columns:1fr; }
+    .j-foot-bot div{ flex-direction:column; gap:8px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .j-reveal,.j-stagger>*{ opacity:1 !important; transform:none !important; transition:none !important; }
+    .j-rise{ opacity:1 !important; transform:none !important; animation:none !important; }
+    .j-hero .photo img,.j-life .photo img{ animation:none !important; transform:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="j-wrap">
+
+  <!-- ============== NAV ============== -->
+  <header class="j-nav" data-screen-label="Home J — Nav">
+    <div class="j-container j-nav-in">
+      <a class="j-brand" href="#">
+        <span class="j-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#fff" stroke-width="2"/><path d="M5.5 11.5V19h13v-7.5" stroke="#26333f" stroke-width="2"/></svg></span>
+        <b>MVP Realty</b>
+      </a>
+      <nav class="j-links">
+        <a href="#listings">Homes</a>
+        <a href="#amenities">Amenities</a>
+        <a href="#communities">Communities</a>
+        <a href="#lifestyle">Lifestyle</a>
+        <a href="#stay">Stay &amp; Tour</a>
+      </nav>
+      <div class="j-nav-cta">
+        <a href="#stay" class="j-btn j-btn--sun">Plan Your Visit</a>
+        <button class="j-burger" aria-label="Menu"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============== HERO ============== -->
+  <section class="j-hero" data-screen-label="Home J — Hero">
+    <div class="photo photo--deep"><img src="../assets/photos/hero-naples-waterfront.jpg" alt="Sunlit Naples waterfront on Florida's Gulf Coast" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1572331165267-854da2b10ccc?auto=format&fit=crop&w=2000&q=72'"></div>
+    <div class="j-hero-veil"></div>
+    <div class="j-hero-glow"></div>
+    <div class="j-container j-hero-in">
+      <span class="j-hero-badge j-rise r1"><i></i> Now welcoming neighbors · Naples &amp; the Gulf Coast</span>
+      <h1 class="j-rise r2">Your sunniest <em>chapter</em> starts on the Gulf Coast.</h1>
+      <p class="j-rise r3">Warm, walkable, gated communities minutes from the beach, with a clubhouse full of friends and something to do every single day.</p>
+      <div class="j-hero-actions j-rise r4">
+        <a href="#listings" class="j-btn j-btn--sun">See Homes &amp; Pricing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#amenities" class="j-btn j-btn--light">Explore the Lifestyle</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== FEATURED LISTINGS ============== -->
+  <section class="j-sec" id="listings" data-screen-label="Home J — Featured Listings">
+    <div class="j-container">
+      <div class="j-head j-head--row j-reveal">
+        <div class="j-head">
+          <span class="j-kicker">Move-in ready favorites</span>
+          <h2 class="j-h">Homes our neighbors love</h2>
+        </div>
+        <a href="#" class="j-more">Browse all homes <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="j-listings j-stagger j-reveal">
+        <!-- Card 1 -->
+        <a class="j-list-card" href="#">
+          <div class="j-list-ph">
+            <div class="photo photo--sand"><img src="../assets/photos/home-exterior.jpg" alt="Sunlit single-story home framed by palms in Seaside Cove" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1100&q=72'"></div>
+            <span class="j-list-tag">Now Selling</span>
+          </div>
+          <div class="j-list-b">
+            <h3>Seaside Cove</h3>
+            <span class="j-list-city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Naples · 12 min to beach</span>
+            <span class="j-list-price">From $1.4M</span>
+            <div class="j-list-stats">
+              <span class="st"><b>3</b><span>Beds</span></span>
+              <span class="st"><b>3</b><span>Baths</span></span>
+              <span class="st"><b>2,640</b><span>Sq Ft</span></span>
+            </div>
+            <span class="j-list-view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <!-- Card 2 -->
+        <a class="j-list-card" href="#">
+          <div class="j-list-ph">
+            <div class="photo"><img src="../assets/photos/home-rendering.jpg" alt="Lakefront home in the Mangrove Bay 55-plus community" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1100&q=72'"></div>
+            <span class="j-list-tag">55+ Living</span>
+          </div>
+          <div class="j-list-b">
+            <h3>Mangrove Bay</h3>
+            <span class="j-list-city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Bonita Springs · 15 min to beach</span>
+            <span class="j-list-price">From $720K</span>
+            <div class="j-list-stats">
+              <span class="st"><b>2</b><span>Beds</span></span>
+              <span class="st"><b>2</b><span>Baths</span></span>
+              <span class="st"><b>1,980</b><span>Sq Ft</span></span>
+            </div>
+            <span class="j-list-view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <!-- Card 3 -->
+        <a class="j-list-card" href="#">
+          <div class="j-list-ph">
+            <div class="photo photo--sand"><img src="../assets/photos/kitchen-model.jpg" alt="Bright decorated model kitchen at Coral Lagoon" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1100&q=72'"></div>
+            <span class="j-list-tag">New Model Open</span>
+          </div>
+          <div class="j-list-b">
+            <h3>Coral Lagoon</h3>
+            <span class="j-list-city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Estero · 18 min to beach</span>
+            <span class="j-list-price">From $815K</span>
+            <div class="j-list-stats">
+              <span class="st"><b>3</b><span>Beds</span></span>
+              <span class="st"><b>2.5</b><span>Baths</span></span>
+              <span class="st"><b>2,310</b><span>Sq Ft</span></span>
+            </div>
+            <span class="j-list-view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== AMENITIES ============== -->
+  <section class="j-sec j-sec--sand" id="amenities" data-screen-label="Home J — Amenities">
+    <div class="j-container j-amen">
+      <div class="j-amen-media j-reveal">
+        <div class="photo photo--deep"><img src="../assets/photos/clubhouse-aerial.jpg" alt="Aerial view of the resort clubhouse, pools, and racquet courts" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1600&q=72'"></div>
+        <div class="j-amen-float"><b>Your resort, every day</b><span>The clubhouse, pools, and courts are a short golf-cart ride away.</span></div>
+      </div>
+      <div>
+        <div class="j-reveal">
+          <span class="j-kicker">Built for an active retirement</span>
+          <h2 class="j-h" style="font-size:clamp(32px,4.2vw,52px);margin-top:16px;">Everything you love, just outside your door</h2>
+          <p class="j-lede" style="margin-top:18px;">Resort amenities you will actually use every week, designed so the fun, the friends, and the fitness are always close by.</p>
+        </div>
+        <div class="j-amen-grid j-stagger j-reveal">
+          <div class="j-amen-card">
+            <div class="j-amen-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-5h6v5"/></svg></div>
+            <h4>Grand clubhouse</h4>
+            <p>The social heart, with lounges, events, and a sun-soaked pool deck.</p>
+          </div>
+          <div class="j-amen-card sun">
+            <div class="j-amen-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></div>
+            <h4>Resort pool</h4>
+            <p>Zero-entry pools, a heated lap lane, and shaded cabanas for the afternoon.</p>
+          </div>
+          <div class="j-amen-card">
+            <div class="j-amen-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M5 5c4 4 9 9 14 14M19 5C15 9 10 14 5 19"/></svg></div>
+            <h4>Pickleball &amp; tennis</h4>
+            <p>Lit courts and friendly leagues that turn neighbors into your crew.</p>
+          </div>
+          <div class="j-amen-card">
+            <div class="j-amen-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7v10M4 9v6M18 7v10M20 9v6M6 12h12"/></svg></div>
+            <h4>Fitness &amp; wellness</h4>
+            <p>A bright gym, group classes, yoga lawns, and a spa to keep you moving.</p>
+          </div>
+          <div class="j-amen-card sun">
+            <div class="j-amen-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3v8a2 2 0 0 0 2 2h0V3M8 3v18M16 3c-1.5 0-2.5 2-2.5 5s1 4 2.5 4v9"/></svg></div>
+            <h4>Dining &amp; social calendar</h4>
+            <p>On-site dining, wine nights, live music, and food trucks all year long.</p>
+          </div>
+          <div class="j-amen-card">
+            <div class="j-amen-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20s2-7 8-7 8 7 8 7M9 9l1.5-2L12 9l1.5-2L15 9"/></svg></div>
+            <h4>Walking &amp; nature trails</h4>
+            <p>Shaded paths and boardwalks for morning strolls and sunset walks.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== COMMUNITIES ============== -->
+  <section class="j-sec" id="communities" data-screen-label="Home J — Communities">
+    <div class="j-container">
+      <div class="j-head j-reveal">
+        <span class="j-kicker">Nine Gulf-Coast communities</span>
+        <h2 class="j-h">Pick your spot, every one minutes from the sand</h2>
+        <p class="j-lede" style="margin-top:18px;">From Bonita Springs to Sarasota, each gated community sits a short, easy drive from white-sand Gulf beaches, dining, and marinas.</p>
+      </div>
+      <div class="j-comm-grid j-stagger j-reveal">
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Seaside Cove</b><span>Naples · 12 min to beach</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Mangrove Bay</b><span>Bonita Springs · 15 min</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Coral Lagoon</b><span>Estero · 18 min to beach</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Harbor Palms</b><span>Fort Myers · 20 min</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Sunwater Key</b><span>Marco Island · 8 min</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Egret Landing</b><span>Punta Gorda · 16 min</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Tidewater Glen</b><span>Venice · 10 min to beach</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Palmetto Shores</b><span>Sarasota · 14 min</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="j-comm" href="#"><span class="j-comm-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg></span><span><b>Pelican Reserve</b><span>Cape Coral · 19 min</span></span><span class="j-comm-go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== LIFESTYLE / SOCIAL ============== -->
+  <section class="j-life" id="lifestyle" data-screen-label="Home J — Lifestyle">
+    <div class="photo photo--deep"><img src="../assets/photos/lanai-pool.jpg" alt="Friends gathered on a screened lanai by the pool at golden hour" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=2000&q=72'"></div>
+    <div class="j-life-veil"></div>
+    <div class="j-container j-life-in">
+      <span class="j-kicker" style="color:#fff;">The best part is the people</span>
+      <h2>You buy the home. You stay for the <em>friends</em>.</h2>
+      <p>Ask our neighbors what made them choose this place and they will tell you the same thing: the standing dinner plans, the pickleball crew, and the feeling that you are never short of something to do.</p>
+      <div class="j-life-stats">
+        <div class="it"><b><span data-count="40" data-suffix="+">0</span></b><span>Clubs and groups to join</span></div>
+        <div class="it"><b><span data-count="200" data-suffix="+">0</span></b><span>Social events every year</span></div>
+        <div class="it"><b><span data-count="9">0</span></b><span>Gulf-Coast communities</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STAY & TOUR ============== -->
+  <section class="j-sec j-sec--sand" id="stay" data-screen-label="Home J — Stay & Tour">
+    <div class="j-container">
+      <div class="j-stay j-reveal">
+        <div class="j-stay-copy">
+          <span class="j-kicker">Try before you buy</span>
+          <div class="j-price">3 days, 2 nights from $99</div>
+          <h2 class="j-h">Come stay and live the lifestyle</h2>
+          <p>Spend a relaxed weekend inside the gates. Play the courts, meet the neighbors, tour the model homes, and watch the sunset from the lanai. The best way to know it is home is to live it for a couple of days.</p>
+          <a href="#" class="j-btn j-btn--sun">Book Your Stay <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div class="j-stay-media">
+          <div class="photo photo--deep"><img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1400&q=72" alt="Couple enjoying a relaxed resort getaway by the water" referrerpolicy="no-referrer" onerror="this.remove()"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== LEAD CAPTURE ============== -->
+  <section class="j-sec" data-screen-label="Home J — Lead Capture">
+    <div class="j-container">
+      <div class="j-cap j-reveal">
+        <span class="j-kicker" style="justify-content:center;">First looks, no pressure</span>
+        <h2 class="j-h">Get pricing, floorplans, and new-release news</h2>
+        <p>Tell us where to send it. You will be the first to hear about move-in-ready homes and coming-soon communities along the Gulf Coast.</p>
+        <form class="j-cap-form" onsubmit="return false">
+          <input type="email" placeholder="Your email address" aria-label="Email address">
+          <button type="submit" class="j-btn j-btn--sun">Send It Over</button>
+        </form>
+        <p class="j-cap-fine">We send a friendly note now and then, and we never sell your information.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== FOOTER ============== -->
+  <footer class="j-foot" data-screen-label="Home J — Footer">
+    <div class="j-container">
+      <div class="j-foot-top">
+        <div class="j-foot-brand">
+          <a class="j-brand" href="#">
+            <span class="j-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#fff" stroke-width="2"/><path d="M5.5 11.5V19h13v-7.5" stroke="#26333f" stroke-width="2"/></svg></span>
+            <b>MVP Realty</b>
+          </a>
+          <p>Florida's Gulf-Coast specialists, matching you with a warm, welcoming gated community minutes from the sand.</p>
+        </div>
+        <div><h4>Homes</h4><ul><li><a href="#">Seaside Cove</a></li><li><a href="#">Mangrove Bay 55+</a></li><li><a href="#">Coral Lagoon</a></li><li><a href="#">Beachfront Homes</a></li></ul></div>
+        <div><h4>Explore</h4><ul><li><a href="#">Amenities</a></li><li><a href="#">Communities</a></li><li><a href="#">Lifestyle</a></li><li><a href="#">Stay &amp; Tour</a></li></ul></div>
+        <div><h4>Visit</h4><ul><li><a href="#">Plan Your Visit</a></li><li><a href="#">Request a Brochure</a></li><li><a href="#">Contact a Guide</a></li><li><a href="#">About MVP</a></li></ul></div>
+      </div>
+      <div class="j-foot-bot"><div><span>© 2026 MVP Realty. All rights reserved.</span><span>Equal Housing Opportunity · Privacy · Terms</span></div></div>
+    </div>
+  </footer>
+
+</div>
+
+<noscript><style>.j-reveal,.j-rise,.j-stagger>*{opacity:1!important;transform:none!important;}</style></noscript>
+<script>
+  (function(){
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // hero load-in
+    var hero = document.querySelector('.j-hero');
+    if (hero) requestAnimationFrame(function(){ hero.classList.add('j-ready'); });
+
+    // sticky nav shadow
+    var nav = document.querySelector('.j-nav');
+    if (nav){
+      var onScroll = function(){ nav.classList.toggle('j-scrolled', window.scrollY > 8); };
+      document.addEventListener('scroll', onScroll, { passive:true }); onScroll();
+    }
+
+    // scroll reveals
+    var reveals = document.querySelectorAll('.j-reveal, .j-life');
+    if(!('IntersectionObserver' in window) || reduce){
+      reveals.forEach(function(r){ r.classList.add('j-in'); });
+    } else {
+      var ro = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('j-in'); ro.unobserve(e.target); } }); }, { threshold:0.14, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(r){ ro.observe(r); });
+      setTimeout(function(){ reveals.forEach(function(r){ r.classList.add('j-in'); }); }, 2600);
+    }
+
+    // count-up
+    function runCount(el){
+      var t = parseFloat(el.dataset.count), suf = el.dataset.suffix||'';
+      if (reduce){ el.textContent = t + suf; return; }
+      var dur = 1400, s = performance.now();
+      (function tick(now){
+        var p = Math.min(1,(now-s)/dur), e = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(t*e) + suf;
+        if (p<1) requestAnimationFrame(tick);
+      })(s);
+    }
+    var counters = document.querySelectorAll('[data-count]');
+    if(!('IntersectionObserver' in window)){ counters.forEach(runCount); }
+    else {
+      var co = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ runCount(e.target); co.unobserve(e.target); } }); }, { threshold:0.6 });
+      counters.forEach(function(c){ co.observe(c); });
+      setTimeout(function(){ counters.forEach(function(c){ if(c.textContent==='0') runCount(c); }); }, 2800);
+    }
+  })();
+</script>
+
+<!-- Tweaks panel -->
+<div id="tweaks-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useEffect } = React;
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{ "accent":"Sunshine", "corners":"Pillowy", "warmth":"Sunlit" }/*EDITMODE-END*/;
+const ACCENTS = {
+  "Sunshine":  { accent:"#FFB703", deep:"#e6a200", seafoam:"#3cb6b3", soft:"#e2f7f6" },
+  "Coral":     { accent:"#FF8A5B", deep:"#e26a3a", seafoam:"#3cb6b3", soft:"#e2f7f6" },
+  "Seafoam":   { accent:"#3cb6b3", deep:"#2a9c99", seafoam:"#2a9c99", soft:"#dff4f3" },
+  "Hibiscus":  { accent:"#E8617D", deep:"#cf4763", seafoam:"#3cb6b3", soft:"#e2f7f6" }
+};
+const CORNERS = { "Pillowy":["32px","22px"], "Soft":["20px","14px"], "Trim":["12px","8px"] };
+const WARMTH = {
+  "Sunlit":   { cream:"#fdf8f0", sand:"#f6ede0", line:"#ecdfcc" },
+  "Breezy":   { cream:"#f6fbfb", sand:"#e9f5f4", line:"#d6ebea" }
+};
+function applyTweaks(t){
+  const el = document.querySelector('.j-wrap'); if(!el) return;
+  const a = ACCENTS[t.accent] || ACCENTS["Sunshine"];
+  const c = CORNERS[t.corners] || CORNERS["Pillowy"];
+  const w = WARMTH[t.warmth] || WARMTH["Sunlit"];
+  const S=(k,v)=>el.style.setProperty(k,v);
+  S('--j-accent',a.accent); S('--j-accent-deep',a.deep);
+  S('--j-seafoam',a.seafoam); S('--j-seafoam-soft',a.soft);
+  S('--j-r',c[0]); S('--j-r-sm',c[1]);
+  S('--j-cream',w.cream); S('--j-sand',w.sand); S('--j-line',w.line);
+}
+function App(){
+  const [t,setTweak] = useTweaks(TWEAK_DEFAULTS);
+  useEffect(()=>{ applyTweaks(t); }, [t.accent, t.corners, t.warmth]);
+  return (<TweaksPanel>
+    <TweakSection label="Accent" />
+    <TweakColor label="Color" value={ACCENTS[t.accent]?.accent}
+      options={["#FFB703","#FF8A5B","#3cb6b3","#E8617D"]}
+      onChange={(v)=>{
+        const name = Object.keys(ACCENTS).find(k=>ACCENTS[k].accent.toLowerCase()===String(v).toLowerCase()) || "Sunshine";
+        setTweak('accent',name);
+      }} />
+    <TweakSection label="Corners" />
+    <TweakRadio label="Radius" value={t.corners} options={["Pillowy","Soft","Trim"]} onChange={(v)=>setTweak('corners',v)} />
+    <TweakSection label="Mood" />
+    <TweakRadio label="Warmth" value={t.warmth} options={["Sunlit","Breezy"]} onChange={(v)=>setTweak('warmth',v)} />
+  </TweaksPanel>);
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App />);
+</script>
+</body>
+</html>

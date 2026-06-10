@@ -32,7 +32,7 @@ After it runs, follow **First-time setup** below (`nvm use` → `pnpm install` �
 .
 ├── apps/
 │   ├── web/        Next.js 16 site (App Router + Turbopack)        :3000
-│   └── backend/    Payload v3 admin + REST/GraphQL API            :3001
+│   └── backend/    Payload v3 admin + REST/GraphQL API            :3002
 ├── packages/       Shared TypeScript libraries
 │   ├── api-contracts/  Zod schemas + types shared across apps
 │   └── ui/             Shared component library
@@ -84,7 +84,7 @@ pnpm dev
 After step 5:
 
 - **Web** at <http://localhost:3000> — Next.js default page for now
-- **Payload admin** at <http://localhost:3001/admin> — login screen; create the first admin user here
+- **Payload admin** at <http://localhost:3002/admin> — login screen; create the first admin user here
 
 To stop: `Ctrl+C`, then `pnpm docker:down` to free the database container.
 
@@ -98,7 +98,7 @@ Each app has its own `.env.local` (gitignored). The root `.env.example` document
 
 ```env
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3002
 ```
 
 **`apps/backend/.env.local`**
@@ -106,7 +106,7 @@ NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
 ```env
 DATABASE_URL=postgres://mvp_realty_db:mvp_realty_db@localhost:5434/mvp_realty_db
 PAYLOAD_SECRET=<paste output of `openssl rand -base64 32`>
-PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3001
+PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3002
 ```
 
 > **Why `5434` instead of `5432`?** Most dev machines already run system Postgres on `5432`. The local compose remaps to a free port. Production (Railway) uses the standard port — this is local-only.
@@ -117,19 +117,19 @@ PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3001
 
 ## Daily commands
 
-| Command             | What it does                                                              |
-| ------------------- | ------------------------------------------------------------------------- |
-| `pnpm dev`          | Boots Docker + both runtimes in parallel (Turbo TUI; press `h` for help)  |
-| `pnpm docker:up`    | Just Postgres                                                             |
-| `pnpm docker:down`  | Stop the container (data persists in a named volume)                      |
-| `pnpm docker:reset` | Stop **and wipe** Postgres (you'll re-seed from scratch)                  |
-| `pnpm typecheck`    | TypeScript across every workspace (cached by Turbo)                       |
-| `pnpm lint`         | ESLint across every workspace                                             |
-| `pnpm test`         | Vitest across every workspace                                             |
-| `pnpm format`       | Prettier-format everything in place                                       |
+| Command             | What it does                                                             |
+| ------------------- | ------------------------------------------------------------------------ |
+| `pnpm dev`          | Boots Docker + both runtimes in parallel (Turbo TUI; press `h` for help) |
+| `pnpm docker:up`    | Just Postgres                                                            |
+| `pnpm docker:down`  | Stop the container (data persists in a named volume)                     |
+| `pnpm docker:reset` | Stop **and wipe** Postgres (you'll re-seed from scratch)                 |
+| `pnpm typecheck`    | TypeScript across every workspace (cached by Turbo)                      |
+| `pnpm lint`         | ESLint across every workspace                                            |
+| `pnpm test`         | Vitest across every workspace                                            |
+| `pnpm format`       | Prettier-format everything in place                                      |
 | `pnpm format:check` | Verify everything's formatted (CI uses this)                             |
-| `pnpm build`        | Production build of all apps                                              |
-| `pnpm clean`        | Nuke `node_modules`, `.next`, `.turbo` — use when things get weird        |
+| `pnpm build`        | Production build of all apps                                             |
+| `pnpm clean`        | Nuke `node_modules`, `.next`, `.turbo` — use when things get weird       |
 
 ### Running commands inside one workspace
 

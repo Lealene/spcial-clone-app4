@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP Realty — Serene Retreat (O)</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  /* ===========================================================
+     DIRECTION O — "Serene Retreat"  ·  spa-calm, airy, unhurried
+     Retirement as a long exhale by the water. Built on the coastal
+     tokens: pale mist + soft seafoam pastels, lots of white, very
+     rounded forms (full-pill buttons, 28-40px radii), light-weight
+     Cormorant serif headlines + light Manrope body, generous leading.
+     Motion is slow + breathing, all reduced-motion guarded.
+     Contrast kept adequate for 55+ readability.
+     VARIANCE 6 / MOTION 4 / DENSITY 2.   Prefix: o-
+     ========================================================== */
+
+  .o-wrap{
+    /* tweakable surface variables (set by applyTweaks on .o-wrap) */
+    --o-accent:#5FD3D0;          /* soft seafoam — the calm accent */
+    --o-accent-deep:#2a9c99;     /* readable accent ink            */
+    --o-radius:36px;             /* very rounded card/section radius */
+    --o-pill:999px;
+    --o-air:1;                   /* airiness multiplier for spacing  */
+
+    /* serene surfaces */
+    --o-paper:#fbfdfd;           /* barely-there off-white          */
+    --o-mist:#f1f9f9;            /* pale aqua wash                  */
+    --o-mist-2:#e7f5f4;
+    --o-line:rgba(29,78,137,.10);/* hairline                        */
+    --o-line-2:rgba(29,78,137,.16);
+    --o-ink:#15334d;             /* slightly softened navy, readable */
+    --o-ink-soft:#3a5670;
+    --o-muted:#5d738c;
+
+    /* soft, diffuse, ocean-tinted shadows */
+    --o-sh:0 40px 90px -50px rgba(16,44,72,.40);
+    --o-sh-sm:0 24px 60px -36px rgba(16,44,72,.26);
+    --o-glow:0 30px 70px -34px rgba(95,211,208,.55);
+
+    color:var(--o-ink);
+    background:var(--o-paper);
+    overflow-x:clip;
+    font-weight:300;
+    letter-spacing:.005em;
+  }
+
+  .o-container{ max-width:1180px; margin:0 auto; padding-inline:clamp(22px,5vw,72px); }
+  .o-wrap a:focus-visible,.o-wrap button:focus-visible,.o-wrap input:focus-visible{
+    outline:2.5px solid var(--o-accent-deep); outline-offset:3px; border-radius:6px; }
+
+  /* ---- type system: light elegant serif heads + light Manrope body ---- */
+  .o-h{ font-family:var(--serif-cormorant); font-weight:400; color:var(--o-ink);
+        line-height:1.04; letter-spacing:-.005em; margin:0; }
+  .o-kicker{ font-family:var(--sans); font-weight:600; font-size:12px; letter-spacing:.32em;
+        text-transform:uppercase; color:var(--o-accent-deep); }
+  .o-lede{ font-family:var(--sans); font-weight:300; color:var(--o-ink-soft);
+        font-size:clamp(17px,1.35vw,20px); line-height:1.85; max-width:54ch; }
+  .o-rule{ width:54px; height:2px; border-radius:2px;
+        background:linear-gradient(90deg,var(--o-accent),transparent);
+        transform-origin:left; }
+
+  /* ---- buttons: full pill, soft, calm press ---- */
+  .o-wrap .btn{ border-radius:var(--o-pill); font-family:var(--sans); font-weight:600;
+        font-size:15.5px; letter-spacing:.01em; text-transform:none; padding:17px 34px;
+        box-shadow:none; transition:transform .5s cubic-bezier(.23,1,.32,1),
+        background .5s ease, color .5s ease, box-shadow .5s ease; }
+  .o-wrap .btn svg{ width:17px; height:17px; transition:transform .5s cubic-bezier(.23,1,.32,1); }
+  .o-wrap .btn--primary{ background:var(--ocean-600); color:#fff; box-shadow:var(--o-sh-sm); }
+  .o-wrap .btn--primary:hover{ background:var(--ocean-700); transform:translateY(-2px); box-shadow:var(--o-sh); }
+  .o-wrap .btn--primary:hover svg{ transform:translateX(4px); }
+  .o-wrap .btn--calm{ background:var(--o-accent); color:#0d3a39; box-shadow:var(--o-sh-sm); }
+  .o-wrap .btn--calm:hover{ transform:translateY(-2px); box-shadow:var(--o-glow); filter:saturate(1.05); }
+  .o-wrap .btn--soft{ background:#fff; color:var(--ocean-700); box-shadow:inset 0 0 0 1.5px var(--o-line-2), var(--o-sh-sm); }
+  .o-wrap .btn--soft:hover{ box-shadow:inset 0 0 0 1.5px var(--o-accent-deep), var(--o-sh); transform:translateY(-2px); }
+  .o-wrap .btn--light{ background:rgba(255,255,255,.18); color:#fff;
+        box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6); backdrop-filter:blur(8px); }
+  .o-wrap .btn--light:hover{ background:rgba(255,255,255,.3); transform:translateY(-2px); }
+  .o-wrap .btn:active{ transform:scale(.98); }
+
+  /* ---- nav ---- */
+  .o-nav{ position:sticky; top:0; z-index:60; background:rgba(251,253,253,.78);
+        backdrop-filter:blur(18px) saturate(150%); border-bottom:1px solid transparent;
+        transition:border-color .6s ease, box-shadow .6s ease; }
+  .o-nav.scrolled{ border-color:var(--o-line); box-shadow:0 20px 40px -34px rgba(16,44,72,.3); }
+  .o-nav-in{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding:18px 0; }
+  .o-brand{ display:flex; align-items:center; gap:13px; }
+  .o-mark{ width:44px; height:44px; border-radius:var(--o-pill); display:grid; place-items:center;
+        background:radial-gradient(120% 120% at 30% 20%, var(--o-accent), var(--ocean-600));
+        box-shadow:var(--o-sh-sm); }
+  .o-mark svg{ width:22px; height:22px; }
+  .o-brand b{ font-family:var(--serif-cormorant); font-weight:600; font-size:25px;
+        letter-spacing:.01em; color:var(--o-ink); }
+  .o-links{ display:flex; align-items:center; gap:36px; }
+  .o-links a{ font-family:var(--sans); font-weight:500; font-size:15.5px; color:var(--o-ink-soft);
+        position:relative; padding:5px 0; transition:color .4s ease; }
+  .o-links a::after{ content:''; position:absolute; left:0; right:100%; bottom:-1px; height:1.5px;
+        background:var(--o-accent-deep); transition:right .55s cubic-bezier(.23,1,.32,1); }
+  .o-links a:hover{ color:var(--o-ink); } .o-links a:hover::after{ right:0; }
+  .o-nav-cta{ display:flex; align-items:center; gap:14px; }
+  .o-nav-cta .btn{ padding:13px 26px; font-size:14.5px; }
+  .o-burger{ display:none; background:none; border:none; color:var(--ocean-700); }
+
+  /* ---- hero ---- */
+  .o-hero{ position:relative; min-height:clamp(620px,90vh,880px); display:flex; align-items:center;
+        color:#fff; overflow:hidden; }
+  .o-hero .photo{ position:absolute; inset:0; z-index:0; } .o-hero .photo::after{ content:none; }
+  .o-hero .photo img{ animation:o-breathe 26s ease-in-out infinite alternate; }
+  @keyframes o-breathe{ from{ transform:scale(1.04); } to{ transform:scale(1.12); } }
+  .o-hero-veil{ position:absolute; inset:0; z-index:1; background:
+        linear-gradient(105deg, rgba(8,26,48,.62) 0%, rgba(8,26,48,.32) 46%, rgba(8,26,48,.08) 78%),
+        linear-gradient(180deg, rgba(8,26,48,0) 55%, rgba(8,26,48,.42) 100%); }
+  .o-hero-in{ position:relative; z-index:2; width:100%; padding:clamp(56px,7vw,96px) 0; max-width:64ch; }
+  .o-hero .label{ display:inline-flex; align-items:center; gap:9px; font-family:var(--sans);
+        font-weight:600; font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:#eafafa;
+        background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+        padding:9px 18px; border-radius:var(--o-pill); backdrop-filter:blur(8px); }
+  .o-hero .label i{ width:7px; height:7px; border-radius:50%; background:var(--o-accent);
+        box-shadow:0 0 0 4px rgba(95,211,208,.3); }
+  .o-hero h1{ font-family:var(--serif-cormorant); font-weight:400; letter-spacing:-.01em;
+        font-size:clamp(48px,7vw,92px); line-height:1.02; margin:26px 0 0; max-width:15ch;
+        text-shadow:0 2px 40px rgba(8,26,48,.35); }
+  .o-hero h1 em{ font-style:italic; font-weight:500; color:#eafcfb; }
+  .o-hero p{ font-family:var(--sans); font-weight:300; font-size:clamp(18px,1.45vw,22px);
+        color:rgba(255,255,255,.94); max-width:46ch; line-height:1.7; margin:26px 0 38px;
+        text-shadow:0 1px 16px rgba(8,26,48,.5); }
+  .o-hero-actions{ display:flex; gap:16px; flex-wrap:wrap; }
+
+  /* hero soft float-up */
+  .o-rise{ opacity:0; transform:translateY(26px); }
+  .o-hero.ready .o-rise{ animation:o-riseIn 1.4s cubic-bezier(.23,1,.32,1) forwards; }
+  .o-hero.ready .o-rise.r1{ animation-delay:.15s; } .o-hero.ready .o-rise.r2{ animation-delay:.40s; }
+  .o-hero.ready .o-rise.r3{ animation-delay:.65s; } .o-hero.ready .o-rise.r4{ animation-delay:.90s; }
+  @keyframes o-riseIn{ to{ opacity:1; transform:none; } }
+
+  /* ---- section scaffold ---- */
+  .o-sec{ padding:calc(clamp(82px,10vw,150px) * var(--o-air)) 0; }
+  .o-sec.mist{ background:linear-gradient(180deg, var(--o-mist) 0%, var(--o-paper) 100%); }
+  .o-head{ max-width:60ch; }
+  .o-head h2{ font-size:clamp(34px,4.6vw,60px); margin:18px 0 0; max-width:18ch; }
+  .o-head .o-lede{ margin:24px 0 0; }
+
+  /* ---- featured listings (quiet, airy index) ---- */
+  .o-list-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:28px;
+        flex-wrap:wrap; margin-bottom:calc(56px * var(--o-air)); }
+  .o-more{ font-family:var(--sans); font-weight:600; font-size:15px; color:var(--ocean-700);
+        display:inline-flex; align-items:center; gap:10px; white-space:nowrap;
+        padding-bottom:5px; border-bottom:1.5px solid transparent; transition:border-color .45s ease; }
+  .o-more svg{ width:17px; height:17px; transition:transform .5s cubic-bezier(.23,1,.32,1); }
+  .o-more:hover{ border-color:var(--o-accent-deep); } .o-more:hover svg{ transform:translateX(5px); }
+
+  .o-listings{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(24px,3vw,40px); }
+  .o-prop{ display:block; background:#fff; border-radius:var(--o-radius); overflow:hidden;
+        box-shadow:var(--o-sh-sm); transition:transform .6s cubic-bezier(.23,1,.32,1), box-shadow .6s ease; }
+  .o-prop:hover{ transform:translateY(-6px); box-shadow:var(--o-sh); }
+  .o-prop .ph{ position:relative; aspect-ratio:4/3.1; overflow:hidden; }
+  .o-prop .ph .photo{ position:absolute; inset:0; }
+  .o-prop .ph img{ transition:transform 1.4s cubic-bezier(.23,1,.32,1); }
+  .o-prop:hover .ph img{ transform:scale(1.07); }
+  .o-prop .tag{ position:absolute; top:16px; left:16px; z-index:2; background:rgba(255,255,255,.92);
+        color:var(--o-accent-deep); font-family:var(--sans); font-weight:600; font-size:11.5px;
+        letter-spacing:.1em; text-transform:uppercase; padding:8px 15px; border-radius:var(--o-pill);
+        backdrop-filter:blur(6px); }
+  .o-prop .b{ padding:26px 28px 30px; }
+  .o-prop h3{ font-family:var(--serif-cormorant); font-weight:500; font-size:28px; color:var(--o-ink);
+        margin:0; line-height:1.1; }
+  .o-prop .city{ font-family:var(--sans); font-weight:400; font-size:15px; color:var(--o-muted);
+        margin-top:5px; display:flex; align-items:center; gap:7px; }
+  .o-prop .city svg{ width:15px; height:15px; color:var(--o-accent-deep); }
+  .o-prop .price{ font-family:var(--sans); font-weight:600; font-size:21px; color:var(--ocean-700);
+        margin-top:16px; }
+  .o-prop .stats{ display:flex; gap:0; margin-top:18px; padding-top:18px; border-top:1px solid var(--o-line); }
+  .o-prop .stats .st{ flex:1; }
+  .o-prop .stats .st b{ display:block; font-family:var(--sans); font-weight:600; font-size:16px;
+        color:var(--o-ink); }
+  .o-prop .stats .st span{ display:block; font-family:var(--sans); font-weight:400; font-size:12.5px;
+        color:var(--o-muted); letter-spacing:.04em; margin-top:3px; }
+  .o-prop .view{ margin-top:22px; display:inline-flex; align-items:center; gap:9px;
+        font-family:var(--sans); font-weight:600; font-size:14.5px; color:var(--o-accent-deep); }
+  .o-prop .view svg{ width:16px; height:16px; transition:transform .5s cubic-bezier(.23,1,.32,1); }
+  .o-prop:hover .view svg{ transform:translateX(5px); }
+
+  /* ---- amenities (visually rich wellness module) ---- */
+  .o-amen-grid{ display:grid; grid-template-columns:1.25fr 1fr 1fr; grid-auto-rows:1fr;
+        gap:clamp(18px,2vw,26px); margin-top:calc(56px * var(--o-air)); }
+  .o-amen{ background:#fff; border-radius:var(--o-radius); padding:34px 32px;
+        box-shadow:var(--o-sh-sm); display:flex; flex-direction:column; gap:14px;
+        transition:transform .6s cubic-bezier(.23,1,.32,1), box-shadow .6s ease; min-height:200px; }
+  .o-amen:hover{ transform:translateY(-5px); box-shadow:var(--o-sh); }
+  .o-amen .ic{ width:54px; height:54px; border-radius:var(--o-pill); display:grid; place-items:center;
+        background:linear-gradient(140deg, var(--o-mist), var(--o-mist-2)); color:var(--o-accent-deep); }
+  .o-amen .ic svg{ width:26px; height:26px; }
+  .o-amen h3{ font-family:var(--serif-cormorant); font-weight:500; font-size:26px; color:var(--o-ink);
+        margin:0; line-height:1.12; }
+  .o-amen p{ font-family:var(--sans); font-weight:300; font-size:15.5px; color:var(--o-ink-soft);
+        line-height:1.7; margin:0; }
+  /* feature amenity cell carries an image */
+  .o-amen.feature{ grid-row:span 2; grid-column:1; padding:0; overflow:hidden;
+        position:relative; color:#fff; justify-content:flex-end; min-height:440px; }
+  .o-amen.feature .photo{ position:absolute; inset:0; z-index:0; } .o-amen.feature .photo::after{ content:none; }
+  .o-amen.feature img{ transition:transform 1.6s cubic-bezier(.23,1,.32,1); }
+  .o-amen.feature:hover img{ transform:scale(1.06); }
+  .o-amen.feature .veil{ position:absolute; inset:0; z-index:1;
+        background:linear-gradient(180deg, rgba(8,26,48,0) 38%, rgba(8,26,48,.78) 100%); }
+  .o-amen.feature .inner{ position:relative; z-index:2; padding:38px 36px; display:flex;
+        flex-direction:column; gap:12px; }
+  .o-amen.feature .ic{ background:rgba(255,255,255,.16); color:#fff; backdrop-filter:blur(6px); }
+  .o-amen.feature h3{ color:#fff; font-size:34px; }
+  .o-amen.feature p{ color:rgba(255,255,255,.9); }
+  .o-amen.wide{ grid-column:span 2; flex-direction:row; align-items:center; gap:24px; }
+  .o-amen.wide .ic{ flex-shrink:0; }
+  .o-amen.wide .txt{ display:flex; flex-direction:column; gap:10px; }
+
+  /* ---- communities (calm list of nine, minutes-to-beach) ---- */
+  .o-comm-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+        margin-top:calc(54px * var(--o-air)); background:var(--o-line);
+        border:1px solid var(--o-line); border-radius:var(--o-radius); overflow:hidden; }
+  .o-comm{ background:var(--o-paper); padding:30px 30px 32px; display:flex; flex-direction:column;
+        gap:8px; transition:background .5s ease; }
+  .o-comm:hover{ background:#fff; }
+  .o-comm .name{ font-family:var(--serif-cormorant); font-weight:500; font-size:27px; color:var(--o-ink);
+        line-height:1.1; }
+  .o-comm .loc{ font-family:var(--sans); font-weight:400; font-size:14.5px; color:var(--o-muted); }
+  .o-comm .beach{ margin-top:14px; display:inline-flex; align-items:center; gap:8px;
+        font-family:var(--sans); font-weight:600; font-size:13.5px; color:var(--o-accent-deep); }
+  .o-comm .beach svg{ width:16px; height:16px; }
+
+  /* ---- lifestyle / social band (full-bleed image) ---- */
+  .o-life{ position:relative; min-height:clamp(560px,72vh,720px); display:flex; align-items:center;
+        color:#fff; overflow:hidden; }
+  .o-life .photo{ position:absolute; inset:0; z-index:0; } .o-life .photo::after{ content:none; }
+  .o-life .photo img{ transform:scale(1.08); transition:transform 18s ease-out; }
+  .o-life.in .photo img{ transform:scale(1); }
+  .o-life-veil{ position:absolute; inset:0; z-index:1;
+        background:linear-gradient(95deg, rgba(8,26,48,.82) 0%, rgba(8,26,48,.5) 52%, rgba(8,26,48,.12) 100%); }
+  .o-life-in{ position:relative; z-index:2; max-width:60ch; padding:clamp(60px,7vw,100px) 0; }
+  .o-life .o-kicker{ color:var(--o-accent); }
+  .o-life h2{ font-family:var(--serif-cormorant); font-weight:400; letter-spacing:-.01em;
+        font-size:clamp(36px,5vw,64px); line-height:1.05; margin:20px 0 0; max-width:18ch; }
+  .o-life h2 em{ font-style:italic; color:#eafcfb; }
+  .o-life p{ font-family:var(--sans); font-weight:300; color:rgba(255,255,255,.92); font-size:18px;
+        line-height:1.75; max-width:48ch; margin:24px 0 0; }
+  .o-life-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px;
+        margin-top:48px; max-width:720px; }
+  .o-life-grid .it{ padding-top:22px; border-top:1px solid rgba(255,255,255,.28); }
+  .o-life-grid .it b{ display:block; font-family:var(--serif-cormorant); font-weight:500; font-size:21px; }
+  .o-life-grid .it span{ display:block; font-family:var(--sans); font-weight:300; font-size:14.5px;
+        color:rgba(255,255,255,.8); margin-top:8px; line-height:1.6; }
+
+  /* ---- stay & tour conversion band ---- */
+  .o-stay{ margin:calc(clamp(82px,10vw,150px) * var(--o-air)) auto;
+        max-width:1180px; padding-inline:clamp(22px,5vw,72px); }
+  .o-stay-in{ display:grid; grid-template-columns:1.05fr 1fr; border-radius:var(--o-radius);
+        overflow:hidden; background:linear-gradient(150deg, var(--o-mist) 0%, var(--o-mist-2) 100%);
+        box-shadow:var(--o-sh); }
+  .o-stay .copy{ padding:clamp(44px,5vw,72px); display:flex; flex-direction:column; justify-content:center; }
+  .o-stay .copy h2{ font-family:var(--serif-cormorant); font-weight:400; font-size:clamp(32px,4vw,52px);
+        line-height:1.06; color:var(--o-ink); margin:14px 0 4px; max-width:14ch; }
+  .o-stay .copy .price{ font-family:var(--sans); font-weight:600; font-size:21px; color:var(--o-accent-deep);
+        margin:0 0 18px; }
+  .o-stay .copy p{ font-family:var(--sans); font-weight:300; font-size:17px; line-height:1.8;
+        color:var(--o-ink-soft); max-width:44ch; margin:0 0 32px; }
+  .o-stay .copy .btn{ align-self:flex-start; }
+  .o-stay .media{ position:relative; min-height:420px; overflow:hidden; }
+  .o-stay .media .photo{ position:absolute; inset:0; }
+  .o-stay .media img{ transition:transform 1.6s cubic-bezier(.23,1,.32,1); }
+  .o-stay-in:hover .media img{ transform:scale(1.05); }
+
+  /* ---- lead capture ---- */
+  .o-cap{ text-align:center; }
+  .o-cap .o-h{ font-size:clamp(34px,4.6vw,58px); max-width:18ch; margin:18px auto 0; }
+  .o-cap .o-lede{ margin:24px auto 0; text-align:center; }
+  .o-cap form{ display:flex; gap:12px; max-width:520px; margin:40px auto 0; flex-wrap:wrap; }
+  .o-cap input{ flex:1; min-width:240px; font-family:var(--sans); font-weight:400; font-size:16px;
+        border:1.5px solid var(--o-line-2); background:#fff; border-radius:var(--o-pill);
+        padding:17px 26px; color:var(--o-ink); outline:none; transition:border-color .4s ease; }
+  .o-cap input::placeholder{ color:var(--o-muted); }
+  .o-cap input:focus{ border-color:var(--o-accent-deep); }
+  .o-cap .fine{ font-family:var(--sans); font-weight:300; font-size:14px; color:var(--o-muted);
+        margin:20px auto 0; max-width:46ch; line-height:1.6; }
+
+  /* ---- footer ---- */
+  .o-foot{ background:linear-gradient(180deg, var(--o-mist) 0%, var(--o-mist-2) 100%);
+        border-top:1px solid var(--o-line); margin-top:calc(40px * var(--o-air)); }
+  .o-foot-top{ display:grid; grid-template-columns:1.7fr 1fr 1fr 1fr; gap:48px;
+        padding:clamp(56px,7vw,88px) 0 50px; }
+  .o-foot-brand b{ font-family:var(--serif-cormorant); font-weight:600; font-size:26px; color:var(--o-ink); }
+  .o-foot-brand p{ font-family:var(--sans); font-weight:300; font-size:15.5px; color:var(--o-ink-soft);
+        max-width:34ch; margin:14px 0 0; line-height:1.7; }
+  .o-foot h4{ font-family:var(--sans); font-weight:600; font-size:12px; letter-spacing:.14em;
+        text-transform:uppercase; color:var(--o-accent-deep); margin:0 0 18px; }
+  .o-foot ul{ list-style:none; padding:0; margin:0; display:grid; gap:13px; }
+  .o-foot a{ font-family:var(--sans); font-weight:300; font-size:15.5px; color:var(--o-ink-soft);
+        transition:color .35s ease; }
+  .o-foot a:hover{ color:var(--o-accent-deep); }
+  .o-foot-bot{ border-top:1px solid var(--o-line); }
+  .o-foot-bot div{ display:flex; justify-content:space-between; gap:20px; padding:26px 0;
+        font-family:var(--sans); font-weight:300; font-size:13.5px; color:var(--o-muted); flex-wrap:wrap; }
+
+  /* ---- reveal (slow, gentle float-up) ---- */
+  .o-reveal{ opacity:0; transform:translateY(30px); filter:blur(4px);
+        transition:opacity 1.1s cubic-bezier(.23,1,.32,1), transform 1.1s cubic-bezier(.23,1,.32,1),
+        filter 1.1s ease; }
+  .o-reveal.in{ opacity:1; transform:none; filter:blur(0); }
+  .o-reveal.d1{ transition-delay:.12s; } .o-reveal.d2{ transition-delay:.24s; }
+  .o-reveal.d3{ transition-delay:.36s; } .o-reveal.d4{ transition-delay:.48s; }
+  .o-rule{ transition:transform 1s cubic-bezier(.23,1,.32,1) .2s; transform:scaleX(0); }
+  .o-reveal.in .o-rule, .o-life.in .o-rule{ transform:scaleX(1); }
+
+  @media (max-width:960px){
+    .o-links{ display:none; } .o-burger{ display:block; }
+    .o-nav-cta .btn{ display:none; }
+    .o-listings{ grid-template-columns:1fr 1fr; }
+    .o-amen-grid{ grid-template-columns:1fr 1fr; }
+    .o-amen.feature{ grid-column:1 / -1; grid-row:auto; min-height:360px; }
+    .o-amen.wide{ grid-column:1 / -1; }
+    .o-comm-grid{ grid-template-columns:1fr 1fr; }
+    .o-life-grid{ grid-template-columns:1fr; max-width:none; gap:0; }
+    .o-life-grid .it{ padding:20px 0; }
+    .o-stay-in{ grid-template-columns:1fr; } .o-stay .media{ min-height:300px; order:-1; }
+    .o-foot-top{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:560px){
+    .o-listings{ grid-template-columns:1fr; }
+    .o-amen-grid{ grid-template-columns:1fr; }
+    .o-amen.wide{ flex-direction:column; align-items:flex-start; }
+    .o-comm-grid{ grid-template-columns:1fr; }
+    .o-foot-top{ grid-template-columns:1fr; }
+    .o-cap input{ min-width:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .o-reveal,.o-rule{ opacity:1 !important; transform:none !important; filter:none !important; transition:none !important; }
+    .o-rise{ opacity:1 !important; transform:none !important; animation:none !important; }
+    .o-hero .photo img,.o-life .photo img{ animation:none !important; transform:none !important; }
+    .o-prop:hover,.o-amen:hover,.o-stay-in:hover .media img{ transform:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="o-wrap">
+
+  <!-- Nav -->
+  <header class="o-nav" data-screen-label="Home O — Nav">
+    <div class="o-container o-nav-in">
+      <a class="o-brand" href="#">
+        <span class="o-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13.5 12 5l9 8.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 11.5V19h13v-7.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <b>MVP Realty</b>
+      </a>
+      <nav class="o-links">
+        <a href="#listings">Residences</a>
+        <a href="#amenities">Amenities</a>
+        <a href="#communities">Communities</a>
+        <a href="#lifestyle">Lifestyle</a>
+        <a href="#stay">Stay &amp; Tour</a>
+      </nav>
+      <div class="o-nav-cta">
+        <a href="#capture" class="btn btn--primary">Plan a Visit</a>
+        <button class="o-burger" aria-label="Menu"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="o-hero" data-screen-label="Home O — Hero">
+    <div class="photo photo--deep"><img src="../assets/photos/hero-naples-waterfront.jpg" alt="Calm Gulf-Coast waterfront at golden hour in Naples, Florida" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505881502353-a1986add3762?auto=format&fit=crop&w=2000&q=72'"></div>
+    <div class="o-hero-veil"></div>
+    <div class="o-container o-hero-in">
+      <span class="label o-rise r1"><i></i>Now Welcoming · Seaside Cove, Naples</span>
+      <h1 class="o-rise r2">Take a deep breath. <em>You're home</em> by the water.</h1>
+      <p class="o-rise r3">Unhurried, resort-calm living in luxury gated communities, all just minutes from the Gulf. Slow mornings, warm friends, and the sea always nearby.</p>
+      <div class="o-hero-actions o-rise r4">
+        <a href="#listings" class="btn btn--calm">Explore Residences</a>
+        <a href="#stay" class="btn btn--light">Stay a Weekend</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured listings -->
+  <section class="o-sec" id="listings" data-screen-label="Home O — Featured Listings">
+    <div class="o-container">
+      <div class="o-list-head o-reveal">
+        <div class="o-head">
+          <div class="o-kicker">Featured Residences</div>
+          <h2 class="o-h">Homes made for easy days.</h2>
+        </div>
+        <a href="#" class="o-more">View all residences <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+
+      <div class="o-listings">
+        <a class="o-prop o-reveal d1" href="#">
+          <div class="ph"><div class="photo photo--deep"><img src="../assets/photos/home-exterior.jpg" alt="Seaside Cove single-story home framed by palms" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1100&q=72'"></div><span class="tag">Now Selling</span></div>
+          <div class="b">
+            <h3>Seaside Cove</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.4-7-11a7 7 0 0 1 14 0c0 5.6-7 11-7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>Naples, FL</div>
+            <div class="price">From $1,395,000</div>
+            <div class="stats">
+              <div class="st"><b>3</b><span>Beds</span></div>
+              <div class="st"><b>3</b><span>Baths</span></div>
+              <div class="st"><b>2,640</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <a class="o-prop o-reveal d2" href="#">
+          <div class="ph"><div class="photo"><img src="../assets/photos/home-rendering.jpg" alt="Mangrove Bay lakeside home with covered lanai" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1100&q=72'"></div><span class="tag">55+ Living</span></div>
+          <div class="b">
+            <h3>Mangrove Bay</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.4-7-11a7 7 0 0 1 14 0c0 5.6-7 11-7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>Bonita Springs, FL</div>
+            <div class="price">From $742,000</div>
+            <div class="stats">
+              <div class="st"><b>2</b><span>Beds</span></div>
+              <div class="st"><b>2</b><span>Baths</span></div>
+              <div class="st"><b>1,980</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <a class="o-prop o-reveal d3" href="#">
+          <div class="ph"><div class="photo photo--sand"><img src="../assets/photos/kitchen-model.jpg" alt="Coral Lagoon decorated model kitchen, bright and airy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=1100&q=72'"></div><span class="tag">New Model Open</span></div>
+          <div class="b">
+            <h3>Coral Lagoon</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.4-7-11a7 7 0 0 1 14 0c0 5.6-7 11-7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>Estero, FL</div>
+            <div class="price">From $868,000</div>
+            <div class="stats">
+              <div class="st"><b>3</b><span>Beds</span></div>
+              <div class="st"><b>2.5</b><span>Baths</span></div>
+              <div class="st"><b>2,310</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Amenities -->
+  <section class="o-sec mist" id="amenities" data-screen-label="Home O — Amenities">
+    <div class="o-container">
+      <div class="o-head o-reveal">
+        <div class="o-kicker">Wellness &amp; Leisure</div>
+        <h2 class="o-h">Days that begin slowly and end by the water.</h2>
+        <p class="o-lede">Resort amenities built for an active, restful retirement. Move when you want, rest when you need, and never run out of gentle ways to fill an afternoon.</p>
+      </div>
+
+      <div class="o-amen-grid">
+        <div class="o-amen feature o-reveal">
+          <div class="photo photo--deep"><img src="../assets/photos/lanai-pool.jpg" alt="Resort pool and screened lanai glowing at sunset" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=72'"></div>
+          <div class="veil"></div>
+          <div class="inner">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 18c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0 3-1.2 4.5 0 3 1.2 4.5 0"/><path d="M3 13c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0 3-1.2 4.5 0 3 1.2 4.5 0"/><path d="M8 8.5V6a2 2 0 0 1 4 0v9"/></svg></span>
+            <h3>The resort pool</h3>
+            <p>A zero-edge pool, sun-warmed loungers, and a poolside cafe. The kind of afternoon that asks nothing of you.</p>
+          </div>
+        </div>
+
+        <div class="o-amen o-reveal d1">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/><path d="M3 3l3.5 3.5M21 3l-3.5 3.5M3 21l3.5-3.5M21 21l-3.5-3.5"/></svg></span>
+          <h3>Pickleball &amp; tennis</h3>
+          <p>Friendly courts and easy-going leagues. Show up, get matched, leave with a new standing date.</p>
+        </div>
+
+        <div class="o-amen o-reveal d2">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c-4.5-2.5-7-6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4-2.5 7.5-7 10Z"/></svg></span>
+          <h3>Spa &amp; wellness</h3>
+          <p>A quiet spa, gentle yoga on the lawn, and a wellness studio for slow, steady mornings.</p>
+        </div>
+
+        <div class="o-amen wide o-reveal d1">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21V8l8-5 8 5v13"/><path d="M4 13h16M9 21v-5h6v5"/></svg></span>
+          <div class="txt">
+            <h3>The clubhouse &amp; dining</h3>
+            <p>A grand social hub at the heart of it all, with chef-led dining, a wine bar, live music, and a calendar that gives every week a little shape.</p>
+          </div>
+        </div>
+
+        <div class="o-amen o-reveal d2">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 20s3-6 9-6 9 6 9 6"/><path d="M7 13c2-3 8-3 10 0"/><path d="M9 8c1.5-2 4.5-2 6 0"/></svg></span>
+          <h3>Walking &amp; nature trails</h3>
+          <p>Shaded paths along the water for slow sunset walks and easy morning miles.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Communities -->
+  <section class="o-sec" id="communities" data-screen-label="Home O — Communities">
+    <div class="o-container">
+      <div class="o-head o-reveal">
+        <div class="o-kicker">Florida's Gulf Coast</div>
+        <h2 class="o-h">Nine communities, all minutes from the beach.</h2>
+        <p class="o-lede">Every address sits within a short, easy drive of white-sand Gulf beaches, marinas, and waterfront dining. Find the one that feels like a deep breath.</p>
+      </div>
+
+      <div class="o-comm-grid o-reveal d1">
+        <div class="o-comm"><span class="name">Seaside Cove</span><span class="loc">Naples</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>8 min to beach</span></div>
+        <div class="o-comm"><span class="name">Mangrove Bay</span><span class="loc">Bonita Springs</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>12 min to beach</span></div>
+        <div class="o-comm"><span class="name">Coral Lagoon</span><span class="loc">Estero</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>15 min to beach</span></div>
+        <div class="o-comm"><span class="name">Heron Pointe</span><span class="loc">Fort Myers</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>14 min to beach</span></div>
+        <div class="o-comm"><span class="name">Palmetto Shores</span><span class="loc">Marco Island</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>6 min to beach</span></div>
+        <div class="o-comm"><span class="name">Tidewater Grove</span><span class="loc">Cape Coral</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>18 min to beach</span></div>
+        <div class="o-comm"><span class="name">Egret Landing</span><span class="loc">Punta Gorda</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>16 min to beach</span></div>
+        <div class="o-comm"><span class="name">Sandpiper Key</span><span class="loc">Sanibel Gateway</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>10 min to beach</span></div>
+        <div class="o-comm"><span class="name">Driftwood Cay</span><span class="loc">Venice</span><span class="beach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 3 1 4.5 0"/><path d="M12 13V3M12 13a5 5 0 0 1 5-5M12 13a5 5 0 0 0-5-5"/></svg>9 min to beach</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lifestyle / social band -->
+  <section class="o-life" id="lifestyle" data-screen-label="Home O — Lifestyle">
+    <div class="photo photo--deep"><img src="../assets/photos/clubhouse-aerial.jpg" alt="Aerial view of the resort clubhouse, pools, and courts at calm dusk" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=2000&q=72'"></div>
+    <div class="o-life-veil"></div>
+    <div class="o-container o-life-in">
+      <div class="o-rule"></div>
+      <div class="o-kicker" style="margin-top:22px;">The Quiet Reason</div>
+      <h2>You choose the home. <em>You stay</em> for the people.</h2>
+      <p>For our residents, the real draw is the life inside the gates. The neighbors who become friends, the standing plans, the comfort of knowing there is always someone to share the evening with.</p>
+      <div class="o-life-grid">
+        <div class="it"><b>A gentle social calendar</b><span>Wine nights, live music, and easy gatherings, as full or as quiet as you like.</span></div>
+        <div class="it"><b>Neighbors who stay</b><span>Small streets and shared porches that turn a community into a circle of friends.</span></div>
+        <div class="it"><b>Unhurried by design</b><span>Nothing here rushes. The pace is yours, and the sunset waits for everyone.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stay & Tour -->
+  <section data-screen-label="Home O — Stay & Tour" id="stay">
+    <div class="o-stay">
+      <div class="o-stay-in o-reveal">
+        <div class="copy">
+          <div class="o-kicker">Try Before You Buy</div>
+          <h2 class="o-h">Stay a weekend. Feel it for yourself.</h2>
+          <div class="price">3 Days / 2 Nights from $99</div>
+          <p>Settle into a model home, play the courts, meet the neighbors, and catch sunset from the lanai. The surest way to know a place is home is to live a little of it first.</p>
+          <a href="#capture" class="btn btn--primary">Book Your Stay</a>
+        </div>
+        <div class="media"><div class="photo photo--deep"><img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1400&q=72" alt="Couple relaxing on a calm resort getaway by the water" referrerpolicy="no-referrer" onerror="this.remove()"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lead capture -->
+  <section class="o-sec mist" id="capture" data-screen-label="Home O — Lead Capture">
+    <div class="o-container o-cap o-reveal">
+      <div class="o-kicker">Stay in the Loop</div>
+      <h2 class="o-h">First looks, pricing, and quiet new releases.</h2>
+      <p class="o-lede">Join our list for early invitations, model openings, and gentle updates from the Gulf Coast. No noise, no pressure.</p>
+      <form onsubmit="return false">
+        <input type="email" placeholder="Your email address" aria-label="Email address">
+        <button type="submit" class="btn btn--calm">Keep Me Posted</button>
+      </form>
+      <p class="fine">First looks at coming-soon communities and incentives. We never sell your information.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="o-foot" data-screen-label="Home O — Footer">
+    <div class="o-container">
+      <div class="o-foot-top">
+        <div class="o-foot-brand">
+          <b>MVP Realty</b>
+          <p>Florida's Gulf-Coast specialists, matching buyers with calm, luxury gated communities and beachfront residences minutes from the sand.</p>
+        </div>
+        <div><h4>Residences</h4><ul><li><a href="#">Seaside Cove</a></li><li><a href="#">Mangrove Bay</a></li><li><a href="#">Coral Lagoon</a></li><li><a href="#">Beachfront Homes</a></li></ul></div>
+        <div><h4>Explore</h4><ul><li><a href="#">Amenities</a></li><li><a href="#">Communities</a></li><li><a href="#">Lifestyle</a></li><li><a href="#">Stay &amp; Tour</a></li></ul></div>
+        <div><h4>Visit</h4><ul><li><a href="#">Plan a Tour</a></li><li><a href="#">Request a Brochure</a></li><li><a href="#">Contact a Guide</a></li><li><a href="#">About MVP</a></li></ul></div>
+      </div>
+      <div class="o-foot-bot"><div><span>© 2026 MVP Realty. All rights reserved.</span><span>Equal Housing Opportunity · Privacy · Terms</span></div></div>
+    </div>
+  </footer>
+
+</div>
+<noscript><style>.o-reveal,.o-rise,.o-rule{opacity:1!important;transform:none!important;filter:none!important;}</style></noscript>
+<script>
+  (function(){
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // hero soft float-up
+    var hero = document.querySelector('.o-hero');
+    if (hero) requestAnimationFrame(function(){ hero.classList.add('ready'); });
+
+    // sticky nav hairline on scroll
+    var nav = document.querySelector('.o-nav');
+    if (nav){
+      var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 8); };
+      document.addEventListener('scroll', onScroll, { passive:true }); onScroll();
+    }
+
+    // gentle reveal on scroll
+    var reveals = document.querySelectorAll('.o-reveal, .o-life');
+    if(!('IntersectionObserver' in window) || reduce){
+      reveals.forEach(function(r){ r.classList.add('in'); });
+    } else {
+      var ro = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }); }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(r){ ro.observe(r); });
+      setTimeout(function(){ reveals.forEach(function(r){ r.classList.add('in'); }); }, 2800);
+    }
+
+    // count-up (kept for any [data-count] elements; harmless if none)
+    function runCount(el){
+      var t = parseFloat(el.dataset.count), suf = el.dataset.suffix||'';
+      if (reduce){ el.textContent = t + suf; return; }
+      var dur = 1600, s = performance.now();
+      (function tick(now){
+        var p = Math.min(1,(now-s)/dur), e = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(t*e) + suf;
+        if (p<1) requestAnimationFrame(tick);
+      })(s);
+    }
+    var counters = document.querySelectorAll('[data-count]');
+    if(!('IntersectionObserver' in window)){ counters.forEach(runCount); }
+    else {
+      var co = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ runCount(e.target); co.unobserve(e.target); } }); }, { threshold:0.6 });
+      counters.forEach(function(c){ co.observe(c); });
+      setTimeout(function(){ counters.forEach(function(c){ if(c.textContent==='0') runCount(c); }); }, 3000);
+    }
+  })();
+</script>
+
+<!-- Tweaks panel -->
+<div id="tweaks-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useEffect } = React;
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{ "accent":"Seafoam", "corners":"Very Soft", "airiness":"Spacious" }/*EDITMODE-END*/;
+const ACCENTS = {
+  "Seafoam":  { accent:"#5FD3D0", deep:"#2a9c99" },
+  "Sea Glass":{ accent:"#9ed9cf", deep:"#3f9489" },
+  "Sky":      { accent:"#9ec9e6", deep:"#3f7aa6" },
+  "Blush Sky":{ accent:"#d9c2e0", deep:"#8a5fa6" }
+};
+const CORNERS = { "Soft":"22px", "Very Soft":"36px", "Pillowy":"48px" };
+const AIRINESS = { "Cozy":"0.8", "Spacious":"1", "Open":"1.25" };
+function applyTweaks(t){
+  const el = document.querySelector('.o-wrap'); if(!el) return;
+  const a = ACCENTS[t.accent] || ACCENTS["Seafoam"];
+  const r = CORNERS[t.corners] || CORNERS["Very Soft"];
+  const air = AIRINESS[t.airiness] || AIRINESS["Spacious"];
+  const S=(k,v)=>el.style.setProperty(k,v);
+  S('--o-accent', a.accent);
+  S('--o-accent-deep', a.deep);
+  S('--o-radius', r);
+  S('--o-air', air);
+}
+function App(){
+  const [t,setTweak] = useTweaks(TWEAK_DEFAULTS);
+  useEffect(()=>{ applyTweaks(t); }, [t.accent, t.corners, t.airiness]);
+  return (<TweaksPanel title="Serene Retreat">
+    <TweakSection label="Accent" />
+    <TweakColor label="Tone" value={ACCENTS[t.accent] ? ACCENTS[t.accent].accent : "#5FD3D0"}
+      options={["#5FD3D0","#9ed9cf","#9ec9e6","#d9c2e0"]}
+      onChange={(hex)=>{
+        const name = Object.keys(ACCENTS).find(k=>ACCENTS[k].accent===hex) || "Seafoam";
+        setTweak('accent', name);
+      }} />
+    <TweakSection label="Form" />
+    <TweakRadio label="Corners" value={t.corners} options={["Soft","Very Soft","Pillowy"]} onChange={(v)=>setTweak('corners',v)} />
+    <TweakRadio label="Airiness" value={t.airiness} options={["Cozy","Spacious","Open"]} onChange={(v)=>setTweak('airiness',v)} />
+  </TweaksPanel>);
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App />);
+</script>
+</body>
+</html>

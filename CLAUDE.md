@@ -42,8 +42,8 @@ All from repo root. Scripts live in `package.json`; this list is just the entry 
 
 ## Project structure
 
-- `apps/web/` — customer Next.js app (App Router, Turbopack), port 3000. See `apps/web/CLAUDE.md`.
-- `apps/backend/` — Payload v3 admin + API (Postgres adapter), port 3001. See `apps/backend/CLAUDE.md`.
+- `apps/web/` — customer Next.js app (App Router, Turbopack). Dev port auto-picks: starts at **3003** (`cross-env PORT=3003`) and increments if busy — kept above the backend's fixed 3002 so parallel `pnpm dev` can't grab the backend's port. See `apps/web/CLAUDE.md`.
+- `apps/backend/` — Payload v3 admin + API (Postgres adapter), fixed port **3002** (referenced by URL via `NEXT_PUBLIC_BACKEND_URL` / `PAYLOAD_PUBLIC_SERVER_URL`, so it stays deterministic). See `apps/backend/CLAUDE.md`.
 - `packages/*` — shared TS libraries (source-only, no build step): `api-contracts`, `ui`. Apps consume them as source via Next's `transpilePackages` — no compile step between change and reload.
 - `tooling/*` — shared configs as workspace packages: `typescript-config`, `eslint-config`, `prettier-config`, `tailwind-config`, `vitest-config`. Edit these to change rules globally.
 - `docs/` — project docs (PRDs, decisions). Empty in the template; add your own.

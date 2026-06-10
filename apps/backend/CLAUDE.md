@@ -1,6 +1,6 @@
 # `@mvp-realty/backend` — Claude Code instructions
 
-Payload v3 admin + REST/GraphQL API mounted inside Next.js 16. Postgres adapter. Port 3001. Admin UI at `/admin`, REST at `/api/<slug>`, GraphQL at `/api/graphql`.
+Payload v3 admin + REST/GraphQL API mounted inside Next.js 16. Postgres adapter. Port 3002. Admin UI at `/admin`, REST at `/api/<slug>`, GraphQL at `/api/graphql`.
 
 Root rules in `/CLAUDE.md` apply. This file carries Payload + backend specifics.
 

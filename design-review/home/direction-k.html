@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MVP Realty — Coastal Botanical (K)</title>
+<link rel="stylesheet" href="../assets/tokens.css">
+<style>
+  /* ===========================================================
+     DIRECTION K — "Coastal Botanical"
+     Nature-led 55+ retirement: closer to the water, closer to
+     the garden. Lora serif headers + Manrope body. Organic
+     medium radii (~18px), sage + seafoam + warm sand, soft
+     leaf/wave motifs. Motion drifts in like a tide.
+     All custom classes prefixed `k-`. VARIANCE 7 / MOTION 5 / DENSITY 3.
+     ========================================================== */
+
+  .k-wrap{
+    /* organic medium radius language */
+    --k-r:18px;
+    --k-r-sm:13px;
+    --k-r-lg:26px;
+    --k-r-pill:999px;
+
+    /* natural palette layered on tokens */
+    --k-sage:#7c9a82;          /* muted natural green   */
+    --k-sage-deep:#4f6b58;     /* deep forest sage      */
+    --k-sage-soft:#e7efe7;     /* pale leaf wash        */
+    --k-seafoam:#3cb6b3;       /* the calm aqua accent  */
+    --k-seafoam-deep:#2a8c8a;
+    --k-ocean:#1D4E89;
+    --k-ocean-deep:#11355c;
+    --k-sand:#f4ede2;          /* warm sand             */
+    --k-sand-deep:#e7dac6;
+    --k-paper:#fbfaf6;         /* warm off-white, not sterile */
+    --k-paper-2:#f3f1e9;
+
+    /* accent is the single tweakable lever */
+    --k-accent:#4f6b58;
+    --k-accent-2:#2a8c8a;
+
+    --k-ink:#24332b;           /* warm earthy near-black */
+    --k-ink-soft:#46564c;
+    --k-muted:#6c7a70;
+    --k-line:#e3e6dd;
+    --k-line-2:#d4d9cc;
+
+    --k-sh-sm:0 10px 28px -18px rgba(36,51,43,.30);
+    --k-sh:0 26px 60px -30px rgba(36,51,43,.34);
+    --k-ease:cubic-bezier(.22,1,.36,1);
+    --k-tide:cubic-bezier(.32,.72,0,1);
+
+    color:var(--k-ink);
+    background:var(--k-paper);
+    overflow-x:clip;
+    font-family:var(--sans);
+  }
+
+  .k-container{ max-width:1240px; margin:0 auto; padding-inline:clamp(20px,5vw,72px); }
+  .k-wrap a:focus-visible,.k-wrap button:focus-visible,.k-wrap input:focus-visible{
+    outline:2.5px solid var(--k-accent-2); outline-offset:3px; border-radius:6px;
+  }
+
+  /* ---------- type system ---------- */
+  .k-wrap h1,.k-wrap h2,.k-wrap h3{ font-family:var(--serif-lora); font-weight:600; color:var(--k-ink); margin:0; line-height:1.08; letter-spacing:-.01em; }
+  .k-kicker{ display:inline-flex; align-items:center; gap:9px; font-family:var(--sans); font-weight:700; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--k-accent); }
+  .k-kicker svg{ width:17px; height:17px; }
+  .k-lede{ color:var(--k-ink-soft); font-size:clamp(17px,1.35vw,20px); line-height:1.7; max-width:54ch; }
+  .k-rule{ width:60px; height:3px; border-radius:3px; background:linear-gradient(90deg,var(--k-accent),var(--k-accent-2)); transform-origin:left; }
+
+  /* ---------- buttons (organic pill, tactile) ---------- */
+  .k-wrap .btn{ border-radius:var(--k-r-pill); font-weight:700; letter-spacing:.01em; text-transform:none; font-size:16px; padding:17px 32px; box-shadow:none;
+    transition:transform .16s var(--k-ease), background .3s var(--k-ease), color .3s var(--k-ease), box-shadow .3s var(--k-ease); }
+  .k-wrap .btn svg{ width:18px; height:18px; transition:transform .3s var(--k-ease); }
+  .k-wrap .btn--primary{ background:var(--k-accent); color:#fff; box-shadow:var(--k-sh-sm); }
+  .k-wrap .btn--primary:hover{ background:var(--k-sage-deep); transform:translateY(-2px); box-shadow:var(--k-sh); }
+  .k-wrap .btn--primary:hover svg{ transform:translateX(4px); }
+  .k-wrap .btn--primary:active{ transform:translateY(0) scale(.985); }
+  .k-wrap .btn--aqua{ background:var(--k-accent-2); color:#fff; box-shadow:var(--k-sh-sm); }
+  .k-wrap .btn--aqua:hover{ background:var(--k-seafoam-deep); transform:translateY(-2px); box-shadow:var(--k-sh); }
+  .k-wrap .btn--aqua:active{ transform:translateY(0) scale(.985); }
+  .k-wrap .btn--outline{ background:transparent; color:var(--k-accent); box-shadow:inset 0 0 0 1.6px var(--k-line-2); }
+  .k-wrap .btn--outline:hover{ box-shadow:inset 0 0 0 1.6px var(--k-accent); transform:translateY(-2px); }
+  .k-wrap .btn--outline:active{ transform:translateY(0) scale(.985); }
+  .k-wrap .btn--light{ background:rgba(255,255,255,.14); color:#fff; box-shadow:inset 0 0 0 1.6px rgba(255,255,255,.6); backdrop-filter:blur(8px); }
+  .k-wrap .btn--light:hover{ background:rgba(255,255,255,.24); transform:translateY(-2px); }
+  .k-wrap .btn--light:active{ transform:translateY(0) scale(.985); }
+
+  /* ---------- nav ---------- */
+  .k-nav{ position:sticky; top:0; z-index:60; background:rgba(251,250,246,.82); backdrop-filter:blur(16px) saturate(150%); border-bottom:1px solid var(--k-line); transition:box-shadow .35s var(--k-ease); }
+  .k-nav.scrolled{ box-shadow:0 1px 0 var(--k-line), 0 16px 34px -28px rgba(36,51,43,.4); }
+  .k-nav-in{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding:14px 0; }
+  .k-brand{ display:flex; align-items:center; gap:12px; }
+  .k-mark{ width:42px; height:42px; border-radius:13px; background:var(--k-accent); display:grid; place-items:center; box-shadow:var(--k-sh-sm); }
+  .k-mark svg{ width:24px; height:24px; }
+  .k-brand b{ font-family:var(--serif-lora); font-weight:600; font-size:21px; letter-spacing:.01em; color:var(--k-ink); }
+  .k-links{ display:flex; align-items:center; gap:30px; }
+  .k-links a{ font-weight:600; font-size:15px; color:var(--k-ink-soft); position:relative; padding:4px 0; transition:color .25s; }
+  .k-links a::after{ content:''; position:absolute; left:0; right:100%; bottom:-2px; height:2px; border-radius:2px; background:var(--k-accent-2); transition:right .35s var(--k-ease); }
+  .k-links a:hover{ color:var(--k-ink); } .k-links a:hover::after{ right:0; }
+  .k-nav-cta{ display:flex; align-items:center; gap:14px; }
+  .k-nav-cta .btn{ padding:13px 24px; font-size:15px; }
+  .k-burger{ display:none; background:none; border:none; color:var(--k-accent); }
+
+  /* ---------- hero ---------- */
+  .k-hero{ position:relative; min-height:clamp(600px,86vh,860px); display:flex; align-items:flex-end; color:#fff; overflow:hidden; }
+  .k-hero .photo{ position:absolute; inset:0; z-index:0; } .k-hero .photo::after{ content:none; }
+  .k-hero .photo img{ animation:k-zoom 18s var(--k-tide) forwards; }
+  @keyframes k-zoom{ from{ transform:scale(1.12); } to{ transform:scale(1); } }
+  .k-hero-veil{ position:absolute; inset:0; z-index:1; background:
+      linear-gradient(180deg, rgba(20,38,28,.42) 0%, rgba(20,38,28,.06) 32%, rgba(20,38,28,.30) 58%, rgba(13,30,22,.86) 100%); }
+  /* organic leaf wash bottom-left */
+  .k-hero-leaf{ position:absolute; left:-4%; bottom:-6%; z-index:1; width:min(46vw,560px); color:var(--k-seafoam); opacity:.16; pointer-events:none; }
+  .k-hero-in{ position:relative; z-index:2; width:100%; padding-bottom:clamp(56px,6vw,96px); }
+  .k-hero .label{ display:inline-flex; align-items:center; gap:10px; font-weight:700; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:#fff; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.4); backdrop-filter:blur(8px); padding:9px 16px; border-radius:var(--k-r-pill); margin-bottom:26px; }
+  .k-hero .label svg{ width:16px; height:16px; }
+  .k-hero h1{ font-size:clamp(40px,6.4vw,82px); line-height:1.02; margin:0; max-width:16ch; text-shadow:0 2px 36px rgba(13,30,22,.4); }
+  .k-hero h1 em{ font-style:italic; color:var(--k-seafoam); }
+  .k-hero p{ font-size:clamp(17px,1.4vw,21px); font-weight:500; color:rgba(255,255,255,.94); max-width:46ch; margin:24px 0 34px; line-height:1.6; text-shadow:0 1px 14px rgba(13,30,22,.5); }
+  .k-hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  /* hero load rise */
+  .k-rise{ opacity:0; transform:translateY(24px); }
+  .k-hero.ready .k-rise{ animation:k-riseIn 1.05s var(--k-ease) forwards; }
+  .k-hero.ready .k-rise.r1{ animation-delay:.12s; } .k-hero.ready .k-rise.r2{ animation-delay:.26s; }
+  .k-hero.ready .k-rise.r3{ animation-delay:.40s; } .k-hero.ready .k-rise.r4{ animation-delay:.54s; }
+  @keyframes k-riseIn{ to{ opacity:1; transform:none; } }
+
+  /* ---------- section scaffold ---------- */
+  .k-sec{ padding:clamp(76px,9vw,140px) 0; }
+  .k-sec.sand{ background:var(--k-sand); }
+  .k-sec.paper2{ background:var(--k-paper-2); }
+  .k-head{ max-width:62ch; }
+  .k-head h2{ font-size:clamp(32px,4.4vw,56px); margin:18px 0 0; }
+  .k-head .k-lede{ margin:22px 0 0; }
+  .k-head-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:28px; flex-wrap:wrap; }
+  .k-more{ font-weight:700; font-size:15px; color:var(--k-accent); display:inline-flex; align-items:center; gap:10px; white-space:nowrap; padding-bottom:4px; border-bottom:2px solid transparent; transition:border-color .25s; }
+  .k-more svg{ width:18px; height:18px; transition:transform .28s var(--k-ease); }
+  .k-more:hover{ border-color:var(--k-accent-2); } .k-more:hover svg{ transform:translateX(5px); }
+
+  /* organic divider wave between sections */
+  .k-wave-divide{ display:block; width:100%; height:54px; color:var(--k-sand); }
+  .k-wave-divide.to-paper2{ color:var(--k-paper-2); }
+
+  /* ---------- featured listings (homepage) ---------- */
+  .k-listings{ display:grid; grid-template-columns:repeat(3,1fr); gap:30px; margin-top:54px; }
+  .k-listing{ display:flex; flex-direction:column; background:#fff; border:1px solid var(--k-line); border-radius:var(--k-r-lg); overflow:hidden; box-shadow:var(--k-sh-sm); transition:transform .4s var(--k-ease), box-shadow .4s var(--k-ease); }
+  .k-listing:hover{ transform:translateY(-6px); box-shadow:var(--k-sh); }
+  .k-listing .ph{ position:relative; aspect-ratio:16/11; overflow:hidden; }
+  .k-listing .ph .photo{ position:absolute; inset:0; } .k-listing .ph .photo::after{ content:none; }
+  .k-listing .ph img{ transition:transform 1s var(--k-ease); } .k-listing:hover .ph img{ transform:scale(1.07); }
+  .k-listing .tag{ position:absolute; top:14px; left:14px; z-index:2; background:rgba(251,250,246,.94); color:var(--k-accent); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:8px 14px; border-radius:var(--k-r-pill); backdrop-filter:blur(6px); }
+  .k-listing .b{ padding:24px 24px 26px; display:flex; flex-direction:column; flex:1; }
+  .k-listing h3{ font-size:24px; }
+  .k-listing .city{ display:flex; align-items:center; gap:7px; font-size:15px; color:var(--k-muted); font-weight:600; margin-top:8px; }
+  .k-listing .city svg{ width:16px; height:16px; color:var(--k-accent-2); }
+  .k-listing .price{ font-family:var(--serif-lora); font-weight:600; font-size:23px; color:var(--k-accent); margin-top:16px; }
+  .k-listing .stats{ display:flex; gap:0; margin-top:18px; padding-top:18px; border-top:1px solid var(--k-line); }
+  .k-listing .stats .st{ flex:1; text-align:center; border-right:1px solid var(--k-line); }
+  .k-listing .stats .st:last-child{ border-right:none; }
+  .k-listing .stats .st b{ display:block; font-family:var(--sans); font-weight:800; font-size:18px; color:var(--k-ink); }
+  .k-listing .stats .st span{ display:block; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--k-muted); margin-top:4px; }
+  .k-listing .view{ margin-top:22px; display:inline-flex; align-items:center; gap:9px; font-weight:700; font-size:15px; color:var(--k-accent-2); }
+  .k-listing .view svg{ width:17px; height:17px; transition:transform .28s var(--k-ease); }
+  .k-listing:hover .view svg{ transform:translateX(4px); }
+
+  /* ---------- amenities (nature + wellness) ---------- */
+  .k-amen{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:1fr; gap:20px; margin-top:54px; }
+  .k-am{ position:relative; border-radius:var(--k-r-lg); padding:30px 28px; background:#fff; border:1px solid var(--k-line); overflow:hidden; transition:transform .4s var(--k-ease), box-shadow .4s var(--k-ease), border-color .4s var(--k-ease); }
+  .k-am:hover{ transform:translateY(-5px); box-shadow:var(--k-sh); border-color:var(--k-sage); }
+  .k-am .ico{ width:54px; height:54px; border-radius:16px; display:grid; place-items:center; background:var(--k-sage-soft); color:var(--k-sage-deep); margin-bottom:18px; transition:background .35s var(--k-ease), color .35s var(--k-ease); }
+  .k-am:hover .ico{ background:var(--k-accent); color:#fff; }
+  .k-am .ico svg{ width:28px; height:28px; }
+  .k-am h3{ font-size:21px; }
+  .k-am p{ color:var(--k-ink-soft); font-size:15px; line-height:1.6; margin:9px 0 0; }
+  /* feature tiles span — nature + resort imagery */
+  .k-am.k-am-wide{ grid-column:span 2; grid-row:span 2; padding:0; border:none; color:#fff; min-height:300px; }
+  .k-am.k-am-wide .photo{ position:absolute; inset:0; z-index:0; } .k-am.k-am-wide .photo::after{ content:none; }
+  .k-am.k-am-wide img{ transition:transform 1.1s var(--k-ease); } .k-am.k-am-wide:hover img{ transform:scale(1.06); }
+  .k-am-wide-veil{ position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,rgba(20,38,28,.05) 0%,rgba(20,38,28,.18) 40%,rgba(13,30,22,.86) 100%); }
+  .k-am-wide-in{ position:relative; z-index:2; height:100%; display:flex; flex-direction:column; justify-content:flex-end; padding:32px; }
+  .k-am-wide-in .ico{ background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.32); }
+  .k-am-wide:hover .ico{ background:rgba(255,255,255,.28); color:#fff; }
+  .k-am-wide-in h3{ color:#fff; font-size:27px; }
+  .k-am-wide-in p{ color:rgba(255,255,255,.9); max-width:34ch; }
+
+  /* ---------- communities (nine, minutes-to-beach) ---------- */
+  .k-comm-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:50px; }
+  .k-comm{ display:flex; align-items:center; gap:16px; background:#fff; border:1px solid var(--k-line); border-radius:var(--k-r); padding:18px 20px; transition:transform .35s var(--k-ease), box-shadow .35s var(--k-ease), border-color .35s var(--k-ease); }
+  .k-comm:hover{ transform:translateY(-3px); box-shadow:var(--k-sh-sm); border-color:var(--k-sage); }
+  .k-comm .leaf{ width:46px; height:46px; flex:none; border-radius:14px; background:var(--k-sage-soft); color:var(--k-sage-deep); display:grid; place-items:center; }
+  .k-comm .leaf svg{ width:24px; height:24px; }
+  .k-comm h3{ font-size:19px; }
+  .k-comm span{ display:flex; align-items:center; gap:6px; font-size:14px; color:var(--k-muted); font-weight:600; margin-top:3px; }
+  .k-comm span svg{ width:14px; height:14px; color:var(--k-accent-2); }
+
+  /* ---------- lifestyle / social band ---------- */
+  .k-life{ position:relative; min-height:600px; display:flex; align-items:center; color:#fff; overflow:hidden; }
+  .k-life .photo{ position:absolute; inset:0; z-index:0; } .k-life .photo::after{ content:none; }
+  .k-life .photo img{ transform:scale(1.08); transition:transform 14s var(--k-tide); }
+  .k-life.in .photo img{ transform:scale(1); }
+  .k-life-veil{ position:absolute; inset:0; z-index:1; background:linear-gradient(95deg, rgba(13,30,22,.9) 0%, rgba(13,30,22,.6) 48%, rgba(13,30,22,.14) 100%); }
+  .k-life-in{ position:relative; z-index:2; max-width:60ch; padding:clamp(60px,7vw,104px) 0; }
+  .k-life .k-kicker{ color:var(--k-seafoam); }
+  .k-life h2{ color:#fff; font-size:clamp(32px,4.8vw,60px); line-height:1.04; margin:20px 0 0; max-width:17ch; }
+  .k-life h2 em{ font-style:italic; color:var(--k-seafoam); }
+  .k-life p{ color:rgba(255,255,255,.92); font-size:18px; line-height:1.68; max-width:46ch; margin:24px 0 0; }
+  .k-social{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; margin-top:44px; max-width:680px; border-top:1px solid rgba(255,255,255,.26); }
+  .k-social .it{ padding:24px 26px 0 0; margin-right:26px; border-right:1px solid rgba(255,255,255,.2); }
+  .k-social .it:last-child{ border-right:none; margin-right:0; }
+  .k-social .it b{ display:block; font-family:var(--serif-lora); font-weight:600; font-size:19px; }
+  .k-social .it span{ display:block; font-size:14.5px; color:rgba(255,255,255,.78); margin-top:8px; line-height:1.5; }
+
+  /* ---------- stay & tour ---------- */
+  .k-stay{ display:grid; grid-template-columns:1.05fr 1fr; align-items:stretch; }
+  .k-stay .copy{ background:var(--k-sage-deep); color:#fff; padding:clamp(52px,6vw,96px); display:flex; flex-direction:column; justify-content:center; position:relative; overflow:hidden; }
+  .k-stay .copy .k-leaf-bg{ position:absolute; right:-8%; bottom:-12%; width:60%; color:#fff; opacity:.08; pointer-events:none; }
+  .k-stay .copy .k-kicker{ color:var(--k-seafoam); position:relative; }
+  .k-stay .copy h2{ color:#fff; font-size:clamp(30px,3.8vw,50px); line-height:1.06; margin:18px 0 8px; position:relative; }
+  .k-stay .copy .price{ font-family:var(--serif-lora); font-weight:600; font-style:italic; font-size:23px; color:var(--k-seafoam); margin:0 0 18px; position:relative; }
+  .k-stay .copy p{ color:rgba(255,255,255,.88); font-size:17px; line-height:1.7; max-width:42ch; margin:0 0 32px; position:relative; }
+  .k-stay .copy .btn{ align-self:flex-start; position:relative; }
+  .k-stay .media{ position:relative; min-height:480px; overflow:hidden; } .k-stay .media .photo{ position:absolute; inset:0; } .k-stay .media .photo::after{ content:none; }
+  .k-stay .media img{ transition:transform 1.4s var(--k-ease); } .k-stay:hover .media img{ transform:scale(1.06); }
+
+  /* ---------- lead capture ---------- */
+  .k-lead{ background:var(--k-paper-2); }
+  .k-lead-in{ display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(36px,5vw,80px); align-items:center; }
+  .k-lead h2{ font-size:clamp(30px,3.8vw,50px); max-width:15ch; }
+  .k-lead p{ color:var(--k-ink-soft); font-size:18px; line-height:1.68; max-width:46ch; margin:20px 0 0; }
+  .k-form{ background:#fff; border:1px solid var(--k-line); border-radius:var(--k-r-lg); padding:clamp(28px,3vw,40px); box-shadow:var(--k-sh-sm); }
+  .k-form label{ display:block; font-weight:700; font-size:14px; color:var(--k-ink); margin-bottom:9px; }
+  .k-form .field{ margin-bottom:18px; }
+  .k-form input{ width:100%; border:1.5px solid var(--k-line-2); background:var(--k-paper); border-radius:var(--k-r-sm); padding:15px 16px; font-family:var(--sans); font-weight:500; font-size:16px; color:var(--k-ink); outline:none; transition:border-color .25s, background .25s; }
+  .k-form input::placeholder{ color:var(--k-muted); }
+  .k-form input:focus{ border-color:var(--k-accent-2); background:#fff; }
+  .k-form .btn{ width:100%; }
+  .k-form .fine{ font-size:13.5px; color:var(--k-muted); margin:16px 0 0; line-height:1.5; }
+
+  /* ---------- footer ---------- */
+  .k-foot{ background:var(--k-ocean-deep); color:rgba(255,255,255,.66); }
+  .k-foot-top{ display:grid; grid-template-columns:1.7fr 1fr 1fr; gap:48px; padding:76px 0 48px; }
+  .k-foot h4{ color:#fff; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin:0 0 18px; }
+  .k-foot ul{ list-style:none; padding:0; margin:0; display:grid; gap:13px; font-size:15.5px; }
+  .k-foot a{ transition:color .22s; } .k-foot a:hover{ color:var(--k-seafoam); }
+  .k-foot-brand .k-brand b{ color:#fff; }
+  .k-foot-brand .k-mark{ background:rgba(255,255,255,.14); }
+  .k-foot-brand p{ font-size:15.5px; max-width:38ch; margin:18px 0 0; line-height:1.65; }
+  .k-foot-bot{ border-top:1px solid rgba(255,255,255,.12); } .k-foot-bot div{ display:flex; justify-content:space-between; gap:20px; padding:24px 0; font-size:14px; flex-wrap:wrap; }
+
+  /* ---------- tidal reveal ---------- */
+  .k-reveal{ opacity:0; transform:translateY(30px); transition:opacity 1s var(--k-ease), transform 1s var(--k-ease); }
+  .k-reveal.in{ opacity:1; transform:none; }
+  .k-reveal.d1{ transition-delay:.1s; } .k-reveal.d2{ transition-delay:.2s; } .k-reveal.d3{ transition-delay:.3s; } .k-reveal.d4{ transition-delay:.4s; }
+  .k-rule{ transition:transform 1s var(--k-ease) .15s; transform:scaleX(0); }
+  .k-reveal.in .k-rule, .k-life.in .k-rule{ transform:scaleX(1); }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:960px){
+    .k-links{ display:none; } .k-burger{ display:block; } .k-nav-cta .btn{ display:none; }
+    .k-listings{ grid-template-columns:1fr 1fr; }
+    .k-amen{ grid-template-columns:1fr 1fr; }
+    .k-am.k-am-wide{ grid-column:span 2; grid-row:span 1; min-height:320px; }
+    .k-comm-grid{ grid-template-columns:1fr 1fr; }
+    .k-life-in{ max-width:none; }
+    .k-social{ grid-template-columns:1fr; max-width:none; border-top:none; }
+    .k-social .it{ border-right:none; margin-right:0; padding:18px 0 0; border-top:1px solid rgba(255,255,255,.2); }
+    .k-stay{ grid-template-columns:1fr; } .k-stay .media{ min-height:320px; order:-1; }
+    .k-lead-in{ grid-template-columns:1fr; }
+    .k-foot-top{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:560px){
+    .k-listings{ grid-template-columns:1fr; }
+    .k-amen{ grid-template-columns:1fr; }
+    .k-am.k-am-wide{ grid-column:span 1; }
+    .k-comm-grid{ grid-template-columns:1fr; }
+    .k-foot-top{ grid-template-columns:1fr; }
+    .k-nav-cta .btn{ display:inline-flex; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .k-reveal,.k-rule{ opacity:1 !important; transform:none !important; transition:none !important; }
+    .k-rise{ opacity:1 !important; transform:none !important; animation:none !important; }
+    .k-hero .photo img,.k-life .photo img,.k-hero.ready .k-rise{ animation:none !important; transform:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="k-wrap">
+
+  <!-- Nav -->
+  <header class="k-nav" data-screen-label="Home K — Nav">
+    <div class="k-container k-nav-in">
+      <a class="k-brand" href="#">
+        <span class="k-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="#fff" fill-opacity=".92"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="#5FD3D0" fill-opacity=".95"/></svg></span>
+        <b>MVP Realty</b>
+      </a>
+      <nav class="k-links">
+        <a href="#listings">Homes</a>
+        <a href="#amenities">Amenities</a>
+        <a href="#communities">Communities</a>
+        <a href="#lifestyle">Lifestyle</a>
+        <a href="#stay">Stay &amp; Tour</a>
+      </nav>
+      <div class="k-nav-cta">
+        <a href="#lead" class="btn btn--primary">Request Brochure</a>
+        <button class="k-burger" aria-label="Menu"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="k-hero" data-screen-label="Home K — Hero">
+    <div class="photo photo--deep"><img src="../assets/photos/hero-naples-waterfront.jpg" alt="Naples bayfront at dawn, palms and calm Gulf water" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1572331165267-854da2b10ccc?auto=format&fit=crop&w=2000&q=72'"></div>
+    <div class="k-hero-veil"></div>
+    <svg class="k-hero-leaf" viewBox="0 0 200 200" fill="none" aria-hidden="true"><path d="M30 170C30 90 90 40 175 30c-8 90-70 135-145 140Z" fill="currentColor"/><path d="M30 170C70 130 120 80 175 30" stroke="currentColor" stroke-width="2" opacity=".5"/></svg>
+    <div class="k-container k-hero-in">
+      <span class="label k-rise r1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-5-4-8-8-8-12a8 8 0 0 1 16 0c0 4-3 8-8 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>Now welcoming neighbors · Naples, Florida</span>
+      <h1 class="k-rise r2">Retire closer to the water, and <em>closer to the garden.</em></h1>
+      <p class="k-rise r3">Luxury Gulf-Coast communities built around nature trails, resort amenities, and a calmer, more rooted way of living well past 55.</p>
+      <div class="k-hero-actions k-rise r4">
+        <a href="#listings" class="btn btn--primary">Explore Homes <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#stay" class="btn btn--light">Stay a Weekend</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Listings -->
+  <section class="k-sec" id="listings" data-screen-label="Home K — Featured Listings">
+    <div class="k-container">
+      <div class="k-head-row k-reveal">
+        <div class="k-head">
+          <div class="k-kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10V20h13V10"/></svg>Homes for Sale</div>
+          <h2>Move-in ready, minutes from the sand.</h2>
+        </div>
+        <a href="#" class="k-more">View all homes <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="k-listings">
+
+        <a class="k-listing k-reveal d1" href="#">
+          <div class="ph">
+            <div class="photo photo--deep"><img src="../assets/photos/home-exterior.jpg" alt="Coastal home framed by palms at Heron Preserve" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1100&q=72'"></div>
+            <span class="tag">New Release</span>
+          </div>
+          <div class="b">
+            <h3>Heron Preserve</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-5-4-8-8-8-12a8 8 0 0 1 16 0c0 4-3 8-8 12Z"/><circle cx="12" cy="9" r="2"/></svg>Naples</div>
+            <div class="price">From $1.4M</div>
+            <div class="stats">
+              <div class="st"><b>3</b><span>Beds</span></div>
+              <div class="st"><b>3.5</b><span>Baths</span></div>
+              <div class="st"><b>2,940</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <a class="k-listing k-reveal d2" href="#">
+          <div class="ph">
+            <div class="photo"><img src="../assets/photos/home-rendering.jpg" alt="Lakeside residence at Mangrove Bay" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1100&q=72'"></div>
+            <span class="tag">55+ Living</span>
+          </div>
+          <div class="b">
+            <h3>Mangrove Bay</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-5-4-8-8-8-12a8 8 0 0 1 16 0c0 4-3 8-8 12Z"/><circle cx="12" cy="9" r="2"/></svg>Bonita Springs</div>
+            <div class="price">$720s to $1M</div>
+            <div class="stats">
+              <div class="st"><b>2</b><span>Beds</span></div>
+              <div class="st"><b>2</b><span>Baths</span></div>
+              <div class="st"><b>2,110</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+        <a class="k-listing k-reveal d3" href="#">
+          <div class="ph">
+            <div class="photo photo--sand"><img src="../assets/photos/kitchen-model.jpg" alt="Bright model kitchen at Coral Lagoon" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1100&q=72'"></div>
+            <span class="tag">Model Open</span>
+          </div>
+          <div class="b">
+            <h3>Coral Lagoon</h3>
+            <div class="city"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-5-4-8-8-8-12a8 8 0 0 1 16 0c0 4-3 8-8 12Z"/><circle cx="12" cy="9" r="2"/></svg>Estero</div>
+            <div class="price">From $840s</div>
+            <div class="stats">
+              <div class="st"><b>3</b><span>Beds</span></div>
+              <div class="st"><b>2.5</b><span>Baths</span></div>
+              <div class="st"><b>2,480</b><span>Sq Ft</span></div>
+            </div>
+            <span class="view">View listing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <svg class="k-wave-divide" viewBox="0 0 1440 54" preserveAspectRatio="none" aria-hidden="true"><path d="M0 54V20c180 28 360 28 540 8 220-24 460-28 720 4 70 9 130 14 180 14v8Z" fill="currentColor"/></svg>
+
+  <!-- Amenities -->
+  <section class="k-sec sand" id="amenities" data-screen-label="Home K — Amenities">
+    <div class="k-container">
+      <div class="k-head k-reveal">
+        <div class="k-kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c3 3 3 7 0 10-3-3-3-7 0-10Z"/><path d="M12 13v8"/></svg>Days Worth Waking Up For</div>
+        <h2>Nature trails and resort amenities, side by side.</h2>
+        <p class="k-lede">Start with sunrise yoga and a walk through the mangrove preserve. End on the pickleball court or the pool deck. The whole day is yours to fill.</p>
+      </div>
+      <div class="k-amen">
+
+        <div class="k-am k-am-wide k-reveal">
+          <div class="photo photo--deep"><img src="https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=1200&q=72" alt="Boardwalk through a coastal mangrove nature preserve" referrerpolicy="no-referrer" onerror="this.remove()"></div>
+          <div class="k-am-wide-veil"></div>
+          <div class="k-am-wide-in">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 21c0-6 4-12 11-15M11 13c-1-3-4-5-8-5M16 9c0-4 2-6 5-7"/></svg></div>
+            <h3>Walking &amp; nature trails</h3>
+            <p>Miles of shaded boardwalks wind through mangrove preserves and butterfly gardens, steps from your door.</p>
+          </div>
+        </div>
+
+        <div class="k-am k-reveal d1">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 13c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><circle cx="12" cy="6" r="2"/></svg></div>
+          <h3>Resort pool &amp; lap lanes</h3>
+          <p>A zero-entry resort pool plus quiet lap lanes for a morning swim.</p>
+        </div>
+
+        <div class="k-am k-reveal d2">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16"/></svg></div>
+          <h3>Pickleball &amp; tennis</h3>
+          <p>Lighted courts and friendly leagues that fill the calendar.</p>
+        </div>
+
+        <div class="k-am k-reveal d1">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h3l2-5 4 14 2-7 1 3h4"/></svg></div>
+          <h3>Fitness &amp; wellness</h3>
+          <p>A full gym, spa treatments, and sunrise yoga on the lawn.</p>
+        </div>
+
+        <div class="k-am k-reveal d2">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3v8a3 3 0 0 0 6 0V3M9 3v6M17 3c-1 2-1 5-1 7v11"/></svg></div>
+          <h3>Clubhouse dining</h3>
+          <p>Waterfront restaurants, a wine bar, and weekly chef nights.</p>
+        </div>
+
+        <div class="k-am k-reveal d1">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 14c3-1 6-1 9 0M5 18c5-2 9-2 14 0M8 8c2-4 6-6 10-6-1 5-4 7-8 8"/></svg></div>
+          <h3>Kayaking &amp; the water</h3>
+          <p>Launch a kayak from the community dock onto calm tidal creeks.</p>
+        </div>
+
+        <div class="k-am k-reveal d2">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></div>
+          <h3>A full social calendar</h3>
+          <p>Garden clubs, live music, and gatherings every week of the year.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Communities -->
+  <section class="k-sec" id="communities" data-screen-label="Home K — Communities">
+    <div class="k-container">
+      <div class="k-head k-reveal">
+        <div class="k-kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-5-4-8-8-8-12a8 8 0 0 1 16 0c0 4-3 8-8 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>Gulf-Coast Communities</div>
+        <h2>Nine communities, all minutes from the beach.</h2>
+        <p class="k-lede">Every address sits within a thirty-minute drive of white-sand Gulf beaches, marinas, and dining. Find the place that feels rooted, then come live it for a weekend.</p>
+      </div>
+      <div class="k-comm-grid">
+        <a class="k-comm k-reveal d1" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Heron Preserve</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Naples · 12 min to beach</span></div></a>
+        <a class="k-comm k-reveal d1" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Mangrove Bay</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Bonita Springs · 9 min</span></div></a>
+        <a class="k-comm k-reveal d1" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Coral Lagoon</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Estero · 18 min</span></div></a>
+        <a class="k-comm k-reveal d2" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Saltgrass Cove</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Fort Myers · 15 min</span></div></a>
+        <a class="k-comm k-reveal d2" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Cypress Landing</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Estero · 20 min</span></div></a>
+        <a class="k-comm k-reveal d2" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Palmetto Shores</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Naples · 10 min</span></div></a>
+        <a class="k-comm k-reveal d3" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Tidewater Green</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Bonita Springs · 14 min</span></div></a>
+        <a class="k-comm k-reveal d3" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Seagrape Bay</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Fort Myers · 16 min</span></div></a>
+        <a class="k-comm k-reveal d3" href="#"><span class="leaf"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="currentColor" fill-opacity=".85"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="currentColor" fill-opacity=".45"/></svg></span><div><h3>Willowmere</h3><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Naples · 22 min</span></div></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lifestyle / social -->
+  <section class="k-life" id="lifestyle" data-screen-label="Home K — Lifestyle">
+    <div class="photo photo--deep"><img src="../assets/photos/clubhouse-aerial.jpg" alt="Aerial view of the clubhouse, gardens, and pools at golden hour" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=2000&q=72'"></div>
+    <div class="k-life-veil"></div>
+    <div class="k-container k-life-in">
+      <div class="k-kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 19c.5-2 2-3 4-3s3 1 3.5 3"/></svg>You Stay for the People</div>
+      <h2>You buy the home. You stay for <em>the neighbors.</em></h2>
+      <p>For our buyers, the deciding factor is the life inside the gates: the standing plans, the garden club, the feeling that there is always a friendly face and somewhere to be.</p>
+      <div class="k-social">
+        <div class="it"><b>A built-in circle</b><span>Garden clubs and walking groups turn neighbors into a friend group within weeks.</span></div>
+        <div class="it"><b>Always something on</b><span>Sunrise yoga, live music, and chef nights fill every week of the calendar.</span></div>
+        <div class="it"><b>Rooted in nature</b><span>Shared gardens and trail mornings keep the whole community moving and outdoors.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stay & Tour -->
+  <section class="k-stay" id="stay" data-screen-label="Home K — Stay & Tour">
+    <div class="copy k-reveal">
+      <svg class="k-leaf-bg" viewBox="0 0 200 200" fill="none" aria-hidden="true"><path d="M30 170C30 90 90 40 175 30c-8 90-70 135-145 140Z" fill="currentColor"/></svg>
+      <div class="k-kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>Try Before You Buy</div>
+      <h2>Stay a weekend. Walk the trails.</h2>
+      <div class="price">3 days, 2 nights from $99</div>
+      <p>Spend a weekend inside the gates. Take the sunrise yoga class, paddle the creek, meet the neighbors over dinner, and watch the sun set from the lanai. The surest way to know it is home is to live it.</p>
+      <a href="#" class="btn btn--aqua">Book Your Stay</a>
+    </div>
+    <div class="media"><div class="photo photo--deep"><img src="../assets/photos/lanai-pool.jpg" alt="Screened lanai and pool overlooking a garden at golden hour" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=72'"></div></div>
+  </section>
+
+  <!-- Lead capture -->
+  <section class="k-sec k-lead" id="lead" data-screen-label="Home K — Lead Capture">
+    <div class="k-container k-lead-in">
+      <div class="k-reveal">
+        <div class="k-kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>First Looks</div>
+        <h2>See pricing, floorplans, and the trail maps.</h2>
+        <p>Tell us where you would like to wake up and we will send a private brochure with home pricing, community amenities, and seasonal release dates.</p>
+      </div>
+      <form class="k-form k-reveal d1" onsubmit="return false">
+        <div class="field">
+          <label for="k-name">Your name</label>
+          <input id="k-name" type="text" placeholder="Jean Whitmore" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="k-email">Email address</label>
+          <input id="k-email" type="email" placeholder="jean@example.com" autocomplete="email">
+        </div>
+        <button type="submit" class="btn btn--primary">Send My Brochure</button>
+        <p class="fine">First looks at new releases and coming-soon communities. We never sell your information.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="k-foot" data-screen-label="Home K — Footer">
+    <div class="k-container">
+      <div class="k-foot-top">
+        <div class="k-foot-brand">
+          <a class="k-brand" href="#">
+            <span class="k-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c0-5 0-9 6-13-1 7-4 10-6 13Z" fill="#fff" fill-opacity=".92"/><path d="M12 21c0-4 0-7-5-10 1 5 3 8 5 10Z" fill="#5FD3D0" fill-opacity=".95"/></svg></span>
+            <b>MVP Realty</b>
+          </a>
+          <p>Florida's Gulf-Coast specialists, matching buyers with luxury gated communities and beachfront residences rooted in nature, minutes from the sand.</p>
+        </div>
+        <div><h4>Explore</h4><ul><li><a href="#listings">Homes for Sale</a></li><li><a href="#amenities">Amenities</a></li><li><a href="#communities">Communities</a></li><li><a href="#stay">Stay &amp; Tour</a></li></ul></div>
+        <div><h4>Communities</h4><ul><li><a href="#">Heron Preserve</a></li><li><a href="#">Mangrove Bay 55+</a></li><li><a href="#">Coral Lagoon</a></li><li><a href="#">Saltgrass Cove</a></li></ul></div>
+      </div>
+      <div class="k-foot-bot"><div><span>© 2026 MVP Realty. All rights reserved.</span><span>Equal Housing Opportunity · Privacy · Terms</span></div></div>
+    </div>
+  </footer>
+
+</div>
+<noscript><style>.k-reveal,.k-rise,.k-rule{opacity:1!important;transform:none!important;}</style></noscript>
+<script>
+  (function(){
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // hero load-in
+    var hero = document.querySelector('.k-hero');
+    if (hero) requestAnimationFrame(function(){ hero.classList.add('ready'); });
+
+    // sticky nav shadow
+    var nav = document.querySelector('.k-nav');
+    if (nav){
+      var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 8); };
+      document.addEventListener('scroll', onScroll, { passive:true }); onScroll();
+    }
+
+    // tidal reveals
+    var reveals = document.querySelectorAll('.k-reveal, .k-life');
+    if(!('IntersectionObserver' in window) || reduce){
+      reveals.forEach(function(r){ r.classList.add('in'); });
+    } else {
+      var ro = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }); }, { threshold:0.12, rootMargin:'0px 0px -8% 0px' });
+      reveals.forEach(function(r){ ro.observe(r); });
+      setTimeout(function(){ reveals.forEach(function(r){ r.classList.add('in'); }); }, 2600);
+    }
+  })();
+</script>
+
+<!-- Tweaks panel -->
+<div id="tweaks-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useEffect } = React;
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{ "accent":"Forest Sage", "corners":"Organic", "warmth":"Sand", "texture":"On" }/*EDITMODE-END*/;
+const ACCENTS = {
+  "Forest Sage": { accent:"#4f6b58", accent2:"#2a8c8a", sageSoft:"#e7efe7", sage:"#7c9a82" },
+  "Seafoam":     { accent:"#2a8c8a", accent2:"#3cb6b3", sageSoft:"#e2f7f6", sage:"#5FD3D0" },
+  "Deep Ocean":  { accent:"#1D4E89", accent2:"#2a8c8a", sageSoft:"#dde8f4", sage:"#5b87bd" },
+  "Clay":        { accent:"#a8674a", accent2:"#7c9a82", sageSoft:"#f0e6dd", sage:"#c19a82" }
+};
+const CORNERS = { "Soft":"12px", "Organic":"18px", "Rounded":"26px" };
+const WARMTH = { "Cool":{ paper:"#fbfaf8", paper2:"#eef2f0", sand:"#eef2ef", sandDeep:"#dce6e1" },
+                 "Sand":{ paper:"#fbfaf6", paper2:"#f3f1e9", sand:"#f4ede2", sandDeep:"#e7dac6" },
+                 "Warm":{ paper:"#fcf8f1", paper2:"#f4ece0", sand:"#f3e7d6", sandDeep:"#e5d2ba" } };
+function applyTweaks(t){
+  const el = document.querySelector('.k-wrap'); if(!el) return;
+  const a = ACCENTS[t.accent] || ACCENTS["Forest Sage"];
+  const r = CORNERS[t.corners] || CORNERS.Organic;
+  const w = WARMTH[t.warmth] || WARMTH.Sand;
+  const S=(k,v)=>el.style.setProperty(k,v);
+  S('--k-accent',a.accent); S('--k-accent-2',a.accent2);
+  S('--k-sage-soft',a.sageSoft); S('--k-sage',a.sage);
+  S('--k-r',r); S('--k-r-lg', (parseInt(r,10)+8)+'px'); S('--k-r-sm', Math.max(6,parseInt(r,10)-5)+'px');
+  S('--k-paper',w.paper); S('--k-paper-2',w.paper2); S('--k-sand',w.sand); S('--k-sand-deep',w.sandDeep);
+  // texture: subtle organic paper grain on the page background
+  if (t.texture === 'On'){
+    el.style.backgroundImage = "radial-gradient(circle at 18% 12%, rgba(124,154,130,.05), transparent 42%), radial-gradient(circle at 82% 78%, rgba(60,182,179,.05), transparent 46%)";
+  } else {
+    el.style.backgroundImage = "none";
+  }
+}
+function App(){
+  const [t,setTweak] = useTweaks(TWEAK_DEFAULTS);
+  useEffect(()=>{ applyTweaks(t); }, [t.accent, t.corners, t.warmth, t.texture]);
+  return (<TweaksPanel>
+    <TweakSection label="Accent" />
+    <TweakColor label="Color"
+      value={ACCENTS[t.accent].accent}
+      options={["#4f6b58","#2a8c8a","#1D4E89","#a8674a"]}
+      onChange={(hex)=>{
+        const name = Object.keys(ACCENTS).find(k=>ACCENTS[k].accent===hex) || "Forest Sage";
+        setTweak('accent', name);
+      }} />
+    <TweakSection label="Form" />
+    <TweakRadio label="Corners" value={t.corners} options={["Soft","Organic","Rounded"]} onChange={(v)=>setTweak('corners',v)} />
+    <TweakRadio label="Warmth" value={t.warmth} options={["Cool","Sand","Warm"]} onChange={(v)=>setTweak('warmth',v)} />
+    <TweakSection label="Surface" />
+    <TweakRadio label="Texture" value={t.texture} options={["On","Off"]} onChange={(v)=>setTweak('texture',v)} />
+  </TweaksPanel>);
+}
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App />);
+</script>
+</body>
+</html>
