@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --port 3002",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev --port 3002",
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start --port 3002",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start --port ${PORT:-3002}",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",

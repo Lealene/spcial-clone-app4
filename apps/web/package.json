@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "cross-env PORT=3003 next dev",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "next start --port ${PORT:-3000}",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",

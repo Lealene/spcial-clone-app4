@@ -27,6 +27,10 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
+    // No migrations are committed yet. On review/staging DBs, set DB_PUSH=true to
+    // let Payload auto-sync the schema on boot. Off by default — production must
+    // use real migrations, never implicit push.
+    push: env.DB_PUSH === 'true',
     pool: {
       connectionString: env.DATABASE_URL,
     },
