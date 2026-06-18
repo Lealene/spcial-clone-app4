@@ -28,6 +28,8 @@ Root rules in `/AGENTS.md` apply. This file carries only web-specific convention
 
 For design work, read `docs/design-port-decisions.md` before editing web UI.
 
+- The approved design system is fixed to the Sand palette, Manrope typeface, and medium roundness (`--radius: 0.625rem`).
+- Do not reintroduce theme, font, radius, or localStorage/query-param customization unless the user explicitly asks for it.
 - Components use semantic role tokens such as `bg-primary`, `bg-accent`, `bg-cta`, `bg-surface`, `text-ink`, `text-muted`, `border-line`, and `ring-ring`.
 - Do not put raw hex values or palette scale utilities in components.
 - Keep generic primitives in `@mvp-realty/ui`; keep marketing/listings/community compositions in this app.
