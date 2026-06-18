@@ -31,7 +31,7 @@ After it runs, follow **First-time setup** below (`nvm use` → `pnpm install` �
 ```
 .
 ├── apps/
-│   ├── web/        Next.js 16 site (App Router + Turbopack)        :3000
+│   ├── web/        Next.js 16 site (App Router + Turbopack)        :3003
 │   └── backend/    Payload v3 admin + REST/GraphQL API            :3002
 ├── packages/       Shared TypeScript libraries
 │   ├── api-contracts/  Zod schemas + types shared across apps
@@ -83,7 +83,7 @@ pnpm dev
 
 After step 5:
 
-- **Web** at <http://localhost:3000> — Next.js default page for now
+- **Web** at <http://localhost:3003> — customer-facing app; increments if the port is busy
 - **Payload admin** at <http://localhost:3002/admin> — login screen; create the first admin user here
 
 To stop: `Ctrl+C`, then `pnpm docker:down` to free the database container.
@@ -97,19 +97,19 @@ Each app has its own `.env.local` (gitignored). The root `.env.example` document
 **`apps/web/.env.local`**
 
 ```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3003
 NEXT_PUBLIC_BACKEND_URL=http://localhost:3002
 ```
 
 **`apps/backend/.env.local`**
 
 ```env
-DATABASE_URL=postgres://mvp_realty_db:mvp_realty_db@localhost:5434/mvp_realty_db
+DATABASE_URL=postgres://mvp_realty_db:mvp_realty_db@localhost:5435/mvp_realty_db
 PAYLOAD_SECRET=<paste output of `openssl rand -base64 32`>
 PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3002
 ```
 
-> **Why `5434` instead of `5432`?** Most dev machines already run system Postgres on `5432`. The local compose remaps to a free port. Production (Railway) uses the standard port — this is local-only.
+> **Why `5435` instead of `5432`?** Most dev machines already run system Postgres on `5432`. The local compose remaps to a free port. Production (Railway) uses the provider endpoint — this is local-only.
 
 > **Where do I read env in code?** Never use `process.env.X` directly — ESLint blocks it. Each workspace has a `src/env.ts` that validates env at boot using [`@t3-oss/env-*`](https://env.t3.gg/). Import like `import { env } from './env'; env.DATABASE_URL`.
 
@@ -186,7 +186,7 @@ tooling/                Shared configs as workspace packages
 Wrong Node version. Run `nvm use` (or `nvm install`). The repo pins Node 24 in `.nvmrc` and `engine-strict=true` in `.npmrc`.
 
 **`pnpm docker:up` fails with `port is already allocated`**
-Something else is on port `5434`. Find it with `lsof -nP -iTCP:5434 -sTCP:LISTEN` and stop it, or edit `docker-compose.yml` to pick another host port (and update your `.env.local`).
+Something else is on port `5435`. Find it with `lsof -nP -iTCP:5435 -sTCP:LISTEN` and stop it, or edit `docker-compose.yml` to pick another host port (and update your `.env.local`).
 
 **Payload admin says `Cannot find module 'sharp'` or images don't process**
 `pnpm install` skipped a build script. Run `pnpm rebuild sharp` and restart `pnpm dev`. The `allowBuilds` list in `pnpm-workspace.yaml` covers this for fresh clones.
@@ -198,7 +198,8 @@ Next.js dev sometimes loses workspace package symlinks after a long session. `pn
 
 ## Where to learn more
 
-- [`CLAUDE.md`](./CLAUDE.md) — conventions and hard rules (also read by AI agents)
-- [`apps/web/CLAUDE.md`](./apps/web/CLAUDE.md) / [`apps/backend/CLAUDE.md`](./apps/backend/CLAUDE.md) — per-app conventions
-- [Payload docs](https://payloadcms.com/docs) — the Payload skill lives at `.agents/skills/payload/`
-- Next.js 16 ships its docs in `node_modules/next/dist/docs/` — searchable and version-matched
+- [`AGENTS.md`](./AGENTS.md) — canonical conventions and hard rules for AI coding agents
+- `CLAUDE.md` files are Claude Code shims that import sibling `AGENTS.md` files
+- [`apps/web/AGENTS.md`](./apps/web/AGENTS.md) / [`apps/backend/AGENTS.md`](./apps/backend/AGENTS.md) — per-app conventions
+- [Payload docs](https://payloadcms.com/docs) — local Payload guidance lives at `.agents/skills/payload/`
+- Next.js ships its docs in `node_modules/next/dist/docs/` — searchable and version-matched
