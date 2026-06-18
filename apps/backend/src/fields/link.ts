@@ -45,6 +45,8 @@ export function linkField({
         type: 'select',
         required: true,
         defaultValue: 'custom',
+        dbName: 'type',
+        enumName: 'link_type',
         options: linkTypeOptions,
       },
       {

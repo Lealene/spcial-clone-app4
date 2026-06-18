@@ -37,7 +37,7 @@ After it runs, follow **First-time setup** below (`nvm use` → `pnpm install` �
 │   ├── api-contracts/  Zod schemas + types shared across apps
 │   └── ui/             Shared component library
 ├── tooling/        Shared ESLint, Prettier, TS, Tailwind, Vitest configs
-├── docs/           Project docs (add your PRDs / decisions here)
+├── docs/           Project docs organized by feature
 └── docker-compose.yml  Local Postgres
 ```
 

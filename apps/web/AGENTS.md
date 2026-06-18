@@ -26,7 +26,7 @@ Root rules in `/AGENTS.md` apply. This file carries only web-specific convention
 
 ## Design-port rules
 
-For design work, read `docs/design-port-decisions.md` before editing web UI.
+For design work, read `docs/design-port/README.md` before editing web UI.
 
 - The approved design system is fixed to the Sand palette, Manrope typeface, and medium roundness (`--radius: 0.625rem`).
 - Do not reintroduce theme, font, radius, or localStorage/query-param customization unless the user explicitly asks for it.
