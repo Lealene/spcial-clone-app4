@@ -69,8 +69,8 @@ ok "root package name -> \"$SCOPE\""
 perl -i -pe "s/\bapp\b/$DB/g" docker-compose.yml
 # connection string wherever it appears (.env.example, README, docs)
 grep -rIl --exclude-dir=.git --exclude-dir=node_modules \
-  --exclude=init-project.sh 'postgres://app:app@localhost:5434/app' . \
-  | while IFS= read -r f; do perl -i -pe "s{postgres://app:app\@localhost:5434/app}{postgres://$DB:$DB\@localhost:5434/$DB}g" "$f"; done
+  --exclude=init-project.sh 'postgres://app:app@localhost:5435/app' . \
+  | while IFS= read -r f; do perl -i -pe "s{postgres://app:app\@localhost:5435/app}{postgres://$DB:$DB\@localhost:5435/$DB}g" "$f"; done
 ok "postgres identifiers -> $DB (db/user/password)"
 
 # --- 4. env files + Payload secret -----------------------------------------
@@ -105,9 +105,9 @@ cat <<EOF
 next steps:
   nvm install && nvm use     # Node 24 (required)
   pnpm install               # installs deps + regenerates pnpm-lock.yaml
-  pnpm dev                   # Postgres + web(:3000) + backend(:3001)
+  pnpm dev                   # Postgres + web(:3003) + backend(:3002)
 
-  then open http://localhost:3001/admin to create your first admin user.
+  then open http://localhost:3002/admin to create your first admin user.
 
 note: this script is one-shot. you can delete scripts/init-project.sh now.
 EOF
