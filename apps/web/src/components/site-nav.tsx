@@ -1,5 +1,6 @@
 'use client';
 
+import type { HeaderGlobal } from '@mvp-realty/api-contracts';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
@@ -8,14 +9,7 @@ import { cn } from '@mvp-realty/ui/lib/utils';
 import { Button } from '@/components/ui/button';
 import { BrandMark, BrandWordmark } from '@/components/brand-mark';
 
-const LINKS = [
-  { href: '/#lifestyle', label: 'The Life' },
-  { href: '/#amenities', label: 'Amenities' },
-  { href: '/#communities', label: 'Communities' },
-  { href: '/listings', label: 'Residences' },
-];
-
-export function SiteNav() {
+export function SiteNav({ header }: { header: HeaderGlobal }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -29,24 +23,25 @@ export function SiteNav() {
   return (
     <header
       className={cn(
-        'border-line-soft bg-surface-soft/80 sticky top-0 z-60 border-b backdrop-blur-[16px] backdrop-saturate-150 transition-shadow duration-300',
+        'border-line-soft bg-surface-soft/80 z-60 sticky top-0 border-b backdrop-blur-[16px] backdrop-saturate-150 transition-shadow duration-300',
         scrolled && 'shadow-[0_1px_0_var(--line-soft),0_16px_34px_-28px_rgba(8,26,48,0.4)]',
       )}
     >
       <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-6 px-[clamp(22px,5vw,76px)] py-4">
-        <Link href="/" className="flex items-center gap-[13px]">
+        <Link href={header.brandHomeLink.href} className="flex items-center gap-[13px]">
           <BrandMark />
           <BrandWordmark />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
-          {LINKS.map((l) => (
+          {header.navItems.map((item) => (
             <Link
-              key={l.href}
-              href={l.href}
-              className="group text-ink-soft hover:text-primary relative py-1.5 font-sans text-[15px] font-semibold tracking-[0.01em] transition-colors"
+              key={`${item.label}-${item.link.href}`}
+              href={item.link.href}
+              aria-label={item.ariaLabel ?? item.link.ariaLabel}
+              className="text-ink-soft hover:text-primary group relative py-1.5 font-sans text-[15px] font-semibold tracking-[0.01em] transition-colors"
             >
-              {l.label}
+              {item.label}
               <span className="bg-accent-deep absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-x-100" />
             </Link>
           ))}
@@ -54,12 +49,14 @@ export function SiteNav() {
 
         <div className="flex items-center gap-4">
           <Button asChild variant="primary" size="sm" className="hidden lg:inline-flex">
-            <Link href="/#lead">Request My Shortlist</Link>
+            <Link href={header.primaryCta.href} aria-label={header.primaryCta.ariaLabel}>
+              {header.primaryCta.label}
+            </Link>
           </Button>
           <button
             type="button"
             className="text-primary lg:hidden"
-            aria-label="Menu"
+            aria-label={menuOpen ? header.mobileMenuCloseLabel : header.mobileMenuLabel}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
@@ -71,19 +68,20 @@ export function SiteNav() {
       {menuOpen && (
         <div className="border-line-soft bg-surface-soft border-t lg:hidden">
           <nav className="mx-auto flex max-w-[1240px] flex-col px-[clamp(22px,5vw,76px)] py-2">
-            {LINKS.map((l) => (
+            {header.navItems.map((item) => (
               <Link
-                key={l.href}
-                href={l.href}
+                key={`${item.label}-${item.link.href}`}
+                href={item.link.href}
+                aria-label={item.ariaLabel ?? item.link.ariaLabel}
                 onClick={() => setMenuOpen(false)}
                 className="border-line-soft text-ink-soft border-b py-3.5 font-sans text-base font-semibold last:border-0"
               >
-                {l.label}
+                {item.label}
               </Link>
             ))}
-            <Button asChild variant="primary" size="full" className="mt-4 mb-2">
-              <Link href="/#lead" onClick={() => setMenuOpen(false)}>
-                Request My Shortlist
+            <Button asChild variant="primary" size="full" className="mb-2 mt-4">
+              <Link href={header.primaryCta.href} onClick={() => setMenuOpen(false)}>
+                {header.primaryCta.label}
               </Link>
             </Button>
           </nav>

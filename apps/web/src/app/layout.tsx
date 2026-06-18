@@ -4,6 +4,8 @@ import './globals.css';
 
 import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
+import { env } from '@/env';
+import { getFooterContent, getHeaderContent } from '@/lib/cms/homepage';
 
 const manrope = Manrope({
   variable: '--font-manrope',
@@ -13,22 +15,28 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'MVP Realty — Gulf-Coast Concierge for Luxury Gated Communities',
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
+  title: {
+    default: 'MVP Realty — Gulf-Coast Concierge for Luxury Gated Communities',
+    template: '%s | MVP Realty',
+  },
   description:
     'A prestigious Gulf-Coast address with resort amenities and a personal concierge. Private gated communities minutes from the Naples beaches.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [header, footer] = await Promise.all([getHeaderContent(), getFooterContent()]);
+
   return (
     <html lang="en" className={`${manrope.variable} h-full`}>
       <body className="flex min-h-full flex-col overflow-x-clip">
-        <SiteNav />
+        <SiteNav header={header} />
         <main className="flex-1">{children}</main>
-        <SiteFooter />
+        <SiteFooter footer={footer} />
       </body>
     </html>
   );

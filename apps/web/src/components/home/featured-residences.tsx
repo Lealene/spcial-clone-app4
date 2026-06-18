@@ -1,3 +1,4 @@
+import type { FeaturedResidencesBlock } from '@mvp-realty/api-contracts';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, MapPin } from 'lucide-react';
@@ -6,36 +7,36 @@ import { Container } from '@/components/container';
 import { Reveal } from '@/components/reveal';
 import { SectionHeader } from '@/components/section-header';
 import { MoreLink } from '@/components/more-link';
-import { featuredResidences } from '@/data/residences';
 
-export function FeaturedResidences() {
+export function FeaturedResidences({ block }: { block: FeaturedResidencesBlock }) {
   return (
-    <section id="listings" className="bg-surface-soft py-[clamp(78px,9vw,138px)]">
+    <section id={block.anchorId} className="bg-surface-soft py-[clamp(78px,9vw,138px)]">
       <Container>
         <Reveal>
           <SectionHeader
             align="center"
-            kicker="Curated Residences"
-            heading="Homes chosen for you, not a search bar."
-            lede="A sample of what is selling now, with starting prices, so you can see where you fit before we ever talk."
+            kicker={block.header.kicker}
+            heading={block.header.heading}
+            lede={block.header.lede}
           />
         </Reveal>
 
         <div className="grid gap-[clamp(20px,2.2vw,30px)] sm:grid-cols-2 lg:grid-cols-3">
-          {featuredResidences.map((r, i) => {
+          {block.manualListings.map((r, i) => {
             const stats = [
-              { value: r.beds, label: 'Beds' },
-              { value: r.baths, label: 'Baths' },
-              { value: r.sqft.toLocaleString(), label: 'Sq Ft' },
+              { value: r.beds, label: r.bedsLabel },
+              { value: r.baths, label: r.bathsLabel },
+              { value: r.sqft.toLocaleString(), label: r.sqftLabel },
             ];
             return (
               <Reveal key={r.slug} delay={i * 0.1}>
                 <Link
-                  href={`/listings/${r.slug}`}
-                  className="group border-line bg-surface shadow-card hover:shadow-lift flex h-full flex-col overflow-hidden rounded-xl border transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-[5px]"
+                  href={r.link.href}
+                  aria-label={r.link.ariaLabel}
+                  className="border-line bg-surface shadow-card hover:shadow-lift group flex h-full flex-col overflow-hidden rounded-xl border transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-[5px]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
-                    <span className="border-accent-deep/40 bg-surface-soft/95 text-primary shadow-card absolute top-3.5 left-3.5 z-10 rounded-md border px-[13px] py-[7px] font-sans text-[11.5px] font-extrabold tracking-[0.1em] uppercase">
+                    <span className="border-accent-deep/40 bg-surface-soft/95 text-primary shadow-card absolute left-3.5 top-3.5 z-10 rounded-md border px-[13px] py-[7px] font-sans text-[11.5px] font-extrabold uppercase tracking-[0.1em]">
                       {r.badge}
                     </span>
                     <Image
@@ -47,7 +48,7 @@ export function FeaturedResidences() {
                     />
                   </div>
                   <div className="flex flex-1 flex-col p-[26px] pt-6">
-                    <h3 className="text-primary font-serif text-[25px] leading-[1.1] font-semibold">
+                    <h3 className="text-primary font-serif text-[25px] font-semibold leading-[1.1]">
                       {r.name}
                     </h3>
                     <div className="text-muted mt-1.5 flex items-center gap-[7px] font-sans text-[15px] font-medium">
@@ -67,17 +68,17 @@ export function FeaturedResidences() {
                               : 'border-line-soft flex-1 border-l pl-3.5 text-left'
                           }
                         >
-                          <b className="text-primary block font-sans text-[18px] leading-none font-extrabold">
+                          <b className="text-primary block font-sans text-[18px] font-extrabold leading-none">
                             {s.value}
                           </b>
-                          <span className="text-muted mt-1.5 block font-sans text-[12px] font-semibold tracking-[0.06em] uppercase">
+                          <span className="text-muted mt-1.5 block font-sans text-[12px] font-semibold uppercase tracking-[0.06em]">
                             {s.label}
                           </span>
                         </div>
                       ))}
                     </div>
                     <span className="text-primary mt-[22px] inline-flex items-center gap-[9px] font-sans text-[15px] font-bold">
-                      View residence
+                      {block.cardCtaLabel}
                       <ArrowRight className="text-accent-deep size-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </span>
                   </div>
@@ -87,9 +88,11 @@ export function FeaturedResidences() {
           })}
         </div>
 
-        <Reveal className="mt-[clamp(38px,4vw,54px)] flex justify-center">
-          <MoreLink href="/listings">View the full collection</MoreLink>
-        </Reveal>
+        {block.moreLink && (
+          <Reveal className="mt-[clamp(38px,4vw,54px)] flex justify-center">
+            <MoreLink href={block.moreLink.href}>{block.moreLink.label}</MoreLink>
+          </Reveal>
+        )}
       </Container>
     </section>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import type { LeadCaptureBlock } from '@mvp-realty/api-contracts';
 import { useState, type FormEvent } from 'react';
 import { ArrowRight, Check, Waves } from 'lucide-react';
 
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button';
 const inputClass =
   'w-full rounded-md border border-line bg-surface-soft px-4 py-[15px] font-sans text-[16px] font-medium text-ink outline-none transition-[border-color,background-color] placeholder:text-muted focus:border-accent-deep focus:bg-surface';
 
-export function LeadCapture() {
+export function LeadCapture({ block }: { block: LeadCaptureBlock }) {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,12 +21,16 @@ export function LeadCapture() {
     const data = new FormData(e.currentTarget);
     const name = String(data.get('name') ?? '').trim();
     const email = String(data.get('email') ?? '').trim();
-    if (!name || !email) {
-      setError('Please share your name and email so your concierge can reach you.');
+    if (block.fields.name.required && !name) {
+      setError(block.errorRequiredMessage);
       return;
     }
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      setError('That email address looks incomplete.');
+    if (block.fields.email.required && !email) {
+      setError(block.errorRequiredMessage);
+      return;
+    }
+    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setError(block.errorInvalidEmailMessage);
       return;
     }
     setError(null);
@@ -34,29 +39,27 @@ export function LeadCapture() {
   }
 
   return (
-    <section id="lead" className="bg-surface-muted py-[clamp(78px,9vw,138px)]">
+    <section id={block.anchorId} className="bg-surface-muted py-[clamp(78px,9vw,138px)]">
       <Container className="grid items-center gap-[clamp(40px,5vw,84px)] lg:grid-cols-[1.1fr_1fr]">
         <Reveal>
-          <Kicker>Your Private Introduction</Kicker>
-          <h2 className="text-ink mt-[18px] max-w-[16ch] font-serif text-[clamp(30px,3.6vw,48px)] leading-[1.07] font-semibold tracking-[-0.01em]">
-            Let a concierge prepare your shortlist.
+          <Kicker>{block.kicker}</Kicker>
+          <h2 className="text-ink mt-[18px] max-w-[16ch] font-serif text-[clamp(30px,3.6vw,48px)] font-semibold leading-[1.07] tracking-[-0.01em]">
+            {block.heading}
           </h2>
           <p className="text-ink-soft mt-5 max-w-[54ch] font-sans text-[clamp(18px,1.35vw,21px)] leading-[1.7]">
-            Tell us a little about the life you are looking for. Your concierge will return with a
-            curated set of residences, pricing, and current incentives, with no obligation and no
-            sales floor.
+            {block.body}
           </p>
           <p className="border-line text-ink-soft mt-6 flex items-center gap-3 border-t pt-[22px] font-sans text-[15px]">
             <Waves className="text-accent-deep size-5 shrink-0" strokeWidth={1.7} />
             <span>
-              Beachfront residences also available,{' '}
+              {block.helperNote.beforeLinkText}
               <a
-                href="#lead"
+                href={block.helperNote.link.href}
                 className="border-cta text-primary hover:border-accent-deep border-b-[1.5px] pb-px font-bold transition-colors"
               >
-                by request
+                {block.helperNote.link.label}
               </a>
-              .
+              {block.helperNote.afterLinkText}
             </span>
           </p>
         </Reveal>
@@ -68,11 +71,10 @@ export function LeadCapture() {
                 <Check className="size-6" />
               </span>
               <h3 className="text-primary mt-5 font-serif text-[26px] font-semibold">
-                Your request is in.
+                {block.successHeading}
               </h3>
               <p className="text-ink-soft mt-3 font-sans text-[16px] leading-[1.6]">
-                Thank you. Your concierge will be in touch shortly with a shortlist prepared just
-                for you — no sales floor, no obligation.
+                {block.successBody}
               </p>
             </div>
           ) : (
@@ -85,44 +87,47 @@ export function LeadCapture() {
                 htmlFor="lead-name"
                 className="text-ink mb-[9px] block font-sans text-[14px] font-bold"
               >
-                Your name
+                {block.fields.name.label}
               </label>
               <input
                 id="lead-name"
                 name="name"
                 type="text"
-                placeholder="Jane & Robert Ellison"
+                placeholder={block.fields.name.placeholder}
                 autoComplete="name"
+                required={block.fields.name.required}
                 className={inputClass}
               />
 
               <label
                 htmlFor="lead-email"
-                className="text-ink mt-5 mb-[9px] block font-sans text-[14px] font-bold"
+                className="text-ink mb-[9px] mt-5 block font-sans text-[14px] font-bold"
               >
-                Email address
+                {block.fields.email.label}
               </label>
               <input
                 id="lead-email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={block.fields.email.placeholder}
                 autoComplete="email"
+                required={block.fields.email.required}
                 className={inputClass}
               />
 
               <label
                 htmlFor="lead-phone"
-                className="text-ink mt-5 mb-[9px] block font-sans text-[14px] font-bold"
+                className="text-ink mb-[9px] mt-5 block font-sans text-[14px] font-bold"
               >
-                Phone (optional)
+                {block.fields.phone.label}
               </label>
               <input
                 id="lead-phone"
                 name="phone"
                 type="tel"
-                placeholder="(239) 555-0148"
+                placeholder={block.fields.phone.placeholder}
                 autoComplete="tel"
+                required={block.fields.phone.required}
                 className={inputClass}
               />
 
@@ -136,11 +141,10 @@ export function LeadCapture() {
               )}
 
               <Button type="submit" variant="primary" size="full" className="mt-6">
-                Request My Shortlist <ArrowRight />
+                {block.submitLabel} <ArrowRight />
               </Button>
               <p className="text-muted mt-4 font-sans text-[13.5px] leading-[1.5]">
-                A private introduction to MVP Realty. We never share your details, and you will only
-                hear from your own concierge.
+                {block.privacyText}
               </p>
             </form>
           )}

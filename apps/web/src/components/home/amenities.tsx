@@ -1,3 +1,4 @@
+import type { AmenitiesBlock, AmenityIcon } from '@mvp-realty/api-contracts';
 import Image from 'next/image';
 import {
   CalendarDays,
@@ -12,9 +13,6 @@ import {
 import { Container } from '@/components/container';
 import { Reveal } from '@/components/reveal';
 import { SectionHeader } from '@/components/section-header';
-import { amenities } from '@/data/amenities';
-import { unsplash } from '@/data/images';
-import type { AmenityIcon } from '@/data/types';
 
 const ICONS: Record<AmenityIcon, LucideIcon> = {
   pool: Waves,
@@ -25,15 +23,15 @@ const ICONS: Record<AmenityIcon, LucideIcon> = {
   calendar: CalendarDays,
 };
 
-export function Amenities() {
+export function Amenities({ block }: { block: AmenitiesBlock }) {
   return (
-    <section id="amenities" className="bg-surface py-[clamp(78px,9vw,138px)]">
+    <section id={block.anchorId} className="bg-surface py-[clamp(78px,9vw,138px)]">
       <Container>
         <Reveal>
           <SectionHeader
-            kicker="The Resort at Your Door"
-            heading="Every day arranged like a stay at a fine resort."
-            lede="From the first cup of coffee at the clubhouse to sunset by the pool, the amenities are designed for an active, social life, and tended so you never have to think about the upkeep."
+            kicker={block.header.kicker}
+            heading={block.header.heading}
+            lede={block.header.lede}
           />
         </Reveal>
 
@@ -43,22 +41,20 @@ export function Amenities() {
         >
           <div className="shadow-lift relative order-1 min-h-[360px] overflow-hidden rounded-xl lg:order-none lg:min-h-[480px]">
             <Image
-              src={unsplash('1576013551627-0cc20b96c2a7', 1400)}
-              alt="Residents gathered with drinks at the resort pool deck on a sunny afternoon"
+              src={block.featureImage.src}
+              alt={block.featureImage.alt}
               fill
               sizes="(max-width: 1024px) 100vw, 55vw"
               className="object-cover"
             />
             <div className="absolute inset-x-0 bottom-0 z-10 bg-[linear-gradient(to_top,rgba(8,26,48,.86),transparent)] p-7 text-white">
-              <b className="block font-serif text-[24px] font-semibold">The Grand Clubhouse</b>
-              <span className="font-sans text-[15px] text-white/85">
-                Dining, events, and the pool deck where the day&rsquo;s plans get made.
-              </span>
+              <b className="block font-serif text-[24px] font-semibold">{block.featureTitle}</b>
+              <span className="font-sans text-[15px] text-white/85">{block.featureCaption}</span>
             </div>
           </div>
 
           <div className="border-line bg-line grid gap-px overflow-hidden rounded-xl border sm:grid-cols-2">
-            {amenities.map((a) => {
+            {block.amenities.map((a) => {
               const Icon = ICONS[a.icon];
               return (
                 <div
