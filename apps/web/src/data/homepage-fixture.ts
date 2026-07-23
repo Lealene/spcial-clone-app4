@@ -1,4 +1,4 @@
-import type { FooterGlobal, HeaderGlobal, HomepagePage } from '@mvp-realty/api-contracts';
+import type { FooterGlobal, HeaderGlobal, CmsPage } from '@mvp-realty/api-contracts';
 
 import { amenities } from './amenities';
 import { featuredCommunities, heroCommunities } from './communities';
@@ -62,7 +62,7 @@ export const footerFixture: FooterGlobal = {
   bottomRightTextFallback: 'Equal Housing Opportunity · Privacy · Terms',
 };
 
-export const homepageFixture: HomepagePage = {
+export const homepageFixture: CmsPage = {
   title: 'Home',
   slug: 'home',
   seo: {

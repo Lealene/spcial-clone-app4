@@ -280,26 +280,52 @@ export const leadCaptureBlockSchema = z.object({
 });
 export type LeadCaptureBlock = z.infer<typeof leadCaptureBlockSchema>;
 
-export const homepageBlockSchema = z.discriminatedUnion('blockType', [
-  heroBlockSchema,
-  communitiesStripBlockSchema,
-  featuredCommunitiesBlockSchema,
-  featuredResidencesBlockSchema,
-  lifestyleBlockSchema,
-  testimonialsBlockSchema,
-  amenitiesBlockSchema,
-  ownerIntroBlockSchema,
-  leadCaptureBlockSchema,
-]);
-export type HomepageBlock = z.infer<typeof homepageBlockSchema>;
+export const CMS_PAGE_BLOCK_TYPES = [
+  'hero',
+  'communitiesStrip',
+  'featuredCommunities',
+  'featuredResidences',
+  'lifestyle',
+  'testimonials',
+  'amenities',
+  'ownerIntro',
+  'leadCapture',
+] as const;
+export type CmsPageBlockType = (typeof CMS_PAGE_BLOCK_TYPES)[number];
+export const cmsPageBlockTypeSchema = z.enum(CMS_PAGE_BLOCK_TYPES);
 
-export const homepagePageSchema = z.object({
+export const cmsPageBlockSchemasByType = {
+  hero: heroBlockSchema,
+  communitiesStrip: communitiesStripBlockSchema,
+  featuredCommunities: featuredCommunitiesBlockSchema,
+  featuredResidences: featuredResidencesBlockSchema,
+  lifestyle: lifestyleBlockSchema,
+  testimonials: testimonialsBlockSchema,
+  amenities: amenitiesBlockSchema,
+  ownerIntro: ownerIntroBlockSchema,
+  leadCapture: leadCaptureBlockSchema,
+} satisfies Record<CmsPageBlockType, z.ZodTypeAny>;
+
+export const cmsPageBlockSchema = z.discriminatedUnion('blockType', [
+  cmsPageBlockSchemasByType.hero,
+  cmsPageBlockSchemasByType.communitiesStrip,
+  cmsPageBlockSchemasByType.featuredCommunities,
+  cmsPageBlockSchemasByType.featuredResidences,
+  cmsPageBlockSchemasByType.lifestyle,
+  cmsPageBlockSchemasByType.testimonials,
+  cmsPageBlockSchemasByType.amenities,
+  cmsPageBlockSchemasByType.ownerIntro,
+  cmsPageBlockSchemasByType.leadCapture,
+]);
+export type CmsPageBlock = z.infer<typeof cmsPageBlockSchema>;
+
+export const cmsPageSchema = z.object({
   title: z.string().min(1),
   slug: z.string().min(1),
   seo: pageSeoSchema.default({}),
-  layout: z.array(homepageBlockSchema),
+  layout: z.array(cmsPageBlockSchema),
 });
-export type HomepagePage = z.infer<typeof homepagePageSchema>;
+export type CmsPage = z.infer<typeof cmsPageSchema>;
 
 export const headerGlobalSchema = z.object({
   brandHomeLink: cmsLinkSchema,

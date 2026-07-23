@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { networkInterfaces } from 'os';
 import path from 'path';
 import { buildConfig } from 'payload';
 import { fileURLToPath } from 'url';
@@ -15,8 +16,19 @@ import { Header } from './globals/Header';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+function getLocalNetworkOrigins(port: number) {
+  return Object.values(networkInterfaces())
+    .flatMap((interfaces) => interfaces ?? [])
+    .filter((address) => address.family === 'IPv4' && !address.internal)
+    .map((address) => `http://${address.address}:${port}`);
+}
+
+const serverUrl = new URL(env.PAYLOAD_PUBLIC_SERVER_URL);
+const csrfOrigins = [serverUrl.origin, ...getLocalNetworkOrigins(Number(serverUrl.port || 3002))];
+
 export default buildConfig({
   serverURL: env.PAYLOAD_PUBLIC_SERVER_URL,
+  csrf: csrfOrigins,
   admin: {
     user: Users.slug,
     importMap: {

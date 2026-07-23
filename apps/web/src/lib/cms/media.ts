@@ -32,12 +32,14 @@ function toAbsoluteMediaUrl(url: string): string {
   return url;
 }
 
+const fallbackImageSrc = '/images/hero-naples-waterfront.jpg';
+
 export function normalizeMediaField(field: unknown, fallbackAlt = '') {
-  if (!isRecord(field)) return { src: '', alt: fallbackAlt || 'Image' };
+  if (!isRecord(field)) return { src: fallbackImageSrc, alt: fallbackAlt || 'Image' };
 
   const image = field.image;
   const media = isRecord(image) ? image : undefined;
-  const rawUrl = typeof media?.url === 'string' ? media.url : '';
+  const rawUrl = typeof media?.url === 'string' && media.url ? media.url : fallbackImageSrc;
   const rawAlt = typeof media?.alt === 'string' ? media.alt : fallbackAlt;
   const altOverride = typeof field.altOverride === 'string' ? field.altOverride : undefined;
   const caption = typeof field.caption === 'string' ? field.caption : undefined;

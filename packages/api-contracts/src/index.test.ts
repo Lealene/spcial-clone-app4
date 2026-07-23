@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { headerGlobalSchema, homepagePageSchema, leadCaptureBlockSchema } from './index.js';
+import {
+  CMS_PAGE_BLOCK_TYPES,
+  cmsCtaSchema,
+  cmsPageBlockSchemasByType,
+  cmsPageBlockTypeSchema,
+  cmsPageSchema,
+  headerGlobalSchema,
+  leadCaptureBlockSchema,
+} from './index.js';
 
 const image = {
   src: '/images/example.jpg',
@@ -9,11 +17,11 @@ const image = {
 
 const link = (label: string, href: string) => ({ label, href });
 
-describe('homepage CMS contracts', () => {
-  it('parses a minimal homepage with block defaults', () => {
-    const parsed = homepagePageSchema.parse({
-      title: 'Home',
-      slug: 'home',
+describe('CMS page contracts', () => {
+  it('parses a minimal CMS page with block defaults', () => {
+    const parsed = cmsPageSchema.parse({
+      title: 'About MVP',
+      slug: 'about',
       layout: [
         {
           blockType: 'hero',
@@ -54,11 +62,11 @@ describe('homepage CMS contracts', () => {
     }
   });
 
-  it('rejects unknown homepage blocks', () => {
+  it('rejects unknown CMS page blocks', () => {
     expect(() =>
-      homepagePageSchema.parse({
-        title: 'Home',
-        slug: 'home',
+      cmsPageSchema.parse({
+        title: 'About MVP',
+        slug: 'about',
         layout: [{ blockType: 'unknown' }],
       }),
     ).toThrow();
@@ -66,7 +74,7 @@ describe('homepage CMS contracts', () => {
 
   it('rejects invalid testimonial carousel intervals', () => {
     expect(() =>
-      homepagePageSchema.parse({
+      cmsPageSchema.parse({
         title: 'Home',
         slug: 'home',
         layout: [
@@ -115,6 +123,38 @@ describe('homepage CMS contracts', () => {
     expect(parsed.helperNote.icon).toBe('waves');
     expect(parsed.fields.name.required).toBe(true);
     expect(parsed.fields.phone.required).toBe(false);
+  });
+
+  it('keeps the CMS page block catalog exhaustive with schemas', () => {
+    expect(CMS_PAGE_BLOCK_TYPES).toEqual([
+      'hero',
+      'communitiesStrip',
+      'featuredCommunities',
+      'featuredResidences',
+      'lifestyle',
+      'testimonials',
+      'amenities',
+      'ownerIntro',
+      'leadCapture',
+    ]);
+    expect(Object.keys(cmsPageBlockSchemasByType)).toEqual([...CMS_PAGE_BLOCK_TYPES]);
+    expect(cmsPageBlockTypeSchema.parse('hero')).toBe('hero');
+  });
+
+  it('keeps link and CTA browser attributes in the shared contract', () => {
+    expect(
+      cmsCtaSchema.parse({
+        label: 'External',
+        href: 'https://example.com',
+        newTab: true,
+        ariaLabel: 'Open external site',
+      }),
+    ).toEqual({
+      label: 'External',
+      href: 'https://example.com',
+      newTab: true,
+      ariaLabel: 'Open external site',
+    });
   });
 
   it('parses header globals with menu labels', () => {

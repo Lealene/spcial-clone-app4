@@ -132,7 +132,7 @@ For the homepage document:
 - `slug`: `home`.
 - route: `/`.
 
-Page-level SEO is specified in [README.md](./README.md#page-seo-model). SEO should not be a homepage block.
+Page-level SEO is specified in [README.md](./README.md#page-seo-model). SEO should not be a CMS page block.
 
 ## Header Global: `SiteNav`
 
@@ -214,7 +214,7 @@ Current hardcoded content to migrate:
 
 ## Block: `hero`
 
-Source: [apps/web/src/components/home/hero.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/hero.tsx).
+Source: [apps/web/src/components/blocks/hero.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/hero.tsx).
 
 Purpose: first viewport hero with background image, eyebrow, headline, lede, and two CTAs.
 
@@ -257,7 +257,7 @@ Current hardcoded content to migrate:
 
 ## Block: `communitiesStrip`
 
-Source: [apps/web/src/components/home/communities-strip.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/communities-strip.tsx).
+Source: [apps/web/src/components/blocks/communities-strip.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/communities-strip.tsx).
 
 Purpose: compact strip of community links under the hero.
 
@@ -293,7 +293,7 @@ Current hardcoded content to migrate:
 
 ## Block: `featuredCommunities`
 
-Source: [apps/web/src/components/home/featured-communities.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/featured-communities.tsx).
+Source: [apps/web/src/components/blocks/featured-communities.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/featured-communities.tsx).
 
 Purpose: section header plus three featured community cards.
 
@@ -343,7 +343,7 @@ Current hardcoded content to migrate:
 
 ## Block: `featuredResidences`
 
-Source: [apps/web/src/components/home/featured-residences.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/featured-residences.tsx).
+Source: [apps/web/src/components/blocks/featured-residences.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/featured-residences.tsx).
 
 Purpose: section header plus listing/residence cards. This block needs listing-like data before the real `listings` collection exists.
 
@@ -401,7 +401,7 @@ Current hardcoded content to migrate:
 
 ## Block: `lifestyle`
 
-Source: [apps/web/src/components/home/the-life.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/the-life.tsx).
+Source: [apps/web/src/components/blocks/the-life.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/the-life.tsx).
 
 Purpose: full-width editorial image band with lifestyle copy and three image tiles.
 
@@ -437,7 +437,7 @@ Current hardcoded content to migrate:
 
 ## Block: `testimonials`
 
-Source: [apps/web/src/components/home/testimonials.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/testimonials.tsx).
+Source: [apps/web/src/components/blocks/testimonials.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/testimonials.tsx).
 
 Purpose: client carousel with resident portraits, quotes, tabs, counter, and arrow controls.
 
@@ -485,7 +485,7 @@ Current hardcoded content to migrate:
 
 ## Block: `amenities`
 
-Source: [apps/web/src/components/home/amenities.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/amenities.tsx).
+Source: [apps/web/src/components/blocks/amenities.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/amenities.tsx).
 
 Purpose: section header, large feature image with caption, and amenity icon cards.
 
@@ -519,7 +519,7 @@ Current hardcoded content to migrate:
 
 ## Block: `ownerIntro`
 
-Source: [apps/web/src/components/home/meet-the-owner.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/meet-the-owner.tsx).
+Source: [apps/web/src/components/blocks/meet-the-owner.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/meet-the-owner.tsx).
 
 Purpose: owner/concierge intro with portrait, badge, biography, signature, and credential stats.
 
@@ -562,7 +562,7 @@ Current hardcoded content to migrate:
 
 ## Block: `leadCapture`
 
-Source: [apps/web/src/components/home/lead-capture.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/home/lead-capture.tsx).
+Source: [apps/web/src/components/blocks/lead-capture.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/components/blocks/lead-capture.tsx).
 
 Purpose: lead capture copy and form. Submission is currently stubbed, but the content should be CMS-managed now.
 
@@ -622,7 +622,7 @@ Current hardcoded content to migrate:
 
 ## Design-Locked Fields
 
-Do not expose these as Payload fields for the homepage blocks:
+Do not expose these as Payload fields for the CMS page blocks:
 
 - button color or variant
 - button size
@@ -670,3 +670,5 @@ If a future business need requires style variants, add a constrained `layoutVari
 - Keep style decisions in React/CSS, not in Payload.
 - Add tests for block normalization.
 - Add at least one fixture matching the current homepage content.
+- Seed the local Payload homepage/header/footer with `pnpm -C apps/backend seed:homepage:local`.
+- Keep adapter-level fallbacks for partial editor content so missing copy/media does not crash page rendering.

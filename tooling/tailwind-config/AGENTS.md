@@ -5,5 +5,5 @@ Root rules in `/AGENTS.md` and tooling rules in `/tooling/AGENTS.md` apply. This
 ## Hard rules
 
 - Tailwind config is CSS-first; do not add `tailwind.config.js` unless the repo convention changes.
-- App semantic tokens live in app CSS; shared brand/typography tokens live here.
-- Token values may be placeholders until a design milestone locks them; verify current design docs before treating a palette as final.
+- The locked Sand semantic roles, shadcn token bridge, medium radius, Manrope font channels, shadows, and shared motion token names live here.
+- App CSS should stay thin: imports, shared `@source`, base rules, and app-only keyframes/motion implementations.

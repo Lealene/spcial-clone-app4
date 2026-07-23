@@ -18,8 +18,8 @@ Root rules in `/AGENTS.md` apply. This file carries only web-specific convention
 
 - `src/app/` — routes and layouts.
 - `src/env.ts` — Zod-validated env using `@t3-oss/env-nextjs`.
-- `src/app/globals.css` — Tailwind import, shared theme import, and app semantic tokens.
-- `src/components/` — app-specific components.
+- `src/app/globals.css` — Tailwind import, shared theme import, shared package `@source`, base rules, and app-only motion primitives.
+- `src/components/` — app-specific components. CMS-renderable page blocks live in `src/components/blocks/` and are registered through its `index.ts`/renderer.
 - `src/data/` — typed hardcoded data that mirrors future Payload schemas.
 - `next.config.ts` — workspace transpilation, image patterns, dev origins, and browser-to-terminal logging.
 - `next-env.d.ts` — generated; never edit.

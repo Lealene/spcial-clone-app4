@@ -1,6 +1,8 @@
 import type { FooterGlobal } from '@mvp-realty/api-contracts';
 import Link from 'next/link';
 
+import { getLinkRenderProps } from '@/lib/cms/links';
+
 export function SiteFooter({ footer }: { footer: FooterGlobal }) {
   return (
     <footer className="bg-primary-deep text-white/65">
@@ -27,8 +29,7 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
                 {col.links.map((item) => (
                   <li key={`${item.label}-${item.link.href}`}>
                     <Link
-                      href={item.link.href}
-                      aria-label={item.ariaLabel ?? item.link.ariaLabel}
+                      {...getLinkRenderProps(item.link, item.ariaLabel)}
                       className="hover:text-accent transition-colors"
                     >
                       {item.label}
@@ -46,7 +47,7 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
             {footer.bottomRightLinks.length > 0 ? (
               <span className="flex flex-wrap gap-3">
                 {footer.bottomRightLinks.map((link) => (
-                  <Link key={`${link.label}-${link.href}`} href={link.href}>
+                  <Link key={`${link.label}-${link.href}`} {...getLinkRenderProps(link)}>
                     {link.label}
                   </Link>
                 ))}

@@ -11,6 +11,21 @@ function pageHref(page: unknown): string {
   return slug ? `/${slug}` : '/';
 }
 
+export function hasLinkTarget(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  const type = typeof value.type === 'string' ? value.type : 'custom';
+  if (type === 'internal') return Boolean(value.page);
+  if (type === 'custom') return typeof value.customUrl === 'string' && value.customUrl.length > 0;
+  if (type === 'anchor') return typeof value.anchor === 'string' && value.anchor.length > 0;
+  if (type === 'phone') return typeof value.phone === 'string' && value.phone.length > 0;
+  if (type === 'email') return typeof value.email === 'string' && value.email.length > 0;
+  return false;
+}
+
+export function hasCtaTarget(value: unknown): boolean {
+  return isRecord(value) && hasLinkTarget(value.link);
+}
+
 export function normalizeLink(value: unknown, fallbackLabel = 'Link', fallbackHref = '#'): CmsLink {
   const link = isRecord(value) ? value : {};
   const type = typeof link.type === 'string' ? link.type : 'custom';
@@ -42,5 +57,15 @@ export function normalizeCta(
     ...nested,
     label: typeof cta.label === 'string' && cta.label ? cta.label : nested.label,
     ariaLabel: typeof cta.ariaLabel === 'string' ? cta.ariaLabel : nested.ariaLabel,
+  };
+}
+
+export function getLinkRenderProps(link: CmsLink | CmsCta, fallbackAriaLabel?: string) {
+  const ariaLabel = link.ariaLabel ?? fallbackAriaLabel;
+  return {
+    href: link.href,
+    'aria-label': ariaLabel,
+    target: link.newTab ? '_blank' : undefined,
+    rel: link.newTab ? 'noopener noreferrer' : undefined,
   };
 }

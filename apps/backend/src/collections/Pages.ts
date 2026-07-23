@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
 import { publishedOrAuthenticated } from '../access/publishedOrAuthenticated';
-import { homepageBlocks } from '../blocks';
+import { pageBlocks } from '../blocks';
 import { seoField } from '../fields/seo';
 
 const reservedSlugs = new Set(['admin', 'api', 'listings', 'communities', 'ui']);
@@ -54,12 +54,12 @@ export const Pages: CollectionConfig = {
     {
       name: 'layout',
       type: 'blocks',
-      blocks: homepageBlocks,
+      blocks: pageBlocks,
       required: true,
       minRows: 1,
       admin: {
         description:
-          'Sort homepage sections here. Visual style remains controlled by the frontend.',
+          'Sort reusable CMS page blocks here. Visual style remains controlled by the frontend.',
       },
     },
   ],

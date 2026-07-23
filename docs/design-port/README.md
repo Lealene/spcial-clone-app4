@@ -16,7 +16,7 @@ Goal: keep the `design-draft/` direction expressed as a **full Tailwind 4 + shad
 
 ## Approved design system
 
-- **Palette:** Sand, mapped once in `apps/web/src/app/globals.css` at `:root`.
+- **Palette:** Sand, mapped once in `tooling/tailwind-config/theme.css` and imported by `apps/web/src/app/globals.css`.
   - `--surface: #faf6f0`
   - `--surface-muted: #f4ede4`
   - `--surface-soft: #fbf8f1`
@@ -38,7 +38,7 @@ Goal: keep the `design-draft/` direction expressed as a **full Tailwind 4 + shad
 
 ## Color & theming spine
 
-- **Semantic role tokens only in components.** Components use role utilities: `bg-primary`, `bg-accent`, `bg-cta`, `bg-surface`, `bg-surface-muted`, `text-ink`, `text-ink-soft`, `text-muted`, `border-line`, `ring-ring`. **No hex and no palette scales (`ocean-600`, etc.) in any component.** Palette values live only in `globals.css`.
+- **Semantic role tokens only in components.** Components use role utilities: `bg-primary`, `bg-accent`, `bg-cta`, `bg-surface`, `bg-surface-muted`, `text-ink`, `text-ink-soft`, `text-muted`, `border-line`, `ring-ring`. **No hex and no palette scales (`ocean-600`, etc.) in any component.** Palette values live only in `@mvp-realty/tailwind-config/theme.css`.
 - **shadcn semantic tokens** (`--primary`, `--accent`, `--ring`, `--background`, `--foreground`, …) are wired to the same role variables so shadcn components inherit the approved Sand design.
 - **No runtime customization.** The former floating "Customize" switcher, `data-theme`/`data-font`/`data-radius` attributes, query-param support, and localStorage persistence were temporary client-showcase tooling and have been removed. Do not reintroduce theme/font/radius customization unless the user explicitly asks for it.
 
@@ -58,7 +58,7 @@ Section list per page, from the `data-screen-label` markers in `design-draft/*.h
 
 ### Home (`/`) — `index.html` — ✅ BUILT
 
-Hero · Communities strip · Featured Communities · Featured Residences · The Life (lifestyle) · Testimonials (carousel) · Amenities · Meet the Owner · Lead Capture. (Implemented in `apps/web/src/components/home/*`.)
+Hero · Communities strip · Featured Communities · Featured Residences · The Life (lifestyle) · Testimonials (carousel) · Amenities · Meet the Owner · Lead Capture. (Implemented in `apps/web/src/components/blocks/*`.)
 
 ### PLP — listings index (`/listings`) — `listings.html` — ✅ BUILT (decisions in "Resolved — PLP" below)
 
@@ -73,7 +73,7 @@ Implemented: `apps/web/src/app/listings/page.tsx`; data `apps/web/src/data/listi
 
 ### PDP — property detail (`/listings/[slug]`) — `property.html` — ✅ BUILT ("as-is", 2026-06-09)
 
-Dynamic route `apps/web/src/app/listings/[slug]/page.tsx` (`generateStaticParams` + `notFound`). Derivation `apps/web/src/data/property.ts` → `getPropertyView(slug)` combines the `Listing` with derived/templated PDP fields (pricePerSqft, deterministic address/year/lot/taxes/hoa/mls via a hash — no randomness; 5-image gallery; similar = same-community→same-type, max 3). Components `apps/web/src/components/listings/property-*.tsx` (gallery, header, actions, body, aside+tour-form, community band, similar). Homepage featured-residence cards deep-link here.
+Dynamic route `apps/web/src/app/listings/[slug]/page.tsx` (`generateStaticParams` + `notFound`). Derivation `apps/web/src/data/property.ts` → `getPropertyView(slug)` combines the `Listing` with derived/templated PDP fields (pricePerSqft, deterministic address/year/lot/taxes/hoa/mls via a hash — no randomness; 5-image gallery; similar = same-community→same-type, max 3). Components `apps/web/src/components/listings/property-*.tsx` (gallery, header, actions, body, aside+tour-form, community band, similar). CMS featured-residence cards deep-link here.
 
 - **Breadcrumb** · **Gallery** (multi-image, from `assets/communities/<community>/` sets) · **Title & Key Facts** (status, price + $/sqft, address, fact tiles: beds/baths/sqft/etc.).
 - Body sections: **Overview · Interior · Floor Plan · Exterior · Location · Listing Courtesy.**
@@ -82,7 +82,7 @@ Dynamic route `apps/web/src/app/listings/[slug]/page.tsx` (`generateStaticParams
 
 ### Community (`/communities/[slug]`) — `community.html` — ✅ BUILT ("as-is", 2026-06-09)
 
-Dynamic route `apps/web/src/app/communities/[slug]/page.tsx` over all 6 community slugs (`generateStaticParams` + `notFound`). Content `apps/web/src/data/community-detail.ts` → `getCommunityDetail(slug)` (`CommunityDetail`: prose, 6 facts, amenities, clubs, 2 models, review score+bars+cards, FAQs, gallery, similar-nearby). Components `apps/web/src/components/communities/*` (detail-header, header-actions, stars, gallery, section-tabs w/ IntersectionObserver scrollspy, main-content, amenity-icon, floorplan, agent-aside, similar-communities, tour-band). Homes-for-Sale rail reuses `ListingCard` over `listings.filter(community===slug)`; "See all" → `/listings?community=slug`. Homepage community cards deep-link here.
+Dynamic route `apps/web/src/app/communities/[slug]/page.tsx` over all 6 community slugs (`generateStaticParams` + `notFound`). Content `apps/web/src/data/community-detail.ts` → `getCommunityDetail(slug)` (`CommunityDetail`: prose, 6 facts, amenities, clubs, 2 models, review score+bars+cards, FAQs, gallery, similar-nearby). Components `apps/web/src/components/communities/*` (detail-header, header-actions, stars, gallery, section-tabs w/ IntersectionObserver scrollspy, main-content, amenity-icon, floorplan, agent-aside, similar-communities, tour-band). Homes-for-Sale rail reuses `ListingCard` over `listings.filter(community===slug)`; "See all" → `/listings?community=slug`. CMS community cards deep-link here.
 
 - **Header** · **Gallery** · **Tabbed nav** (`c-tabs`, anchors to blocks).
 - Blocks: **Overview · Homes for Sale · Models · Amenities · Lifestyle · Reviews · FAQs.**

@@ -199,7 +199,7 @@ export interface Page {
     includeInSitemap?: boolean | null;
   };
   /**
-   * Sort homepage sections here. Visual style remains controlled by the frontend.
+   * Sort reusable CMS page blocks here. Visual style remains controlled by the frontend.
    */
   layout: (
     | HeroBlock

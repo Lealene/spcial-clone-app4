@@ -5,7 +5,7 @@ import './globals.css';
 import { SiteNav } from '@/components/site-nav';
 import { SiteFooter } from '@/components/site-footer';
 import { env } from '@/env';
-import { getFooterContent, getHeaderContent } from '@/lib/cms/homepage';
+import { getFooterContent, getHeaderContent } from '@/lib/cms/site-chrome';
 
 const manrope = Manrope({
   variable: '--font-manrope',

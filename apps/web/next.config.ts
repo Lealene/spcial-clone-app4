@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const backendUrl = new URL(process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:3002');
+const backendHostAllowsLocalOptimization = ['localhost', '127.0.0.1', '::1'].includes(
+  backendUrl.hostname,
+);
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@mvp-realty/api-contracts', '@mvp-realty/ui'],
@@ -13,6 +16,7 @@ const nextConfig: NextConfig = {
   // Design-exploration phase: lifestyle/portrait photography we don't own yet
   // is sourced from Unsplash. Swap for owned assets (or Payload Media) later.
   images: {
+    dangerouslyAllowLocalIP: backendHostAllowsLocalOptimization,
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       {

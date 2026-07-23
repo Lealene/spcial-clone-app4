@@ -1,6 +1,6 @@
 # Homepage Payload CMS integration plan
 
-Status: **draft for expansion (2026-06-18)**.
+Status: **historical plan; active architecture is in `docs/architecture/cms-page-builder.md` (2026-06-19)**.
 
 Goal: make the current homepage fully editable from Payload CMS without losing the finished frontend design. The homepage should be the first document in a reusable page-builder model, so future pages can be created in Payload by selecting, configuring, and sorting blocks.
 
@@ -23,10 +23,10 @@ Add a separate site-wide SEO settings global later if needed for defaults such a
 ## Source facts
 
 - The current homepage route is [apps/web/src/app/page.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/app/page.tsx).
-- The homepage is already decomposed into section components under `apps/web/src/components/home/`.
+- The homepage is already decomposed into section components under `apps/web/src/components/blocks/`.
 - The current homepage order is: `Hero`, `CommunitiesStrip`, `FeaturedCommunities`, `FeaturedResidences`, `TheLife`, `Testimonials`, `Amenities`, `MeetTheOwner`, `LeadCapture`.
 - Global shell content is rendered in [apps/web/src/app/layout.tsx](/Users/jomar/Documents/work/mvp-realty/apps/web/src/app/layout.tsx) with `SiteNav` and `SiteFooter`.
-- The backend currently registers only `Users` and `Media` in [apps/backend/src/payload.config.ts](/Users/jomar/Documents/work/mvp-realty/apps/backend/src/payload.config.ts).
+- The backend registers `Users`, `Media`, and `Pages`, plus Header/Footer globals, in [apps/backend/src/payload.config.ts](/Users/jomar/Documents/work/mvp-realty/apps/backend/src/payload.config.ts).
 - `Media` already supports uploads and required alt text in [apps/backend/src/collections/Media.ts](/Users/jomar/Documents/work/mvp-realty/apps/backend/src/collections/Media.ts).
 - `@payloadcms/plugin-seo` is not currently installed; using it would be a new dependency decision.
 - The web app must not import from `apps/backend`; shared runtime-safe schemas and DTOs belong in `@mvp-realty/api-contracts`.
@@ -304,7 +304,7 @@ Each block should be a separate Payload `Block` config with:
 - `interfaceName`
 - fields that match the finished frontend component's content surface
 
-Initial homepage blocks:
+Initial CMS page blocks:
 
 - `hero`
 - `communitiesStrip`
@@ -336,11 +336,11 @@ Recommended staging:
 
 This avoids blocking homepage CMS work on full real estate domain modeling.
 
-### Listing-dependent homepage blocks before `listings` exists
+### Listing-dependent CMS page blocks before `listings` exists
 
 Do not add a Payload relationship field to `listings` until the `listings` collection exists. Payload relationship fields require a real `relationTo` target; pointing at a future collection would make the schema, admin UI, and generated types brittle.
 
-For homepage blocks that need listing/residence cards now, use manual card data first and normalize it to the same frontend DTO that future listing relationships will produce.
+For CMS page blocks that need listing/residence cards now, use manual card data first and normalize it to the same frontend DTO that future listing relationships will produce.
 
 Initial `featuredResidences` block shape:
 
@@ -582,9 +582,9 @@ Lead submission can remain stubbed at first, but the CMS block should be ready f
 Add a small CMS layer in `apps/web`:
 
 - `apps/web/src/lib/cms/client.ts`
-- `apps/web/src/lib/cms/pages.ts`
-- `apps/web/src/lib/cms/globals.ts`
-- `apps/web/src/lib/cms/metadata.ts`
+- `apps/web/src/lib/cms/pages/index.ts`
+- `apps/web/src/lib/cms/site-chrome.ts`
+- `apps/web/src/lib/cms/pages/metadata.ts`
 
 Responsibilities:
 
@@ -601,8 +601,8 @@ Render flow for `/`:
 
 1. Fetch page with slug `home`.
 2. If missing, use a temporary static fallback during migration or return `notFound()` after launch.
-3. Render `page.layout` with `BlockRenderer`.
-4. `BlockRenderer` switches on `block.blockType`.
+3. Render `page.layout` with `CmsPageBlocksRenderer`.
+4. `CmsPageBlocksRenderer` dispatches through the typed block registry keyed by `block.blockType`.
 5. Unknown blocks return `null`.
 6. Client components receive only serializable props.
 
@@ -662,19 +662,21 @@ Because `apps/web` and `apps/backend` are separate apps, Payload hooks cannot di
 
 ### Phase 2 - Seed homepage content
 
+Implemented locally by `apps/backend/src/scripts/seed-homepage.ts`, runnable with `pnpm -C apps/backend seed:homepage:local`.
+
 - Upload or create equivalent media entries.
-- Create the `home` page document.
+- Create or update the published `home` page document.
 - Populate page SEO fields from the current hardcoded homepage metadata.
 - Recreate current homepage section order in `layout`.
 - Populate manual block data from existing hardcoded content.
-- Create header and footer globals from current nav/footer constants.
+- Create or update header and footer globals from current nav/footer constants.
 
 ### Phase 3 - Frontend data wiring
 
 - Add CMS fetch helpers.
 - Add metadata mapping helper.
 - Convert homepage components to accept props.
-- Add `BlockRenderer`.
+- Add `CmsPageBlocksRenderer`.
 - Add `generateMetadata` for the homepage from CMS SEO data.
 - Replace the static homepage stack with CMS-driven layout rendering.
 - Wire header/footer globals into root layout.
