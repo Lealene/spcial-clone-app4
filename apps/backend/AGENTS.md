@@ -12,6 +12,7 @@ Root rules in `/AGENTS.md` apply. This file carries Payload and backend-specific
 - **Collections live in `src/collections/*.ts`.** Keep one collection per file and register collections in `src/payload.config.ts`.
 - **Access control belongs on collections.** Use `access: { read, create, update, delete }` per collection so REST, GraphQL, and local API enforce the same rules.
 - **Hooks belong on collections or fields.** Do not hide Payload lifecycle behavior in app route handlers.
+- **Page blocks follow the renderer standard.** Use `docs/architecture/payload-block-renderer-standard.md` and the global `payload-block-renderer` skill when available. Reuse shared enabled/anchor/link/media fields and keep authoring limits aligned with `@mvp-realty/api-contracts`.
 - **CSS side-effect imports are declared.** `src/types/css.d.ts` supports Payload CSS imports; do not remove it.
 - **Do not set `turbopack.root` in `next.config.ts`.** Auto-detection through the root lockfile is correct for this monorepo.
 

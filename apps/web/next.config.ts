@@ -1,5 +1,10 @@
 import type { NextConfig } from 'next';
 
+const backendUrl = new URL(process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:3002');
+const backendHostAllowsLocalOptimization = ['localhost', '127.0.0.1', '::1'].includes(
+  backendUrl.hostname,
+);
+
 const nextConfig: NextConfig = {
   transpilePackages: ['@mvp-realty/api-contracts', '@mvp-realty/ui'],
   // Dev-only. Next 16 blocks `/_next/*` dev resources (HMR + the hydration
@@ -11,7 +16,16 @@ const nextConfig: NextConfig = {
   // Design-exploration phase: lifestyle/portrait photography we don't own yet
   // is sourced from Unsplash. Swap for owned assets (or Payload Media) later.
   images: {
-    remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
+    dangerouslyAllowLocalIP: backendHostAllowsLocalOptimization,
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      {
+        protocol: backendUrl.protocol.replace(':', '') as 'http' | 'https',
+        hostname: backendUrl.hostname,
+        port: backendUrl.port,
+        pathname: '/api/media/file/**',
+      },
+    ],
   },
   // Next.js 16.2 — forward browser console to the dev terminal so AI agents
   // (and humans tailing the terminal) catch client-side errors without

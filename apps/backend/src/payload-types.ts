@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    pages: Page;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +79,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +89,14 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    header: Header;
+    footer: Footer;
+  };
+  globalsSelect: {
+    header: HeaderSelect<false> | HeaderSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -163,6 +171,662 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * Use home for the / route. Enter a lowercase kebab-case segment.
+   */
+  slug: string;
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    canonicalMode?: ('auto' | 'custom') | null;
+    canonicalUrl?: string | null;
+    index?: boolean | null;
+    follow?: boolean | null;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+    ogImage?: (number | null) | Media;
+    ogImageAlt?: string | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+    twitterTitle?: string | null;
+    twitterDescription?: string | null;
+    twitterImage?: (number | null) | Media;
+    twitterImageAlt?: string | null;
+    /**
+     * Reserved for the future generated sitemap.
+     */
+    includeInSitemap?: boolean | null;
+  };
+  /**
+   * Sort reusable CMS page blocks here. Visual style remains controlled by the frontend.
+   */
+  layout: (
+    | HeroBlock
+    | CommunitiesStripBlock
+    | FeaturedCommunitiesBlock
+    | FeaturedResidencesBlock
+    | LifestyleBlock
+    | TestimonialsBlock
+    | AmenitiesBlock
+    | OwnerIntroBlock
+    | LeadCaptureBlock
+  )[];
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  backgroundImage: {
+    /**
+     * Full-width landscape, at least 2000px wide.
+     */
+    image: number | Media;
+    /**
+     * Optional. Falls back to the media alt text.
+     */
+    altOverride?: string | null;
+  };
+  backgroundImagePriority?: boolean | null;
+  eyebrow: string;
+  heading: string;
+  headingAccent?: string | null;
+  lede: string;
+  primaryCta: {
+    label: string;
+    link: {
+      label?: string | null;
+      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    ariaLabel?: string | null;
+  };
+  secondaryCta?: {
+    label?: string | null;
+    link?: {
+      label?: string | null;
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    ariaLabel?: string | null;
+  };
+  showEyebrowMarker?: boolean | null;
+  showPrimaryCtaIcon?: boolean | null;
+  showSecondaryCta?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommunitiesStripBlock".
+ */
+export interface CommunitiesStripBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  /**
+   * Reserved for selected/query modes after communities exist.
+   */
+  sourceMode?: 'manual' | null;
+  /**
+   * Recommended: 3 compact community links.
+   */
+  items: {
+    name: string;
+    blurb: string;
+    slug: string;
+    link: {
+      label?: string | null;
+      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    icon?: 'mapPin' | null;
+    id?: string | null;
+  }[];
+  maxItems?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'communitiesStrip';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedCommunitiesBlock".
+ */
+export interface FeaturedCommunitiesBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  header: {
+    kicker: string;
+    heading: string;
+    /**
+     * Optional phrase rendered with the existing emphasized style.
+     */
+    headingAccent?: string | null;
+    lede?: string | null;
+  };
+  /**
+   * Reserved for selected/query modes after communities exist.
+   */
+  sourceMode?: 'manual' | null;
+  /**
+   * Community cards. Images should be 16:11.
+   */
+  manualCommunities: {
+    slug: string;
+    name: string;
+    locality: string;
+    rating: number;
+    reviews: number;
+    reviewsLabel?: string | null;
+    priceRange: string;
+    tags?:
+      | {
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    residences: number;
+    residencesLabel?: string | null;
+    nowSelling: number;
+    nowSellingLabel?: string | null;
+    image: {
+      /**
+       * Recommended aspect ratio: 16:11.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
+    link: {
+      label?: string | null;
+      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    id?: string | null;
+  }[];
+  moreLink?: {
+    label?: string | null;
+    link?: {
+      label?: string | null;
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    ariaLabel?: string | null;
+  };
+  emptyStateHeading?: string | null;
+  emptyStateBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featuredCommunities';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedResidencesBlock".
+ */
+export interface FeaturedResidencesBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  header: {
+    kicker: string;
+    heading: string;
+    /**
+     * Optional phrase rendered with the existing emphasized style.
+     */
+    headingAccent?: string | null;
+    lede?: string | null;
+  };
+  /**
+   * Reserved for selected/query modes after listings exist.
+   */
+  sourceMode?: 'manual' | null;
+  /**
+   * Residence cards. Images should be 4:3.
+   */
+  manualListings: {
+    slug: string;
+    name: string;
+    locality: string;
+    /**
+     * Reserved for future sorting; priceLabel is displayed.
+     */
+    price?: number | null;
+    priceLabel: string;
+    beds: number;
+    bedsLabel?: string | null;
+    baths: number;
+    bathsLabel?: string | null;
+    sqft: number;
+    sqftLabel?: string | null;
+    badge: string;
+    image: {
+      /**
+       * Recommended aspect ratio: 4:3.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
+    link: {
+      label?: string | null;
+      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    id?: string | null;
+  }[];
+  cardCtaLabel?: string | null;
+  moreLink?: {
+    label?: string | null;
+    link?: {
+      label?: string | null;
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    ariaLabel?: string | null;
+  };
+  emptyStateHeading?: string | null;
+  emptyStateBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featuredResidences';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LifestyleBlock".
+ */
+export interface LifestyleBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  backgroundImage: {
+    /**
+     * Full-width landscape, at least 2000px wide.
+     */
+    image: number | Media;
+    /**
+     * Optional. Falls back to the media alt text.
+     */
+    altOverride?: string | null;
+  };
+  kicker: string;
+  heading: string;
+  headingAccent?: string | null;
+  body: string;
+  /**
+   * Recommended: 3 tiles. Images should be 3:4.
+   */
+  tiles: {
+    caption: string;
+    image: {
+      /**
+       * Recommended aspect ratio: 3:4.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
+    link?: {
+      label?: string | null;
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    id?: string | null;
+  }[];
+  maxTiles?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'lifestyle';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock".
+ */
+export interface TestimonialsBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  kicker: string;
+  heading: string;
+  headingAccent?: string | null;
+  headingSuffix?: string | null;
+  /**
+   * Recommended: 1-8 stories. Portraits should be 4:5.
+   */
+  stories: {
+    slug: string;
+    name: string;
+    location: string;
+    quote: string;
+    portrait: {
+      /**
+       * Recommended aspect ratio: 4:5.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
+    tabAriaLabel?: string | null;
+    id?: string | null;
+  }[];
+  carouselAutoPlay?: boolean | null;
+  carouselIntervalMs?: number | null;
+  previousLabel?: string | null;
+  nextLabel?: string | null;
+  tabListLabel?: string | null;
+  counterSeparator?: string | null;
+  emptyStateHeading?: string | null;
+  emptyStateBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonials';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AmenitiesBlock".
+ */
+export interface AmenitiesBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  header: {
+    kicker: string;
+    heading: string;
+    /**
+     * Optional phrase rendered with the existing emphasized style.
+     */
+    headingAccent?: string | null;
+    lede?: string | null;
+  };
+  featureImage: {
+    /**
+     * Large landscape feature image.
+     */
+    image: number | Media;
+    /**
+     * Optional. Falls back to the media alt text.
+     */
+    altOverride?: string | null;
+  };
+  featureTitle: string;
+  featureCaption: string;
+  /**
+   * Recommended: 1-6 amenity cards.
+   */
+  amenities: {
+    icon: 'pool' | 'racquet' | 'fitness' | 'dining' | 'trails' | 'calendar';
+    title: string;
+    blurb: string;
+    id?: string | null;
+  }[];
+  emptyStateHeading?: string | null;
+  emptyStateBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'amenities';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OwnerIntroBlock".
+ */
+export interface OwnerIntroBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  portrait: {
+    /**
+     * Recommended aspect ratio: 4:5.
+     */
+    image: number | Media;
+    /**
+     * Optional. Falls back to the media alt text.
+     */
+    altOverride?: string | null;
+  };
+  portraitBadgeLabel?: string | null;
+  kicker: string;
+  heading: string;
+  headingAccent?: string | null;
+  titleLine: string;
+  bio: string;
+  signature: string;
+  /**
+   * Recommended: 1-4 credential stats.
+   */
+  credentials: {
+    value: string;
+    label: string;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ownerIntro';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LeadCaptureBlock".
+ */
+export interface LeadCaptureBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
+  anchorId?: string | null;
+  kicker: string;
+  heading: string;
+  body: string;
+  helperNote: {
+    icon?: 'waves' | null;
+    beforeLinkText?: string | null;
+    link: {
+      label: string;
+      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    afterLinkText?: string | null;
+  };
+  /**
+   * Field set is code-defined; labels and placeholders are editable.
+   */
+  fields: {
+    name: {
+      label: string;
+      placeholder: string;
+      required?: boolean | null;
+    };
+    email: {
+      label: string;
+      placeholder: string;
+      required?: boolean | null;
+    };
+    phone: {
+      label: string;
+      placeholder: string;
+      required?: boolean | null;
+    };
+  };
+  submitLabel: string;
+  privacyText: string;
+  successHeading: string;
+  successBody: string;
+  errorRequiredMessage: string;
+  errorInvalidEmailMessage: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'leadCapture';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -192,6 +856,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -277,6 +945,518 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        canonicalMode?: T;
+        canonicalUrl?: T;
+        index?: T;
+        follow?: T;
+        ogTitle?: T;
+        ogDescription?: T;
+        ogImage?: T;
+        ogImageAlt?: T;
+        twitterCard?: T;
+        twitterTitle?: T;
+        twitterDescription?: T;
+        twitterImage?: T;
+        twitterImageAlt?: T;
+        includeInSitemap?: T;
+      };
+  layout?:
+    | T
+    | {
+        hero?: T | HeroBlockSelect<T>;
+        communitiesStrip?: T | CommunitiesStripBlockSelect<T>;
+        featuredCommunities?: T | FeaturedCommunitiesBlockSelect<T>;
+        featuredResidences?: T | FeaturedResidencesBlockSelect<T>;
+        lifestyle?: T | LifestyleBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
+        amenities?: T | AmenitiesBlockSelect<T>;
+        ownerIntro?: T | OwnerIntroBlockSelect<T>;
+        leadCapture?: T | LeadCaptureBlockSelect<T>;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  backgroundImage?:
+    | T
+    | {
+        image?: T;
+        altOverride?: T;
+      };
+  backgroundImagePriority?: T;
+  eyebrow?: T;
+  heading?: T;
+  headingAccent?: T;
+  lede?: T;
+  primaryCta?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        ariaLabel?: T;
+      };
+  secondaryCta?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        ariaLabel?: T;
+      };
+  showEyebrowMarker?: T;
+  showPrimaryCtaIcon?: T;
+  showSecondaryCta?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CommunitiesStripBlock_select".
+ */
+export interface CommunitiesStripBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  sourceMode?: T;
+  items?:
+    | T
+    | {
+        name?: T;
+        blurb?: T;
+        slug?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        icon?: T;
+        id?: T;
+      };
+  maxItems?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedCommunitiesBlock_select".
+ */
+export interface FeaturedCommunitiesBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  header?:
+    | T
+    | {
+        kicker?: T;
+        heading?: T;
+        headingAccent?: T;
+        lede?: T;
+      };
+  sourceMode?: T;
+  manualCommunities?:
+    | T
+    | {
+        slug?: T;
+        name?: T;
+        locality?: T;
+        rating?: T;
+        reviews?: T;
+        reviewsLabel?: T;
+        priceRange?: T;
+        tags?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        residences?: T;
+        residencesLabel?: T;
+        nowSelling?: T;
+        nowSellingLabel?: T;
+        image?:
+          | T
+          | {
+              image?: T;
+              altOverride?: T;
+            };
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        id?: T;
+      };
+  moreLink?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        ariaLabel?: T;
+      };
+  emptyStateHeading?: T;
+  emptyStateBody?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedResidencesBlock_select".
+ */
+export interface FeaturedResidencesBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  header?:
+    | T
+    | {
+        kicker?: T;
+        heading?: T;
+        headingAccent?: T;
+        lede?: T;
+      };
+  sourceMode?: T;
+  manualListings?:
+    | T
+    | {
+        slug?: T;
+        name?: T;
+        locality?: T;
+        price?: T;
+        priceLabel?: T;
+        beds?: T;
+        bedsLabel?: T;
+        baths?: T;
+        bathsLabel?: T;
+        sqft?: T;
+        sqftLabel?: T;
+        badge?: T;
+        image?:
+          | T
+          | {
+              image?: T;
+              altOverride?: T;
+            };
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        id?: T;
+      };
+  cardCtaLabel?: T;
+  moreLink?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        ariaLabel?: T;
+      };
+  emptyStateHeading?: T;
+  emptyStateBody?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LifestyleBlock_select".
+ */
+export interface LifestyleBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  backgroundImage?:
+    | T
+    | {
+        image?: T;
+        altOverride?: T;
+      };
+  kicker?: T;
+  heading?: T;
+  headingAccent?: T;
+  body?: T;
+  tiles?:
+    | T
+    | {
+        caption?: T;
+        image?:
+          | T
+          | {
+              image?: T;
+              altOverride?: T;
+            };
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        id?: T;
+      };
+  maxTiles?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock_select".
+ */
+export interface TestimonialsBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  kicker?: T;
+  heading?: T;
+  headingAccent?: T;
+  headingSuffix?: T;
+  stories?:
+    | T
+    | {
+        slug?: T;
+        name?: T;
+        location?: T;
+        quote?: T;
+        portrait?:
+          | T
+          | {
+              image?: T;
+              altOverride?: T;
+            };
+        tabAriaLabel?: T;
+        id?: T;
+      };
+  carouselAutoPlay?: T;
+  carouselIntervalMs?: T;
+  previousLabel?: T;
+  nextLabel?: T;
+  tabListLabel?: T;
+  counterSeparator?: T;
+  emptyStateHeading?: T;
+  emptyStateBody?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AmenitiesBlock_select".
+ */
+export interface AmenitiesBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  header?:
+    | T
+    | {
+        kicker?: T;
+        heading?: T;
+        headingAccent?: T;
+        lede?: T;
+      };
+  featureImage?:
+    | T
+    | {
+        image?: T;
+        altOverride?: T;
+      };
+  featureTitle?: T;
+  featureCaption?: T;
+  amenities?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        blurb?: T;
+        id?: T;
+      };
+  emptyStateHeading?: T;
+  emptyStateBody?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OwnerIntroBlock_select".
+ */
+export interface OwnerIntroBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  portrait?:
+    | T
+    | {
+        image?: T;
+        altOverride?: T;
+      };
+  portraitBadgeLabel?: T;
+  kicker?: T;
+  heading?: T;
+  headingAccent?: T;
+  titleLine?: T;
+  bio?: T;
+  signature?: T;
+  credentials?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LeadCaptureBlock_select".
+ */
+export interface LeadCaptureBlockSelect<T extends boolean = true> {
+  enabled?: T;
+  anchorId?: T;
+  kicker?: T;
+  heading?: T;
+  body?: T;
+  helperNote?:
+    | T
+    | {
+        icon?: T;
+        beforeLinkText?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        afterLinkText?: T;
+      };
+  fields?:
+    | T
+    | {
+        name?:
+          | T
+          | {
+              label?: T;
+              placeholder?: T;
+              required?: T;
+            };
+        email?:
+          | T
+          | {
+              label?: T;
+              placeholder?: T;
+              required?: T;
+            };
+        phone?:
+          | T
+          | {
+              label?: T;
+              placeholder?: T;
+              required?: T;
+            };
+      };
+  submitLabel?: T;
+  privacyText?: T;
+  successHeading?: T;
+  successBody?: T;
+  errorRequiredMessage?: T;
+  errorInvalidEmailMessage?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -314,6 +1494,270 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header".
+ */
+export interface Header {
+  id: number;
+  brandHomeLink: {
+    label: string;
+    type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+    page?: (number | null) | Page;
+    /**
+     * Use a single-leading-slash app route or an HTTP(S) URL.
+     */
+    customUrl?: string | null;
+    /**
+     * Examples: #lead, /#lead.
+     */
+    anchor?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    newTab?: boolean | null;
+    ariaLabel?: string | null;
+  };
+  brandLabel: string;
+  brandMarkAlt?: string | null;
+  navItems?:
+    | {
+        label: string;
+        link: {
+          label: string;
+          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+          page?: (number | null) | Page;
+          /**
+           * Use a single-leading-slash app route or an HTTP(S) URL.
+           */
+          customUrl?: string | null;
+          /**
+           * Examples: #lead, /#lead.
+           */
+          anchor?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          newTab?: boolean | null;
+          ariaLabel?: string | null;
+        };
+        ariaLabel?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  primaryCta: {
+    label: string;
+    link: {
+      label?: string | null;
+      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    ariaLabel?: string | null;
+  };
+  mobileMenuLabel: string;
+  mobileMenuCloseLabel: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  brandName: string;
+  brandAccentText?: string | null;
+  brandBlurb: string;
+  columns?:
+    | {
+        title: string;
+        links?:
+          | {
+              label: string;
+              link: {
+                label: string;
+                type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+                page?: (number | null) | Page;
+                /**
+                 * Use a single-leading-slash app route or an HTTP(S) URL.
+                 */
+                customUrl?: string | null;
+                /**
+                 * Examples: #lead, /#lead.
+                 */
+                anchor?: string | null;
+                phone?: string | null;
+                email?: string | null;
+                newTab?: boolean | null;
+                ariaLabel?: string | null;
+              };
+              ariaLabel?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  bottomLeftText: string;
+  bottomRightLinks?:
+    | {
+        link: {
+          label: string;
+          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+          page?: (number | null) | Page;
+          /**
+           * Use a single-leading-slash app route or an HTTP(S) URL.
+           */
+          customUrl?: string | null;
+          /**
+           * Examples: #lead, /#lead.
+           */
+          anchor?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          newTab?: boolean | null;
+          ariaLabel?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  bottomRightTextFallback?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header_select".
+ */
+export interface HeaderSelect<T extends boolean = true> {
+  brandHomeLink?:
+    | T
+    | {
+        label?: T;
+        type?: T;
+        page?: T;
+        customUrl?: T;
+        anchor?: T;
+        phone?: T;
+        email?: T;
+        newTab?: T;
+        ariaLabel?: T;
+      };
+  brandLabel?: T;
+  brandMarkAlt?: T;
+  navItems?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        ariaLabel?: T;
+        id?: T;
+      };
+  primaryCta?:
+    | T
+    | {
+        label?: T;
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        ariaLabel?: T;
+      };
+  mobileMenuLabel?: T;
+  mobileMenuCloseLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  brandName?: T;
+  brandAccentText?: T;
+  brandBlurb?: T;
+  columns?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              link?:
+                | T
+                | {
+                    label?: T;
+                    type?: T;
+                    page?: T;
+                    customUrl?: T;
+                    anchor?: T;
+                    phone?: T;
+                    email?: T;
+                    newTab?: T;
+                    ariaLabel?: T;
+                  };
+              ariaLabel?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  bottomLeftText?: T;
+  bottomRightLinks?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              customUrl?: T;
+              anchor?: T;
+              phone?: T;
+              email?: T;
+              newTab?: T;
+              ariaLabel?: T;
+            };
+        id?: T;
+      };
+  bottomRightTextFallback?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

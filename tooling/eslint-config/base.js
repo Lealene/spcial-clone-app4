@@ -16,6 +16,11 @@ export default [
       '**/*.tsbuildinfo',
     ],
   },
+  {
+    linterOptions: {
+      reportUnusedDisableDirectives: 'error',
+    },
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -25,6 +30,15 @@ export default [
       globals: { ...globals.node },
     },
     rules: {
+      // Keep module interfaces and data flow explicit; avoid broad style-only rules.
+      'default-param-last': 'error',
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'no-param-reassign': ['error', { props: true }],
+      'no-promise-executor-return': 'error',
+      'no-return-assign': ['error', 'always'],
+      'no-unmodified-loop-condition': 'error',
+      'no-useless-assignment': 'error',
+      'prefer-promise-reject-errors': 'error',
       'no-restricted-syntax': [
         'error',
         {
@@ -51,7 +65,10 @@ export default [
       '**/*.config.{ts,js,mjs}',
       '**/eslint.config.{ts,js,mjs}',
     ],
-    rules: { 'no-restricted-syntax': 'off' },
+    rules: {
+      'no-param-reassign': 'off',
+      'no-restricted-syntax': 'off',
+    },
   },
   prettier,
 ];

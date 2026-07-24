@@ -2,7 +2,7 @@ name: mvp_realty_db
 
 services:
   postgres:
-    image: pgvector/pgvector:pg17
+    image: postgres:17
     container_name: mvp_realty_db-postgres
     restart: unless-stopped
     environment:

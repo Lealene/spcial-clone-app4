@@ -1,7 +1,7 @@
 /**
  * Hand-authored content types, shaped to mirror a future Payload schema so the
  * page components can later swap to backend fetches behind the same shapes.
- * No backend wiring yet — see docs/design-port-decisions.md.
+ * No backend wiring yet — see docs/design-port/README.md.
  */
 
 export type Image = {

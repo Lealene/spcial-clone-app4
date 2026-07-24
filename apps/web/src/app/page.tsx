@@ -1,25 +1,22 @@
-import { Hero } from '@/components/home/hero';
-import { CommunitiesStrip } from '@/components/home/communities-strip';
-import { FeaturedCommunities } from '@/components/home/featured-communities';
-import { FeaturedResidences } from '@/components/home/featured-residences';
-import { TheLife } from '@/components/home/the-life';
-import { Testimonials } from '@/components/home/testimonials';
-import { Amenities } from '@/components/home/amenities';
-import { MeetTheOwner } from '@/components/home/meet-the-owner';
-import { LeadCapture } from '@/components/home/lead-capture';
+import type { Metadata } from 'next';
 
-export default function HomePage() {
-  return (
-    <>
-      <Hero />
-      <CommunitiesStrip />
-      <FeaturedCommunities />
-      <FeaturedResidences />
-      <TheLife />
-      <Testimonials />
-      <Amenities />
-      <MeetTheOwner />
-      <LeadCapture />
-    </>
-  );
+import { CmsPageBlocksRenderer } from '@/components/blocks';
+import { homepageFixture } from '@/data/homepage-fixture';
+import { getPageContent } from '@/lib/cms/pages';
+import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
+
+async function getHomePageContent() {
+  const result = await getPageContent('home');
+  return result.status === 'ready' ? result.page : homepageFixture;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getHomePageContent();
+  return getCmsPageMetadata(page, '/');
+}
+
+export default async function HomePage() {
+  const page = await getHomePageContent();
+
+  return <CmsPageBlocksRenderer blocks={page.layout} />;
 }

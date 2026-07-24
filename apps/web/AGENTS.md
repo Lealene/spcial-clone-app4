@@ -13,21 +13,24 @@ Root rules in `/AGENTS.md` apply. This file carries only web-specific convention
 - **Tailwind CSS-first.** Theme tokens live in `@mvp-realty/tailwind-config/theme.css` and app semantic tokens live in `src/app/globals.css`. No `tailwind.config.js`.
 - **Path alias `@/*` maps to `./src/*`.** Use `paths`; do not add `baseUrl`.
 - **Do not import from `apps/backend`.** Shared schemas and types belong in `@mvp-realty/api-contracts`.
+- **Payload blocks follow the renderer standard.** Use `docs/architecture/payload-block-renderer-standard.md`: validate the envelope with `layout: unknown[]`, isolate each block, never fabricate editorial content, and preserve valid siblings.
 
 ## Layout
 
 - `src/app/` — routes and layouts.
 - `src/env.ts` — Zod-validated env using `@t3-oss/env-nextjs`.
-- `src/app/globals.css` — Tailwind import, shared theme import, and app semantic tokens.
-- `src/components/` — app-specific components.
+- `src/app/globals.css` — Tailwind import, shared theme import, shared package `@source`, base rules, and app-only motion primitives.
+- `src/components/` — app-specific components. CMS-renderable page blocks live in `src/components/blocks/` and are registered through its `index.ts`/renderer.
 - `src/data/` — typed hardcoded data that mirrors future Payload schemas.
 - `next.config.ts` — workspace transpilation, image patterns, dev origins, and browser-to-terminal logging.
 - `next-env.d.ts` — generated; never edit.
 
 ## Design-port rules
 
-For design work, read `docs/design-port-decisions.md` before editing web UI.
+For design work, read `docs/design-port/README.md` before editing web UI.
 
+- The approved design system is fixed to the Sand palette, Manrope typeface, and medium roundness (`--radius: 0.625rem`).
+- Do not reintroduce theme, font, radius, or localStorage/query-param customization unless the user explicitly asks for it.
 - Components use semantic role tokens such as `bg-primary`, `bg-accent`, `bg-cta`, `bg-surface`, `text-ink`, `text-muted`, `border-line`, and `ring-ring`.
 - Do not put raw hex values or palette scale utilities in components.
 - Keep generic primitives in `@mvp-realty/ui`; keep marketing/listings/community compositions in this app.

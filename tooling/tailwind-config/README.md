@@ -1,6 +1,6 @@
 # @mvp-realty/tailwind-config
 
-Tailwind v4 design tokens for the monorepo.
+Tailwind v4 CSS-first design tokens for the monorepo.
 
 ## Usage
 
@@ -12,6 +12,4 @@ Tailwind v4 design tokens for the monorepo.
 
 ## Status
 
-> **Tokens are placeholder values.** Replace them with your project's design
-> system (color ramps, typography scale, spacing, motion). Do not treat the
-> current OKLCH values as canonical.
+This package owns the locked Sand design system: semantic role tokens, the shadcn token bridge, medium radius, Manrope font channels, shared shadows, and shared animation token names. App CSS should stay thin and hold only imports, shared source scanning directives, base rules, and app-only keyframes.

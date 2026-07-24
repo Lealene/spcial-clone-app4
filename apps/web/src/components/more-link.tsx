@@ -9,16 +9,25 @@ export function MoreLink({
   href,
   children,
   className,
+  target,
+  rel,
+  'aria-label': ariaLabel,
 }: {
   href: string;
   children: ReactNode;
   className?: string;
+  target?: '_blank';
+  rel?: string;
+  'aria-label'?: string;
 }) {
   return (
     <Link
       href={href}
+      target={target}
+      rel={rel}
+      aria-label={ariaLabel}
       className={cn(
-        'group border-cta text-primary inline-flex items-center gap-2.5 border-b-[1.5px] pb-[5px] font-sans text-[15px] font-bold tracking-[0.02em] whitespace-nowrap transition-[gap] duration-300 hover:gap-[14px]',
+        'border-cta text-primary group inline-flex items-center gap-2.5 whitespace-nowrap border-b-[1.5px] pb-[5px] font-sans text-[15px] font-bold tracking-[0.02em] transition-[gap] duration-300 hover:gap-[14px]',
         className,
       )}
     >
