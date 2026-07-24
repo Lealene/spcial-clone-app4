@@ -6,7 +6,10 @@ import type { CmsPage } from '@mvp-realty/api-contracts';
 export function getCmsPageMetadata(page: CmsPage, path: string): Metadata {
   const title = page.seo.metaTitle ?? page.title;
   const description = page.seo.metaDescription;
-  const canonical = page.seo.canonicalUrl ?? new URL(path, env.NEXT_PUBLIC_SITE_URL).toString();
+  const canonical =
+    page.seo.canonicalMode === 'custom' && page.seo.canonicalUrl
+      ? new URL(page.seo.canonicalUrl, env.NEXT_PUBLIC_SITE_URL).toString()
+      : new URL(path, env.NEXT_PUBLIC_SITE_URL).toString();
   const ogImage = page.seo.ogImage;
   const twitterImage = page.seo.twitterImage ?? ogImage;
 
@@ -40,7 +43,14 @@ export function getCmsPageMetadata(page: CmsPage, path: string): Metadata {
       card: page.seo.twitterCard,
       title: page.seo.twitterTitle ?? page.seo.ogTitle ?? title,
       description: page.seo.twitterDescription ?? page.seo.ogDescription ?? description,
-      images: twitterImage ? [twitterImage.src] : undefined,
+      images: twitterImage
+        ? [
+            {
+              url: twitterImage.src,
+              alt: page.seo.twitterImageAlt ?? twitterImage.alt,
+            },
+          ]
+        : undefined,
     },
   };
 }

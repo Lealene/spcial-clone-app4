@@ -177,7 +177,7 @@ export interface Page {
   id: number;
   title: string;
   /**
-   * Use home for the / route. Do not include slashes.
+   * Use home for the / route. Enter a lowercase kebab-case segment.
    */
   slug: string;
   seo?: {
@@ -196,6 +196,9 @@ export interface Page {
     twitterDescription?: string | null;
     twitterImage?: (number | null) | Media;
     twitterImageAlt?: string | null;
+    /**
+     * Reserved for the future generated sitemap.
+     */
     includeInSitemap?: boolean | null;
   };
   /**
@@ -222,7 +225,11 @@ export interface Page {
  */
 export interface HeroBlock {
   /**
-   * Optional plain section ID without #.
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
    */
   anchorId?: string | null;
   backgroundImage: {
@@ -243,11 +250,11 @@ export interface HeroBlock {
   primaryCta: {
     label: string;
     link: {
-      label: string;
+      label?: string | null;
       type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
       page?: (number | null) | Page;
       /**
-       * Use for existing app routes such as /listings until they are CMS pages.
+       * Use a single-leading-slash app route or an HTTP(S) URL.
        */
       customUrl?: string | null;
       /**
@@ -261,14 +268,14 @@ export interface HeroBlock {
     };
     ariaLabel?: string | null;
   };
-  secondaryCta: {
+  secondaryCta?: {
     label?: string | null;
-    link: {
+    link?: {
       label?: string | null;
-      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
       page?: (number | null) | Page;
       /**
-       * Use for existing app routes such as /listings until they are CMS pages.
+       * Use a single-leading-slash app route or an HTTP(S) URL.
        */
       customUrl?: string | null;
       /**
@@ -294,40 +301,45 @@ export interface HeroBlock {
  * via the `definition` "CommunitiesStripBlock".
  */
 export interface CommunitiesStripBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   /**
-   * Selected/query modes are added after communities exist.
+   * Reserved for selected/query modes after communities exist.
    */
   sourceMode?: 'manual' | null;
   /**
    * Recommended: 3 compact community links.
    */
-  items?:
-    | {
-        name: string;
-        blurb: string;
-        slug: string;
-        link: {
-          label: string;
-          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
-          page?: (number | null) | Page;
-          /**
-           * Use for existing app routes such as /listings until they are CMS pages.
-           */
-          customUrl?: string | null;
-          /**
-           * Examples: #lead, /#lead.
-           */
-          anchor?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          newTab?: boolean | null;
-          ariaLabel?: string | null;
-        };
-        icon?: 'mapPin' | null;
-        id?: string | null;
-      }[]
-    | null;
+  items: {
+    name: string;
+    blurb: string;
+    slug: string;
+    link: {
+      label?: string | null;
+      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    icon?: 'mapPin' | null;
+    id?: string | null;
+  }[];
   maxItems?: number | null;
   id?: string | null;
   blockName?: string | null;
@@ -338,6 +350,13 @@ export interface CommunitiesStripBlock {
  * via the `definition` "FeaturedCommunitiesBlock".
  */
 export interface FeaturedCommunitiesBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   header: {
     kicker: string;
@@ -349,69 +368,67 @@ export interface FeaturedCommunitiesBlock {
     lede?: string | null;
   };
   /**
-   * Selected/query modes are added after communities exist.
+   * Reserved for selected/query modes after communities exist.
    */
   sourceMode?: 'manual' | null;
   /**
    * Community cards. Images should be 16:11.
    */
-  manualCommunities?:
-    | {
-        slug: string;
-        name: string;
-        locality: string;
-        rating: number;
-        reviews: number;
-        reviewsLabel?: string | null;
-        priceRange: string;
-        tags?:
-          | {
-              label: string;
-              id?: string | null;
-            }[]
-          | null;
-        residences: number;
-        residencesLabel?: string | null;
-        nowSelling: number;
-        nowSellingLabel?: string | null;
-        image: {
-          /**
-           * Recommended aspect ratio: 16:11.
-           */
-          image: number | Media;
-          /**
-           * Optional. Falls back to the media alt text.
-           */
-          altOverride?: string | null;
-        };
-        link: {
+  manualCommunities: {
+    slug: string;
+    name: string;
+    locality: string;
+    rating: number;
+    reviews: number;
+    reviewsLabel?: string | null;
+    priceRange: string;
+    tags?:
+      | {
           label: string;
-          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
-          page?: (number | null) | Page;
-          /**
-           * Use for existing app routes such as /listings until they are CMS pages.
-           */
-          customUrl?: string | null;
-          /**
-           * Examples: #lead, /#lead.
-           */
-          anchor?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          newTab?: boolean | null;
-          ariaLabel?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
-  moreLink: {
-    label?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    residences: number;
+    residencesLabel?: string | null;
+    nowSelling: number;
+    nowSellingLabel?: string | null;
+    image: {
+      /**
+       * Recommended aspect ratio: 16:11.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
     link: {
       label?: string | null;
       type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
       page?: (number | null) | Page;
       /**
-       * Use for existing app routes such as /listings until they are CMS pages.
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    id?: string | null;
+  }[];
+  moreLink?: {
+    label?: string | null;
+    link?: {
+      label?: string | null;
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
        */
       customUrl?: string | null;
       /**
@@ -436,6 +453,13 @@ export interface FeaturedCommunitiesBlock {
  * via the `definition` "FeaturedResidencesBlock".
  */
 export interface FeaturedResidencesBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   header: {
     kicker: string;
@@ -447,65 +471,66 @@ export interface FeaturedResidencesBlock {
     lede?: string | null;
   };
   /**
-   * Selected/query modes are added after listings exist.
+   * Reserved for selected/query modes after listings exist.
    */
   sourceMode?: 'manual' | null;
   /**
    * Residence cards. Images should be 4:3.
    */
-  manualListings?:
-    | {
-        slug: string;
-        name: string;
-        locality: string;
-        price?: number | null;
-        priceLabel: string;
-        beds: number;
-        bedsLabel?: string | null;
-        baths: number;
-        bathsLabel?: string | null;
-        sqft: number;
-        sqftLabel?: string | null;
-        badge: string;
-        image: {
-          /**
-           * Recommended aspect ratio: 4:3.
-           */
-          image: number | Media;
-          /**
-           * Optional. Falls back to the media alt text.
-           */
-          altOverride?: string | null;
-        };
-        link: {
-          label: string;
-          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
-          page?: (number | null) | Page;
-          /**
-           * Use for existing app routes such as /listings until they are CMS pages.
-           */
-          customUrl?: string | null;
-          /**
-           * Examples: #lead, /#lead.
-           */
-          anchor?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          newTab?: boolean | null;
-          ariaLabel?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
-  cardCtaLabel?: string | null;
-  moreLink: {
-    label?: string | null;
+  manualListings: {
+    slug: string;
+    name: string;
+    locality: string;
+    /**
+     * Reserved for future sorting; priceLabel is displayed.
+     */
+    price?: number | null;
+    priceLabel: string;
+    beds: number;
+    bedsLabel?: string | null;
+    baths: number;
+    bathsLabel?: string | null;
+    sqft: number;
+    sqftLabel?: string | null;
+    badge: string;
+    image: {
+      /**
+       * Recommended aspect ratio: 4:3.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
     link: {
       label?: string | null;
       type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
       page?: (number | null) | Page;
       /**
-       * Use for existing app routes such as /listings until they are CMS pages.
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    id?: string | null;
+  }[];
+  cardCtaLabel?: string | null;
+  moreLink?: {
+    label?: string | null;
+    link?: {
+      label?: string | null;
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
        */
       customUrl?: string | null;
       /**
@@ -530,6 +555,13 @@ export interface FeaturedResidencesBlock {
  * via the `definition` "LifestyleBlock".
  */
 export interface LifestyleBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   backgroundImage: {
     /**
@@ -548,39 +580,37 @@ export interface LifestyleBlock {
   /**
    * Recommended: 3 tiles. Images should be 3:4.
    */
-  tiles?:
-    | {
-        caption: string;
-        image: {
-          /**
-           * Recommended aspect ratio: 3:4.
-           */
-          image: number | Media;
-          /**
-           * Optional. Falls back to the media alt text.
-           */
-          altOverride?: string | null;
-        };
-        link: {
-          label?: string | null;
-          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
-          page?: (number | null) | Page;
-          /**
-           * Use for existing app routes such as /listings until they are CMS pages.
-           */
-          customUrl?: string | null;
-          /**
-           * Examples: #lead, /#lead.
-           */
-          anchor?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          newTab?: boolean | null;
-          ariaLabel?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  tiles: {
+    caption: string;
+    image: {
+      /**
+       * Recommended aspect ratio: 3:4.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
+    link?: {
+      label?: string | null;
+      type?: ('internal' | 'custom' | 'anchor' | 'phone' | 'email') | null;
+      page?: (number | null) | Page;
+      /**
+       * Use a single-leading-slash app route or an HTTP(S) URL.
+       */
+      customUrl?: string | null;
+      /**
+       * Examples: #lead, /#lead.
+       */
+      anchor?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      newTab?: boolean | null;
+      ariaLabel?: string | null;
+    };
+    id?: string | null;
+  }[];
   maxTiles?: number | null;
   id?: string | null;
   blockName?: string | null;
@@ -591,6 +621,13 @@ export interface LifestyleBlock {
  * via the `definition` "TestimonialsBlock".
  */
 export interface TestimonialsBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   kicker: string;
   heading: string;
@@ -599,26 +636,24 @@ export interface TestimonialsBlock {
   /**
    * Recommended: 1-8 stories. Portraits should be 4:5.
    */
-  stories?:
-    | {
-        slug: string;
-        name: string;
-        location: string;
-        quote: string;
-        portrait: {
-          /**
-           * Recommended aspect ratio: 4:5.
-           */
-          image: number | Media;
-          /**
-           * Optional. Falls back to the media alt text.
-           */
-          altOverride?: string | null;
-        };
-        tabAriaLabel?: string | null;
-        id?: string | null;
-      }[]
-    | null;
+  stories: {
+    slug: string;
+    name: string;
+    location: string;
+    quote: string;
+    portrait: {
+      /**
+       * Recommended aspect ratio: 4:5.
+       */
+      image: number | Media;
+      /**
+       * Optional. Falls back to the media alt text.
+       */
+      altOverride?: string | null;
+    };
+    tabAriaLabel?: string | null;
+    id?: string | null;
+  }[];
   carouselAutoPlay?: boolean | null;
   carouselIntervalMs?: number | null;
   previousLabel?: string | null;
@@ -636,6 +671,13 @@ export interface TestimonialsBlock {
  * via the `definition` "AmenitiesBlock".
  */
 export interface AmenitiesBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   header: {
     kicker: string;
@@ -661,14 +703,12 @@ export interface AmenitiesBlock {
   /**
    * Recommended: 1-6 amenity cards.
    */
-  amenities?:
-    | {
-        icon: 'pool' | 'racquet' | 'fitness' | 'dining' | 'trails' | 'calendar';
-        title: string;
-        blurb: string;
-        id?: string | null;
-      }[]
-    | null;
+  amenities: {
+    icon: 'pool' | 'racquet' | 'fitness' | 'dining' | 'trails' | 'calendar';
+    title: string;
+    blurb: string;
+    id?: string | null;
+  }[];
   emptyStateHeading?: string | null;
   emptyStateBody?: string | null;
   id?: string | null;
@@ -680,6 +720,13 @@ export interface AmenitiesBlock {
  * via the `definition` "OwnerIntroBlock".
  */
 export interface OwnerIntroBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   portrait: {
     /**
@@ -701,13 +748,11 @@ export interface OwnerIntroBlock {
   /**
    * Recommended: 1-4 credential stats.
    */
-  credentials?:
-    | {
-        value: string;
-        label: string;
-        id?: string | null;
-      }[]
-    | null;
+  credentials: {
+    value: string;
+    label: string;
+    id?: string | null;
+  }[];
   id?: string | null;
   blockName?: string | null;
   blockType: 'ownerIntro';
@@ -717,6 +762,13 @@ export interface OwnerIntroBlock {
  * via the `definition` "LeadCaptureBlock".
  */
 export interface LeadCaptureBlock {
+  /**
+   * Disable to keep this block in the page without rendering it.
+   */
+  enabled?: boolean | null;
+  /**
+   * Plain section ID without #, for example featured-listings.
+   */
   anchorId?: string | null;
   kicker: string;
   heading: string;
@@ -729,7 +781,7 @@ export interface LeadCaptureBlock {
       type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
       page?: (number | null) | Page;
       /**
-       * Use for existing app routes such as /listings until they are CMS pages.
+       * Use a single-leading-slash app route or an HTTP(S) URL.
        */
       customUrl?: string | null;
       /**
@@ -940,6 +992,7 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "HeroBlock_select".
  */
 export interface HeroBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   backgroundImage?:
     | T
@@ -1001,6 +1054,7 @@ export interface HeroBlockSelect<T extends boolean = true> {
  * via the `definition` "CommunitiesStripBlock_select".
  */
 export interface CommunitiesStripBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   sourceMode?: T;
   items?:
@@ -1034,6 +1088,7 @@ export interface CommunitiesStripBlockSelect<T extends boolean = true> {
  * via the `definition` "FeaturedCommunitiesBlock_select".
  */
 export interface FeaturedCommunitiesBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   header?:
     | T
@@ -1114,6 +1169,7 @@ export interface FeaturedCommunitiesBlockSelect<T extends boolean = true> {
  * via the `definition` "FeaturedResidencesBlock_select".
  */
 export interface FeaturedResidencesBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   header?:
     | T
@@ -1190,6 +1246,7 @@ export interface FeaturedResidencesBlockSelect<T extends boolean = true> {
  * via the `definition` "LifestyleBlock_select".
  */
 export interface LifestyleBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   backgroundImage?:
     | T
@@ -1235,6 +1292,7 @@ export interface LifestyleBlockSelect<T extends boolean = true> {
  * via the `definition` "TestimonialsBlock_select".
  */
 export interface TestimonialsBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   kicker?: T;
   heading?: T;
@@ -1272,6 +1330,7 @@ export interface TestimonialsBlockSelect<T extends boolean = true> {
  * via the `definition` "AmenitiesBlock_select".
  */
 export interface AmenitiesBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   header?:
     | T
@@ -1307,6 +1366,7 @@ export interface AmenitiesBlockSelect<T extends boolean = true> {
  * via the `definition` "OwnerIntroBlock_select".
  */
 export interface OwnerIntroBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   portrait?:
     | T
@@ -1336,6 +1396,7 @@ export interface OwnerIntroBlockSelect<T extends boolean = true> {
  * via the `definition` "LeadCaptureBlock_select".
  */
 export interface LeadCaptureBlockSelect<T extends boolean = true> {
+  enabled?: T;
   anchorId?: T;
   kicker?: T;
   heading?: T;
@@ -1445,7 +1506,7 @@ export interface Header {
     type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
     page?: (number | null) | Page;
     /**
-     * Use for existing app routes such as /listings until they are CMS pages.
+     * Use a single-leading-slash app route or an HTTP(S) URL.
      */
     customUrl?: string | null;
     /**
@@ -1467,7 +1528,7 @@ export interface Header {
           type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
           page?: (number | null) | Page;
           /**
-           * Use for existing app routes such as /listings until they are CMS pages.
+           * Use a single-leading-slash app route or an HTTP(S) URL.
            */
           customUrl?: string | null;
           /**
@@ -1486,11 +1547,11 @@ export interface Header {
   primaryCta: {
     label: string;
     link: {
-      label: string;
+      label?: string | null;
       type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
       page?: (number | null) | Page;
       /**
-       * Use for existing app routes such as /listings until they are CMS pages.
+       * Use a single-leading-slash app route or an HTTP(S) URL.
        */
       customUrl?: string | null;
       /**
@@ -1529,7 +1590,7 @@ export interface Footer {
                 type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
                 page?: (number | null) | Page;
                 /**
-                 * Use for existing app routes such as /listings until they are CMS pages.
+                 * Use a single-leading-slash app route or an HTTP(S) URL.
                  */
                 customUrl?: string | null;
                 /**
@@ -1556,7 +1617,7 @@ export interface Footer {
           type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
           page?: (number | null) | Page;
           /**
-           * Use for existing app routes such as /listings until they are CMS pages.
+           * Use a single-leading-slash app route or an HTTP(S) URL.
            */
           customUrl?: string | null;
           /**

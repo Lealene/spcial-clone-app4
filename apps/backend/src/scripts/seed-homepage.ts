@@ -188,6 +188,7 @@ async function main() {
     },
     layout: [
       {
+        enabled: true,
         blockType: 'hero',
         backgroundImage: media(mediaDocs.hero),
         backgroundImagePriority: true,
@@ -202,6 +203,7 @@ async function main() {
         showSecondaryCta: true,
       },
       {
+        enabled: true,
         blockType: 'communitiesStrip',
         sourceMode: 'manual',
         maxItems: 3,
@@ -230,6 +232,7 @@ async function main() {
         ],
       },
       {
+        enabled: true,
         blockType: 'featuredCommunities',
         anchorId: 'communities',
         header: {
@@ -295,6 +298,7 @@ async function main() {
         moreLink: cta('Explore all communities', '/listings'),
       },
       {
+        enabled: true,
         blockType: 'featuredResidences',
         anchorId: 'listings',
         header: {
@@ -357,6 +361,7 @@ async function main() {
         moreLink: cta('View the full collection', '/listings'),
       },
       {
+        enabled: true,
         blockType: 'lifestyle',
         anchorId: 'lifestyle',
         backgroundImage: media(
@@ -396,6 +401,7 @@ async function main() {
         ],
       },
       {
+        enabled: true,
         blockType: 'testimonials',
         anchorId: 'testimonials',
         kicker: 'In Their Words',
@@ -436,6 +442,7 @@ async function main() {
         counterSeparator: '/',
       },
       {
+        enabled: true,
         blockType: 'amenities',
         anchorId: 'amenities',
         header: {
@@ -487,6 +494,7 @@ async function main() {
         ],
       },
       {
+        enabled: true,
         blockType: 'ownerIntro',
         anchorId: 'concierge',
         portrait: media(mediaDocs.owner),
@@ -504,6 +512,7 @@ async function main() {
         ],
       },
       {
+        enabled: true,
         blockType: 'leadCapture',
         anchorId: 'lead',
         kicker: 'Your Private Introduction',

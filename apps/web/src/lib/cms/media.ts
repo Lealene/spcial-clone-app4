@@ -1,3 +1,5 @@
+import { cmsImageSchema, type CmsImage } from '@mvp-realty/api-contracts';
+
 import { env } from '@/env';
 
 export type RawPayloadMedia = {
@@ -5,6 +7,7 @@ export type RawPayloadMedia = {
   alt?: unknown;
   width?: unknown;
   height?: unknown;
+  mimeType?: unknown;
 };
 
 export type RawMediaField = {
@@ -17,38 +20,64 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-function toAbsoluteMediaUrl(url: string): string {
+function text(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
+}
+
+function toAbsoluteMediaUrl(url: string): string | null {
+  if (url.startsWith('//')) return null;
   if (url.startsWith('/images/')) return url;
   if (url.startsWith('/')) return new URL(url, env.NEXT_PUBLIC_BACKEND_URL).toString();
 
   try {
     const parsed = new URL(url);
     const backend = new URL(env.NEXT_PUBLIC_BACKEND_URL);
-    if (parsed.origin === backend.origin) return parsed.toString();
+    if (
+      (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+      parsed.origin === backend.origin
+    ) {
+      return parsed.toString();
+    }
   } catch {
-    return url;
+    return null;
   }
 
-  return url;
+  return null;
 }
 
-const fallbackImageSrc = '/images/hero-naples-waterfront.jpg';
+export function normalizeMediaField(field: unknown, fallbackAlt?: string): CmsImage {
+  if (!isRecord(field)) {
+    throw new Error('CMS media field must contain a populated media object.');
+  }
 
-export function normalizeMediaField(field: unknown, fallbackAlt = '') {
-  if (!isRecord(field)) return { src: fallbackImageSrc, alt: fallbackAlt || 'Image' };
+  const media = isRecord(field.image) ? field.image : text(field.url) ? field : undefined;
+  if (!media) throw new Error('CMS media field must contain a populated media object.');
+  const mimeType = text(media.mimeType);
+  if (mimeType && !mimeType.startsWith('image/')) {
+    throw new Error('CMS media field must reference an image.');
+  }
 
-  const image = field.image;
-  const media = isRecord(image) ? image : undefined;
-  const rawUrl = typeof media?.url === 'string' && media.url ? media.url : fallbackImageSrc;
-  const rawAlt = typeof media?.alt === 'string' ? media.alt : fallbackAlt;
-  const altOverride = typeof field.altOverride === 'string' ? field.altOverride : undefined;
-  const caption = typeof field.caption === 'string' ? field.caption : undefined;
+  const rawUrl = text(media.url);
+  const src = rawUrl ? toAbsoluteMediaUrl(rawUrl) : null;
+  const alt = text(field.altOverride) ?? text(media.alt) ?? text(fallbackAlt);
+  if (!src || !alt) throw new Error('CMS media field is missing a valid URL or alt text.');
 
-  return {
-    src: toAbsoluteMediaUrl(rawUrl),
-    alt: altOverride || rawAlt || 'Image',
-    width: typeof media?.width === 'number' ? media.width : undefined,
-    height: typeof media?.height === 'number' ? media.height : undefined,
-    caption,
-  };
+  return cmsImageSchema.parse({
+    src,
+    alt,
+    width: typeof media.width === 'number' && media.width > 0 ? media.width : undefined,
+    height: typeof media.height === 'number' && media.height > 0 ? media.height : undefined,
+    caption: text(field.caption),
+  });
+}
+
+export function normalizeOptionalMediaField(
+  field: unknown,
+  fallbackAlt?: string,
+): CmsImage | undefined {
+  try {
+    return normalizeMediaField(field, fallbackAlt);
+  } catch {
+    return undefined;
+  }
 }

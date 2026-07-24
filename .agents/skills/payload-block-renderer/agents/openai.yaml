@@ -1,0 +1,4 @@
+interface:
+  display_name: "Payload Block Renderer"
+  short_description: "Convert components into typed Payload blocks"
+  default_prompt: "Use $payload-block-renderer to convert existing components into Payload blocks, expose editorial fields by default, honor exclusions, and connect the typed web renderer."

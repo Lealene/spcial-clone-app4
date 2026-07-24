@@ -11,7 +11,7 @@ import { LifestyleBlock } from './Lifestyle';
 import { OwnerIntroBlock } from './OwnerIntro';
 import { TestimonialsBlock } from './Testimonials';
 
-const pageBlocksByType = {
+export const pageBlocksByType = {
   hero: HeroBlock,
   communitiesStrip: CommunitiesStripBlock,
   featuredCommunities: FeaturedCommunitiesBlock,

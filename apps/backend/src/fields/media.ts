@@ -1,3 +1,4 @@
+import { CMS_TEXT_LIMITS } from '@mvp-realty/api-contracts';
 import type { Field } from 'payload';
 
 type MediaFieldOptions = {
@@ -32,6 +33,7 @@ export function mediaField({
       {
         name: 'altOverride',
         type: 'text',
+        maxLength: CMS_TEXT_LIMITS.shortCopy,
         admin: {
           description: 'Optional. Falls back to the media alt text.',
         },
@@ -41,6 +43,7 @@ export function mediaField({
             {
               name: 'caption',
               type: 'text' as const,
+              maxLength: CMS_TEXT_LIMITS.shortCopy,
             },
           ]
         : []),

@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 
 import { Container } from '@/components/container';
 import { Button } from '@/components/ui/button';
+import { getLinkRenderProps } from '@/lib/cms/links';
 
 // Veil tint follows the active theme's deepest brand colour (via color-mix on
 // --primary-deep) so the hero re-skins when the theme switches, instead of
@@ -62,15 +63,13 @@ export function Hero({ block }: { block: HeroBlock }) {
           style={{ animationDelay: '0.54s' }}
         >
           <Button asChild variant="cta">
-            <Link href={block.primaryCta.href} aria-label={block.primaryCta.ariaLabel}>
+            <Link {...getLinkRenderProps(block.primaryCta)}>
               {block.primaryCta.label} {block.showPrimaryCtaIcon && <ArrowRight />}
             </Link>
           </Button>
           {showSecondary && (
             <Button asChild variant="glass">
-              <Link href={showSecondary.href} aria-label={showSecondary.ariaLabel}>
-                {showSecondary.label}
-              </Link>
+              <Link {...getLinkRenderProps(showSecondary)}>{showSecondary.label}</Link>
             </Button>
           )}
         </div>

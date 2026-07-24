@@ -29,6 +29,7 @@ const csrfOrigins = [serverUrl.origin, ...getLocalNetworkOrigins(Number(serverUr
 export default buildConfig({
   serverURL: env.PAYLOAD_PUBLIC_SERVER_URL,
   csrf: csrfOrigins,
+  maxDepth: 2,
   admin: {
     user: Users.slug,
     importMap: {
@@ -43,9 +44,8 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
-    // No migrations are committed yet. On review/staging DBs, set DB_PUSH=true to
-    // let Payload auto-sync the schema on boot. Off by default — production must
-    // use real migrations, never implicit push.
+    // Migrations are canonical. Enable schema push only on disposable databases
+    // when intentionally developing a schema before its migration is generated.
     push: env.DB_PUSH === 'true',
     pool: {
       connectionString: env.DATABASE_URL,

@@ -1,4 +1,7 @@
+import { CMS_TEXT_LIMITS } from '@mvp-realty/api-contracts';
 import type { Field } from 'payload';
+
+import { anchorIdField } from './anchorId';
 
 type SectionHeaderFieldOptions = {
   name?: string;
@@ -16,30 +19,23 @@ export function sectionHeaderField({
     type: 'group',
     label,
     fields: [
-      ...(includeAnchor
-        ? [
-            {
-              name: 'anchorId',
-              type: 'text' as const,
-              admin: {
-                description: 'Plain section ID without #, for example communities.',
-              },
-            },
-          ]
-        : []),
+      ...(includeAnchor ? [anchorIdField()] : []),
       {
         name: 'kicker',
         type: 'text',
         required: true,
+        maxLength: CMS_TEXT_LIMITS.label,
       },
       {
         name: 'heading',
         type: 'text',
         required: true,
+        maxLength: CMS_TEXT_LIMITS.heading,
       },
       {
         name: 'headingAccent',
         type: 'text',
+        maxLength: CMS_TEXT_LIMITS.heading,
         admin: {
           description: 'Optional phrase rendered with the existing emphasized style.',
         },
@@ -47,6 +43,7 @@ export function sectionHeaderField({
       {
         name: 'lede',
         type: 'textarea',
+        maxLength: CMS_TEXT_LIMITS.shortCopy,
       },
     ],
   };

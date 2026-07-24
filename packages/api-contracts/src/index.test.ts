@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  CMS_PAGE_BLOCK_LIMITS,
   CMS_PAGE_BLOCK_TYPES,
+  cmsAnchorIdSchema,
+  cmsCanonicalUrlSchema,
   cmsCtaSchema,
+  cmsHrefSchema,
   cmsPageBlockSchemasByType,
   cmsPageBlockTypeSchema,
   cmsPageSchema,
@@ -155,6 +159,25 @@ describe('CMS page contracts', () => {
       newTab: true,
       ariaLabel: 'Open external site',
     });
+  });
+
+  it('rejects unsafe CMS links and invalid section anchors', () => {
+    expect(cmsHrefSchema.safeParse('/listings').success).toBe(true);
+    expect(cmsHrefSchema.safeParse('https://example.com').success).toBe(true);
+    expect(cmsHrefSchema.safeParse('javascript:alert(1)').success).toBe(false);
+    expect(cmsHrefSchema.safeParse('//example.com').success).toBe(false);
+    expect(cmsAnchorIdSchema.safeParse('featured-listings').success).toBe(true);
+    expect(cmsAnchorIdSchema.safeParse('#featured listings').success).toBe(false);
+    expect(cmsCanonicalUrlSchema.safeParse('/preferred').success).toBe(true);
+    expect(cmsCanonicalUrlSchema.safeParse('https://example.com/preferred').success).toBe(true);
+    expect(cmsCanonicalUrlSchema.safeParse('mailto:editor@example.com').success).toBe(false);
+    expect(cmsCanonicalUrlSchema.safeParse('tel:+1234567890').success).toBe(false);
+    expect(cmsCanonicalUrlSchema.safeParse('#section').success).toBe(false);
+  });
+
+  it('shares bounded authoring limits across schemas and consumers', () => {
+    expect(CMS_PAGE_BLOCK_LIMITS.testimonialIntervalMs).toEqual({ min: 1000, max: 60000 });
+    expect(CMS_PAGE_BLOCK_LIMITS.layout.max).toBe(24);
   });
 
   it('parses header globals with menu labels', () => {

@@ -1,4 +1,12 @@
-import type { Field } from 'payload';
+import { CMS_TEXT_LIMITS, cmsCanonicalUrlSchema } from '@mvp-realty/api-contracts';
+import type { Field, Validate } from 'payload';
+
+const validateCanonicalUrl: Validate = (value, { siblingData }) => {
+  if (siblingData?.canonicalMode !== 'custom') return true;
+  return cmsCanonicalUrlSchema.safeParse(value).success
+    ? true
+    : 'Enter a safe app-relative or HTTP(S) canonical URL.';
+};
 
 export const seoField: Field = {
   name: 'seo',
@@ -11,8 +19,8 @@ export const seoField: Field = {
         {
           label: 'Search',
           fields: [
-            { name: 'metaTitle', type: 'text' },
-            { name: 'metaDescription', type: 'textarea' },
+            { name: 'metaTitle', type: 'text', maxLength: 70 },
+            { name: 'metaDescription', type: 'textarea', maxLength: 200 },
             {
               name: 'canonicalMode',
               type: 'select',
@@ -25,6 +33,8 @@ export const seoField: Field = {
             {
               name: 'canonicalUrl',
               type: 'text',
+              maxLength: CMS_TEXT_LIMITS.url,
+              validate: validateCanonicalUrl,
               admin: {
                 condition: (_, siblingData) => siblingData?.canonicalMode === 'custom',
               },
@@ -41,10 +51,10 @@ export const seoField: Field = {
         {
           label: 'Social',
           fields: [
-            { name: 'ogTitle', type: 'text' },
-            { name: 'ogDescription', type: 'textarea' },
+            { name: 'ogTitle', type: 'text', maxLength: 70 },
+            { name: 'ogDescription', type: 'textarea', maxLength: 200 },
             { name: 'ogImage', type: 'upload', relationTo: 'media' },
-            { name: 'ogImageAlt', type: 'text' },
+            { name: 'ogImageAlt', type: 'text', maxLength: CMS_TEXT_LIMITS.shortCopy },
             {
               name: 'twitterCard',
               type: 'select',
@@ -54,15 +64,22 @@ export const seoField: Field = {
                 { label: 'Summary large image', value: 'summary_large_image' },
               ],
             },
-            { name: 'twitterTitle', type: 'text' },
-            { name: 'twitterDescription', type: 'textarea' },
+            { name: 'twitterTitle', type: 'text', maxLength: 70 },
+            { name: 'twitterDescription', type: 'textarea', maxLength: 200 },
             { name: 'twitterImage', type: 'upload', relationTo: 'media' },
-            { name: 'twitterImageAlt', type: 'text' },
+            { name: 'twitterImageAlt', type: 'text', maxLength: CMS_TEXT_LIMITS.shortCopy },
           ],
         },
         {
           label: 'Sitemap',
-          fields: [{ name: 'includeInSitemap', type: 'checkbox', defaultValue: true }],
+          fields: [
+            {
+              name: 'includeInSitemap',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: { description: 'Reserved for the future generated sitemap.' },
+            },
+          ],
         },
       ],
     },

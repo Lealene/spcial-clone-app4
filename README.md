@@ -1,205 +1,354 @@
-# Next.js + Payload Template
+# MVP Realty
 
-A monorepo starter — a **Next.js 16** web app and a **Payload v3** backend (Postgres), wired together with pnpm workspaces, Turborepo, and TypeScript 6 strict.
+MVP Realty is a pnpm monorepo with a customer-facing **Next.js 16** website and a **Payload v3** CMS backed by PostgreSQL. Turborepo runs the apps and shared TypeScript packages together.
 
-Follow this README top to bottom and you'll have everything running locally in ~10 minutes.
+If this is your first time working in the repository, follow **First-time setup** from top to bottom.
 
----
+## What runs locally
 
-## Start a new project from this template
+| Service       | URL or port                   | Purpose                      |
+| ------------- | ----------------------------- | ---------------------------- |
+| Web app       | <http://localhost:3003>       | Customer-facing website      |
+| Payload admin | <http://localhost:3002/admin> | CMS and local admin account  |
+| Payload API   | <http://localhost:3002/api>   | REST API used by the web app |
+| PostgreSQL    | `localhost:5435`              | Local CMS database           |
 
-On GitHub, click **"Use this template" → Create a new repository** (this gives you a fresh, single-commit history). Then clone your new repo and run the init script once:
-
-```bash
-./scripts/init-project.sh <scope> [db-name] [--git]
-```
-
-It renames the package scope (`@mvp-realty/*` → `@<scope>/*`), updates the local Postgres identifiers, creates `apps/web/.env.local` + `apps/backend/.env.local`, and generates a `PAYLOAD_SECRET`.
-
-```bash
-# example
-./scripts/init-project.sh acme              # packages become @acme/*, db "acme"
-./scripts/init-project.sh acme acme_db --git # custom db name + fresh git history
-```
-
-After it runs, follow **First-time setup** below (`nvm use` → `pnpm install` → `pnpm dev`). The script is one-shot — delete it once you've run it.
-
----
-
-## What's in this repo
-
-```
-.
-├── apps/
-│   ├── web/        Next.js 16 site (App Router + Turbopack)        :3003
-│   └── backend/    Payload v3 admin + REST/GraphQL API            :3002
-├── packages/       Shared TypeScript libraries
-│   ├── api-contracts/  Zod schemas + types shared across apps
-│   └── ui/             Shared component library
-├── tooling/        Shared ESLint, Prettier, TS, Tailwind, Vitest configs
-├── docs/           Project docs organized by feature
-└── docker-compose.yml  Local Postgres
-```
-
-Everything is a [pnpm workspace](https://pnpm.io/workspaces). Apps and packages reference each other via `workspace:*`; there is no `npm publish` step.
-
----
+Keep ports `3002`, `3003`, and `5435` free while developing. The web server can choose another port when `3003` is busy, but the local environment and generated URLs expect `3003`.
 
 ## Prerequisites
 
-| Tool       | Version | How to install                                                                                |
-| ---------- | ------- | --------------------------------------------------------------------------------------------- |
-| **Node**   | 24 LTS  | Use [nvm](https://github.com/nvm-sh/nvm). After cloning, `nvm install` reads `.nvmrc` for you |
-| **pnpm**   | 11.x    | `corepack enable && corepack prepare pnpm@11 --activate`                                      |
-| **Docker** | any 24+ | [Docker Desktop](https://www.docker.com/products/docker-desktop/)                             |
-| **Git**    | any 2.x | Already on macOS; `brew install git` if you don't have it                                     |
+Install these before continuing:
 
-> **Why pnpm, not npm or yarn?** This repo is a workspace monorepo. pnpm hard-links shared dependencies once on disk instead of duplicating them per workspace. `.npmrc` has `engine-strict=true`, so `pnpm install` refuses to run on the wrong Node major — if you see `ERR_PNPM_UNSUPPORTED_ENGINE`, run `nvm use`.
+- [Git](https://git-scm.com/)
+- [nvm](https://github.com/nvm-sh/nvm) for Node.js
+- Docker Desktop **or** [Colima](https://github.com/abiosoft/colima)
 
----
+The repository selects Node 24 from `.nvmrc` and pins pnpm `11.2.1`. You do not need to install pnpm globally; Corepack handles it below.
 
 ## First-time setup
 
-From a fresh clone:
+### 1. Clone the repository
 
 ```bash
-# 1. Switch to Node 24 (reads .nvmrc)
+git clone <repository-url>
+cd mvp-realty
+```
+
+Replace `<repository-url>` with the URL your team provides.
+
+### 2. Install the correct Node and pnpm versions
+
+```bash
 nvm install
 nvm use
 
-# 2. Install everything
+corepack enable
+corepack prepare pnpm@11.2.1 --activate
+pnpm --version
+```
+
+`pnpm --version` should print `11.2.1`.
+
+### 3. Install dependencies
+
+```bash
 pnpm install
+```
 
-# 3. Create your local env files (see "Env files" below)
-cp .env.example apps/web/.env.local
-cp .env.example apps/backend/.env.local
+This also installs the repository's Lefthook Git hooks.
 
-# 4. Generate a Payload secret and paste it into apps/backend/.env.local
+### 4. Create your local environment files
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+cp apps/backend/.env.example apps/backend/.env.local
+```
+
+Generate a private Payload signing secret:
+
+```bash
 openssl rand -base64 32
+```
 
-# 5. Boot Postgres + both runtimes
+Open `apps/backend/.env.local` and replace:
+
+```env
+PAYLOAD_SECRET=replace-with-openssl-rand-base64-32
+```
+
+with the generated value. Do not commit either `.env.local` file or share your local secret.
+
+The important local values are:
+
+```env
+# apps/web/.env.local
+NEXT_PUBLIC_SITE_URL=http://localhost:3003
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3002
+
+# apps/backend/.env.local
+DATABASE_URL=postgres://mvp_realty_db:mvp_realty_db@localhost:5435/mvp_realty_db
+PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3002
+DB_PUSH=false
+```
+
+Normal development uses committed Payload migrations. Keep `DB_PUSH=false` or leave it unset.
+
+### 5. Start Docker
+
+Choose one container runtime. Do not run multiple Docker runtimes at the same time unless you understand Docker contexts and port forwarding.
+
+#### Docker Desktop
+
+Open Docker Desktop and wait until it reports that Docker is running.
+
+#### Colima
+
+```bash
+colima start
+```
+
+For either option, confirm Docker and Compose are ready:
+
+```bash
+docker info
+docker compose version
+```
+
+Both commands must succeed before continuing.
+
+### 6. Create and prepare the local database
+
+Start PostgreSQL:
+
+```bash
+pnpm docker:up
+```
+
+Apply the committed Payload migrations:
+
+```bash
+pnpm -C apps/backend migrate
+```
+
+Add the starter homepage, Header, Footer, and media:
+
+```bash
+pnpm -C apps/backend seed:homepage:local
+```
+
+The seed is safe to rerun when you need to refresh the starter CMS content.
+
+### 7. Start development
+
+```bash
 pnpm dev
 ```
 
-After step 5:
+Wait until both apps report that they are ready, then open:
 
-- **Web** at <http://localhost:3003> — customer-facing app; increments if the port is busy
-- **Payload admin** at <http://localhost:3002/admin> — login screen; create the first admin user here
+- Web app: <http://localhost:3003>
+- Payload admin: <http://localhost:3002/admin>
 
-To stop: `Ctrl+C`, then `pnpm docker:down` to free the database container.
+### 8. Create your local Payload admin
 
----
+A new database shows Payload's **first-user registration** screen at <http://localhost:3002/admin>. Create your own local email and password there.
 
-## Env files
+There is no shared default admin password. Your account exists only in your local PostgreSQL volume and must never be committed to the repository.
 
-Each app has its own `.env.local` (gitignored). The root `.env.example` documents every variable. Sensible local defaults:
+If the page shows a normal login form instead of first-user registration, that database already contains a user.
 
-**`apps/web/.env.local`**
+## Confirm that everything works
 
-```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3003
-NEXT_PUBLIC_BACKEND_URL=http://localhost:3002
-```
+A successful setup should satisfy all of these checks:
 
-**`apps/backend/.env.local`**
+1. <http://localhost:3003> loads the website.
+2. <http://localhost:3002/admin> loads Payload and accepts your local account.
+3. Payload contains a published page with the slug `home`.
+4. Payload contains Header and Footer globals and five starter media records.
+5. `pnpm -C apps/backend migrate:status` reports the current migration as applied.
 
-```env
-DATABASE_URL=postgres://mvp_realty_db:mvp_realty_db@localhost:5435/mvp_realty_db
-PAYLOAD_SECRET=<paste output of `openssl rand -base64 32`>
-PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3002
-```
+> **Important:** the web app has a deliberate fixture fallback. It can display a complete-looking homepage when Payload is unavailable or its page data is invalid. Seeing the website alone does not prove the CMS is connected; check Payload admin or the `home` page API too.
 
-> **Why `5435` instead of `5432`?** Most dev machines already run system Postgres on `5432`. The local compose remaps to a free port. Production (Railway) uses the provider endpoint — this is local-only.
+## Daily development
 
-> **Where do I read env in code?** Never use `process.env.X` directly — ESLint blocks it. Each workspace has a `src/env.ts` that validates env at boot using [`@t3-oss/env-*`](https://env.t3.gg/). Import like `import { env } from './env'; env.DATABASE_URL`.
-
----
-
-## Daily commands
-
-| Command             | What it does                                                             |
-| ------------------- | ------------------------------------------------------------------------ |
-| `pnpm dev`          | Boots Docker + both runtimes in parallel (Turbo TUI; press `h` for help) |
-| `pnpm docker:up`    | Just Postgres                                                            |
-| `pnpm docker:down`  | Stop the container (data persists in a named volume)                     |
-| `pnpm docker:reset` | Stop **and wipe** Postgres (you'll re-seed from scratch)                 |
-| `pnpm typecheck`    | TypeScript across every workspace (cached by Turbo)                      |
-| `pnpm lint`         | ESLint across every workspace                                            |
-| `pnpm test`         | Vitest across every workspace                                            |
-| `pnpm format`       | Prettier-format everything in place                                      |
-| `pnpm format:check` | Verify everything's formatted (CI uses this)                             |
-| `pnpm build`        | Production build of all apps                                             |
-| `pnpm clean`        | Nuke `node_modules`, `.next`, `.turbo` — use when things get weird       |
-
-### Running commands inside one workspace
+From the repository root:
 
 ```bash
-pnpm --filter @mvp-realty/web dev
-pnpm --filter @mvp-realty/backend generate:types
-pnpm -C apps/backend payload migrate:create
+nvm use
+pnpm dev
 ```
 
----
+`pnpm dev` ensures PostgreSQL is running and starts both Next.js apps through Turborepo.
 
-## Git hooks (Lefthook)
+To stop the apps, press `Ctrl+C`. PostgreSQL remains available for the next session. To stop it too:
 
-Hooks install automatically on `pnpm install`.
-
-- **Pre-commit** — Prettier-formats and ESLint-fixes whatever you staged, then re-stages.
-- **Pre-push** — Runs `pnpm typecheck` + `pnpm lint` against the whole repo (Turbo-cached).
-
-Use `git commit --no-verify` _sparingly_.
-
----
-
-## How the codebase is organized
-
-```
-apps/web/               Customer-facing Next.js app (App Router + Turbopack)
-  src/app/              Routes (App Router)
-  src/env.ts            Zod-validated env — import from here, never process.env
-  next.config.ts        Includes transpilePackages for workspace deps
-
-apps/backend/           Payload v3 in Next.js (App Router)
-  src/payload.config.ts Payload config (collections, db adapter, auth)
-  src/collections/      Payload collection schemas (Users, Media)
-  src/app/(payload)/    Payload admin UI + REST/GraphQL routes (generated)
-  src/app/(frontend)/   Anything the backend needs to render itself
-
-packages/               Shared TS libraries (source-only, no build step)
-  api-contracts/        Zod schemas + types shared between web and backend
-  ui/                   shared component library
-
-tooling/                Shared configs as workspace packages
-  typescript-config/    base / nextjs / react-library / node tsconfigs
-  eslint-config/        Flat ESLint configs (base / nextjs / react)
-  prettier-config/      Single quotes, semis, 100 col, Tailwind class sort
-  tailwind-config/      OKLCH design tokens
-  vitest-config/        Shared Vitest base + react variants
+```bash
+pnpm docker:down
 ```
 
----
+`docker:down` preserves your local database volume.
 
-## Common gotchas
+## Database lifecycle
 
-**`pnpm install` fails with `ERR_PNPM_UNSUPPORTED_ENGINE`**
-Wrong Node version. Run `nvm use` (or `nvm install`). The repo pins Node 24 in `.nvmrc` and `engine-strict=true` in `.npmrc`.
+Committed Payload migrations are the schema source of truth.
 
-**`pnpm docker:up` fails with `port is already allocated`**
-Something else is on port `5435`. Find it with `lsof -nP -iTCP:5435 -sTCP:LISTEN` and stop it, or edit `docker-compose.yml` to pick another host port (and update your `.env.local`).
+| Command                                    | What it does                                                            |
+| ------------------------------------------ | ----------------------------------------------------------------------- |
+| `pnpm docker:up`                           | Starts local PostgreSQL and waits for it to become healthy              |
+| `pnpm docker:down`                         | Stops PostgreSQL but preserves local data                               |
+| `pnpm -C apps/backend migrate`             | Applies pending Payload migrations                                      |
+| `pnpm -C apps/backend migrate:status`      | Shows applied and pending migrations                                    |
+| `pnpm -C apps/backend seed:homepage:local` | Creates or updates starter CMS content and media                        |
+| `pnpm docker:reset`                        | **Deletes the entire local PostgreSQL volume** and creates an empty one |
 
-**Payload admin says `Cannot find module 'sharp'` or images don't process**
-`pnpm install` skipped a build script. Run `pnpm rebuild sharp` and restart `pnpm dev`. The `allowBuilds` list in `pnpm-workspace.yaml` covers this for fresh clones.
+### Completely reset local data
 
-**`pnpm dev` shows the Payload admin but the web app 404s on save**
-Next.js dev sometimes loses workspace package symlinks after a long session. `pnpm clean && pnpm install && pnpm dev`.
+Only use this when you intentionally want to delete all local CMS content and users:
 
----
+```bash
+pnpm docker:reset
+pnpm -C apps/backend migrate
+pnpm -C apps/backend seed:homepage:local
+pnpm dev
+```
 
-## Where to learn more
+Then visit <http://localhost:3002/admin> and create a new first user.
 
-- [`AGENTS.md`](./AGENTS.md) — canonical conventions and hard rules for AI coding agents
-- `CLAUDE.md` files are Claude Code shims that import sibling `AGENTS.md` files
-- [`apps/web/AGENTS.md`](./apps/web/AGENTS.md) / [`apps/backend/AGENTS.md`](./apps/backend/AGENTS.md) — per-app conventions
-- [Payload docs](https://payloadcms.com/docs) — local Payload guidance lives at `.agents/skills/payload/`
-- Next.js ships its docs in `node_modules/next/dist/docs/` — searchable and version-matched
+## Quality commands
+
+Run these from the repository root:
+
+| Command             | What it does                                        |
+| ------------------- | --------------------------------------------------- |
+| `pnpm typecheck`    | Type-checks every workspace                         |
+| `pnpm lint`         | Runs ESLint across the monorepo                     |
+| `pnpm test`         | Runs Vitest across the monorepo                     |
+| `pnpm format`       | Formats supported files with Prettier               |
+| `pnpm format:check` | Checks formatting without changing files            |
+| `pnpm build`        | Builds both applications for production             |
+| `pnpm clean`        | Removes dependencies and generated app/Turbo caches |
+
+Run a command in one workspace with either form:
+
+```bash
+pnpm --filter @mvp-realty/web test
+pnpm -C apps/backend generate:types
+```
+
+## Common problems
+
+### `pnpm: command not found`
+
+Enable the repository's pinned pnpm version:
+
+```bash
+corepack enable
+corepack prepare pnpm@11.2.1 --activate
+```
+
+### `ERR_PNPM_UNSUPPORTED_ENGINE`
+
+The wrong Node version is active:
+
+```bash
+nvm install
+nvm use
+```
+
+### Cannot connect to the Docker daemon
+
+Start Docker Desktop or run:
+
+```bash
+colima start
+```
+
+Then verify:
+
+```bash
+docker info
+docker compose version
+```
+
+### Port is already allocated
+
+Check the conflicting port:
+
+```bash
+lsof -nP -iTCP:5435 -sTCP:LISTEN
+lsof -nP -iTCP:3002 -sTCP:LISTEN
+lsof -nP -iTCP:3003 -sTCP:LISTEN
+```
+
+Stop the conflicting process or container. Prefer keeping the documented ports instead of allowing the apps to move silently.
+
+### Payload reports that a table or relation does not exist
+
+PostgreSQL is running, but the Payload schema was not migrated:
+
+```bash
+pnpm -C apps/backend migrate
+```
+
+Restart `pnpm dev` afterward.
+
+### Payload is empty after a database reset
+
+A reset creates a blank database. Rebuild it in this order:
+
+```bash
+pnpm -C apps/backend migrate
+pnpm -C apps/backend seed:homepage:local
+```
+
+Then create the first admin at <http://localhost:3002/admin>.
+
+### The web homepage works, but Payload does not
+
+The frontend is probably rendering its fixture fallback. Check the backend terminal output and open <http://localhost:3002/admin>. Also verify that the published `home` page exists in Payload.
+
+### Payload cannot load `sharp` or process images
+
+```bash
+pnpm rebuild sharp
+```
+
+Restart development afterward.
+
+## Repository map
+
+```text
+apps/
+  web/                 Customer-facing Next.js app on port 3003
+  backend/             Payload admin/API on port 3002
+    src/collections/   Users, Media, and Pages collections
+    src/blocks/        Payload page-builder blocks
+    src/globals/       Header and Footer globals
+    src/migrations/    Committed Payload database migrations
+    src/scripts/       Seed, audit, and local admin utilities
+packages/
+  api-contracts/       Runtime schemas and types shared across apps
+  ui/                  Shared React primitives
+tooling/               Shared ESLint, Prettier, TypeScript, Tailwind, and Vitest configs
+docs/                  Architecture, product, and implementation documentation
+.agents/skills/         Team-shared agent skills
+```
+
+The apps consume shared packages directly through workspace dependencies and Next.js transpilation; shared packages do not require a separate build during development.
+
+## Git hooks
+
+Lefthook installs during `pnpm install`:
+
+- Pre-commit formats and ESLint-fixes staged files, then re-stages them.
+- Pre-push runs `pnpm typecheck` and `pnpm lint`.
+
+Use `git commit --no-verify` only when you understand why a hook must be bypassed.
+
+## Agent and framework guidance
+
+- [`AGENTS.md`](./AGENTS.md) contains the canonical repository rules for coding agents.
+- App-specific rules live in [`apps/web/AGENTS.md`](./apps/web/AGENTS.md) and [`apps/backend/AGENTS.md`](./apps/backend/AGENTS.md).
+- Payload guidance is available at [`.agents/skills/payload/`](./.agents/skills/payload/).
+- Payload block-renderer guidance is available at [`.agents/skills/payload-block-renderer/`](./.agents/skills/payload-block-renderer/).
+- Installed, version-matched Next.js documentation lives under `node_modules/next/dist/docs/` after `pnpm install`.

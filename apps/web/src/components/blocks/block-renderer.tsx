@@ -38,7 +38,7 @@ export function CmsPageBlocksRenderer({ blocks }: { blocks: CmsPageBlock[] }) {
   return (
     <>
       {blocks.map((block, index) => (
-        <CmsPageBlockRenderer key={`${block.blockType}-${index}`} block={block} />
+        <CmsPageBlockRenderer key={block.id ?? `${block.blockType}-${index}`} block={block} />
       ))}
     </>
   );

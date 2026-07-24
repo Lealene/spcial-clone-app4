@@ -9,13 +9,18 @@ import {
 } from './links';
 
 describe('CMS link helpers', () => {
-  it('normalizes internal page links with home mapped to root', () => {
+  it('normalizes populated internal page links with home mapped to root', () => {
     expect(normalizeLink({ type: 'internal', page: { slug: 'home' }, label: 'Home' }).href).toBe(
       '/',
     );
     expect(
       normalizeLink({ type: 'internal', page: { slug: 'listings' }, label: 'Listings' }).href,
     ).toBe('/listings');
+  });
+
+  it('rejects unresolved internal relationships instead of linking to root', () => {
+    expect(hasLinkTarget({ type: 'internal', page: 42 })).toBe(false);
+    expect(() => normalizeLink({ type: 'internal', page: 42, label: 'Listings' })).toThrow();
   });
 
   it('normalizes custom, anchor, phone, and email links', () => {
@@ -31,13 +36,15 @@ describe('CMS link helpers', () => {
     );
   });
 
-  it('uses fallbacks when label or target are missing', () => {
-    expect(normalizeLink(undefined, 'Fallback', '/fallback')).toEqual({
-      label: 'Fallback',
-      href: '/fallback',
-      newTab: undefined,
-      ariaLabel: undefined,
-    });
+  it('rejects missing and unsafe targets', () => {
+    expect(() => normalizeLink(undefined, 'Fallback', '/fallback')).toThrow();
+    expect(() =>
+      normalizeLink({ type: 'custom', customUrl: 'javascript:alert(1)', label: 'Unsafe' }),
+    ).toThrow();
+    expect(() =>
+      normalizeLink({ type: 'custom', customUrl: '//example.com', label: 'Unsafe' }),
+    ).toThrow();
+    expect(() => normalizeLink({ type: 'anchor', anchor: '#bad anchor', label: 'Bad' })).toThrow();
   });
 
   it('detects usable direct link and nested CTA targets', () => {
@@ -50,20 +57,16 @@ describe('CMS link helpers', () => {
 
   it('lets CTA copy override the nested link copy', () => {
     expect(
-      normalizeCta(
-        {
-          label: 'Outer label',
-          ariaLabel: 'Outer aria',
-          link: {
-            type: 'custom',
-            customUrl: '/inner',
-            label: 'Inner label',
-            ariaLabel: 'Inner aria',
-          },
+      normalizeCta({
+        label: 'Outer label',
+        ariaLabel: 'Outer aria',
+        link: {
+          type: 'custom',
+          customUrl: '/inner',
+          label: 'Inner label',
+          ariaLabel: 'Inner aria',
         },
-        'Fallback',
-        '/fallback',
-      ),
+      }),
     ).toMatchObject({ label: 'Outer label', ariaLabel: 'Outer aria', href: '/inner' });
   });
 

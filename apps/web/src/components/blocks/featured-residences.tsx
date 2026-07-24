@@ -7,6 +7,7 @@ import { Container } from '@/components/container';
 import { Reveal } from '@/components/reveal';
 import { SectionHeader } from '@/components/section-header';
 import { MoreLink } from '@/components/more-link';
+import { getLinkRenderProps } from '@/lib/cms/links';
 
 export function FeaturedResidences({ block }: { block: FeaturedResidencesBlock }) {
   return (
@@ -17,6 +18,7 @@ export function FeaturedResidences({ block }: { block: FeaturedResidencesBlock }
             align="center"
             kicker={block.header.kicker}
             heading={block.header.heading}
+            headingAccent={block.header.headingAccent}
             lede={block.header.lede}
           />
         </Reveal>
@@ -31,8 +33,7 @@ export function FeaturedResidences({ block }: { block: FeaturedResidencesBlock }
             return (
               <Reveal key={r.slug} delay={i * 0.1}>
                 <Link
-                  href={r.link.href}
-                  aria-label={r.link.ariaLabel}
+                  {...getLinkRenderProps(r.link)}
                   className="border-line bg-surface shadow-card hover:shadow-lift group flex h-full flex-col overflow-hidden rounded-xl border transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-[5px]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
@@ -90,7 +91,7 @@ export function FeaturedResidences({ block }: { block: FeaturedResidencesBlock }
 
         {block.moreLink && (
           <Reveal className="mt-[clamp(38px,4vw,54px)] flex justify-center">
-            <MoreLink href={block.moreLink.href}>{block.moreLink.label}</MoreLink>
+            <MoreLink {...getLinkRenderProps(block.moreLink)}>{block.moreLink.label}</MoreLink>
           </Reveal>
         )}
       </Container>

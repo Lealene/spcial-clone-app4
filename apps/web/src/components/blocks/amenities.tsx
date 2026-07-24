@@ -31,6 +31,7 @@ export function Amenities({ block }: { block: AmenitiesBlock }) {
           <SectionHeader
             kicker={block.header.kicker}
             heading={block.header.heading}
+            headingAccent={block.header.headingAccent}
             lede={block.header.lede}
           />
         </Reveal>

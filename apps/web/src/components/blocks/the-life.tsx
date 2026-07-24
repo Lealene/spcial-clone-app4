@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Container } from '@/components/container';
 import { Reveal } from '@/components/reveal';
 import { Kicker } from '@/components/section-header';
+import { getLinkRenderProps } from '@/lib/cms/links';
 
 // Theme-aware veil (see Hero) so the band re-skins with the active palette.
 const veil = (pct: number) => `color-mix(in srgb, var(--primary-deep) ${pct}%, transparent)`;
@@ -64,7 +65,7 @@ export function TheLife({ block }: { block: LifestyleBlock }) {
             );
 
             return tile.link ? (
-              <Link key={tile.caption} href={tile.link.href} aria-label={tile.link.ariaLabel}>
+              <Link key={tile.caption} {...getLinkRenderProps(tile.link)}>
                 {figure}
               </Link>
             ) : (

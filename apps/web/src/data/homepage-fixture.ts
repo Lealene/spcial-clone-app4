@@ -69,6 +69,7 @@ export const homepageFixture: CmsPage = {
     metaTitle: 'MVP Realty — Gulf-Coast Concierge for Luxury Gated Communities',
     metaDescription:
       'A prestigious Gulf-Coast address with resort amenities and a personal concierge. Private gated communities minutes from the Naples beaches.',
+    canonicalMode: 'auto',
     index: true,
     follow: true,
     twitterCard: 'summary_large_image',

@@ -8,6 +8,7 @@ import { Container } from '@/components/container';
 import { Reveal } from '@/components/reveal';
 import { Kicker } from '@/components/section-header';
 import { Button } from '@/components/ui/button';
+import { getLinkRenderProps } from '@/lib/cms/links';
 
 const inputClass =
   'w-full rounded-md border border-line bg-surface-soft px-4 py-[15px] font-sans text-[16px] font-medium text-ink outline-none transition-[border-color,background-color] placeholder:text-muted focus:border-accent-deep focus:bg-surface';
@@ -54,7 +55,7 @@ export function LeadCapture({ block }: { block: LeadCaptureBlock }) {
             <span>
               {block.helperNote.beforeLinkText}
               <a
-                href={block.helperNote.link.href}
+                {...getLinkRenderProps(block.helperNote.link)}
                 className="border-cta text-primary hover:border-accent-deep border-b-[1.5px] pb-px font-bold transition-colors"
               >
                 {block.helperNote.link.label}

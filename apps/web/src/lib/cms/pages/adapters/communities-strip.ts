@@ -1,7 +1,7 @@
 import type { CommunitiesStripBlock } from '@mvp-realty/api-contracts';
 
 import { normalizeLink } from '../../links';
-import { array, isRecord, num, text } from '../primitives';
+import { mapValidRows, text } from '../primitives';
 
 export function normalizeCommunitiesStripBlock(
   raw: Record<string, unknown>,
@@ -10,18 +10,19 @@ export function normalizeCommunitiesStripBlock(
     blockType: 'communitiesStrip',
     anchorId: text(raw.anchorId) || undefined,
     sourceMode: 'manual',
-    maxItems: num(raw.maxItems, 3),
-    items: array(raw.items).map((item) => {
-      const row = isRecord(item) ? item : {};
+    maxItems:
+      raw.maxItems === undefined ? 3 : typeof raw.maxItems === 'number' ? raw.maxItems : Number.NaN,
+    items: mapValidRows(raw.items, (row) => {
+      const slug = text(row.slug);
+      const name = text(row.name);
+      const blurb = text(row.blurb);
+      if (!slug || !name || !blurb) return null;
+
       return {
-        slug: text(row.slug, text(row.name, 'community')),
-        name: text(row.name, 'Community'),
-        blurb: text(row.blurb, 'Explore this Gulf-Coast community.'),
-        link: normalizeLink(
-          row.link,
-          text(row.name, 'Community'),
-          `/communities/${text(row.slug, '')}`,
-        ),
+        slug,
+        name,
+        blurb,
+        link: normalizeLink(row.link, name),
         icon: 'mapPin',
       };
     }),

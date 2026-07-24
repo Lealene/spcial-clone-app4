@@ -2,7 +2,11 @@ import type { FeaturedCommunitiesBlock } from '@mvp-realty/api-contracts';
 
 import { hasCtaTarget, normalizeCta, normalizeLink } from '../../links';
 import { normalizeMediaField } from '../../media';
-import { array, isRecord, normalizeHeaderGroup, normalizeTags, num, text } from '../primitives';
+import { mapValidRows, normalizeHeaderGroup, normalizeTags, text } from '../primitives';
+
+function finiteNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
 
 export function normalizeFeaturedCommunitiesBlock(
   raw: Record<string, unknown>,
@@ -12,29 +16,47 @@ export function normalizeFeaturedCommunitiesBlock(
     anchorId: text(raw.anchorId, 'communities'),
     header: normalizeHeaderGroup(raw.header),
     sourceMode: 'manual',
-    manualCommunities: array(raw.manualCommunities).map((item) => {
-      const row = isRecord(item) ? item : {};
-      const slug = text(row.slug, text(row.name, 'community'));
+    manualCommunities: mapValidRows(raw.manualCommunities, (row) => {
+      const slug = text(row.slug);
+      const name = text(row.name);
+      const locality = text(row.locality);
+      const rating = finiteNumber(row.rating);
+      const reviews = finiteNumber(row.reviews);
+      const priceRange = text(row.priceRange);
+      const residences = finiteNumber(row.residences);
+      const nowSelling = finiteNumber(row.nowSelling);
+
+      if (
+        !slug ||
+        !name ||
+        !locality ||
+        rating === null ||
+        reviews === null ||
+        !priceRange ||
+        residences === null ||
+        nowSelling === null
+      ) {
+        return null;
+      }
+
       return {
         slug,
-        name: text(row.name, 'Community'),
-        locality: text(row.locality, 'Southwest Florida'),
-        rating: num(row.rating, 0),
-        reviews: num(row.reviews, 0),
+        name,
+        locality,
+        rating,
+        reviews,
         reviewsLabel: text(row.reviewsLabel, 'reviews'),
-        priceRange: text(row.priceRange, 'Pricing available by request'),
+        priceRange,
         tags: normalizeTags(row.tags),
-        residences: num(row.residences, 0),
+        residences,
         residencesLabel: text(row.residencesLabel, 'residences'),
-        nowSelling: num(row.nowSelling, 0),
+        nowSelling,
         nowSellingLabel: text(row.nowSellingLabel, 'now selling'),
-        image: normalizeMediaField(row.image, text(row.name, 'Community image')),
-        link: normalizeLink(row.link, text(row.name, 'Community'), `/communities/${slug}`),
+        image: normalizeMediaField(row.image, name),
+        link: normalizeLink(row.link, name),
       };
     }),
-    moreLink: hasCtaTarget(raw.moreLink)
-      ? normalizeCta(raw.moreLink, 'Explore all communities', '/listings')
-      : undefined,
+    moreLink: hasCtaTarget(raw.moreLink) ? normalizeCta(raw.moreLink) : undefined,
     emptyStateHeading: text(raw.emptyStateHeading) || undefined,
     emptyStateBody: text(raw.emptyStateBody) || undefined,
   };

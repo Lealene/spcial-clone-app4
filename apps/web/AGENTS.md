@@ -13,6 +13,7 @@ Root rules in `/AGENTS.md` apply. This file carries only web-specific convention
 - **Tailwind CSS-first.** Theme tokens live in `@mvp-realty/tailwind-config/theme.css` and app semantic tokens live in `src/app/globals.css`. No `tailwind.config.js`.
 - **Path alias `@/*` maps to `./src/*`.** Use `paths`; do not add `baseUrl`.
 - **Do not import from `apps/backend`.** Shared schemas and types belong in `@mvp-realty/api-contracts`.
+- **Payload blocks follow the renderer standard.** Use `docs/architecture/payload-block-renderer-standard.md`: validate the envelope with `layout: unknown[]`, isolate each block, never fabricate editorial content, and preserve valid siblings.
 
 ## Layout
 

@@ -2,35 +2,50 @@ import type { CmsPage } from '@mvp-realty/api-contracts';
 
 import { fetchJson } from '../client';
 import { getFooterContent, getHeaderContent } from '../site-chrome';
+import type { CmsPageBlockDiagnostic } from './block-adapters';
+import { reportCmsPageDiagnostics } from './diagnostics';
+import { parsePayloadPageEnvelope } from './envelope';
 import { normalizePage } from './page';
-import { array, isRecord } from './primitives';
 
-export { cmsPageBlockAdapters, normalizeCmsPageBlock } from './block-adapters';
+export {
+  cmsPageBlockAdapters,
+  normalizeCmsPageBlock,
+  normalizeCmsPageBlocks,
+} from './block-adapters';
+export type { CmsPageBlockDiagnostic } from './block-adapters';
+export { parsePayloadPageEnvelope } from './envelope';
 export { normalizePage } from './page';
 export { getFooterContent, getHeaderContent };
 
-type PageContentOptions = {
-  fallback?: CmsPage;
-};
+export type CmsPageContentResult =
+  | { status: 'ready'; page: CmsPage; diagnostics: CmsPageBlockDiagnostic[] }
+  | { status: 'empty'; page: CmsPage; diagnostics: CmsPageBlockDiagnostic[] }
+  | { status: 'missing' }
+  | { status: 'unavailable'; error: Error };
 
 function pagePath(slug: string): string {
   const query = encodeURIComponent(slug);
   return `/api/pages?where[slug][equals]=${query}&depth=2&limit=1`;
 }
 
-export async function getPageContent(
-  slug: string,
-  options: PageContentOptions = {},
-): Promise<CmsPage | null> {
+function toError(reason: unknown): Error {
+  return reason instanceof Error ? reason : new Error('CMS page request failed.');
+}
+
+export async function getPageContent(slug: string): Promise<CmsPageContentResult> {
   try {
     const response = await fetchJson(pagePath(slug));
-    const docs = isRecord(response) ? array(response.docs) : [];
-    const page = docs[0];
-    if (!page) return options.fallback ?? null;
+    const envelope = parsePayloadPageEnvelope(response);
+    if (envelope.status === 'missing') return envelope;
 
-    const parsed = normalizePage(page);
-    return parsed.layout.length > 0 ? parsed : (options.fallback ?? null);
-  } catch {
-    return options.fallback ?? null;
+    const normalized = normalizePage(envelope.page);
+    reportCmsPageDiagnostics(normalized.diagnostics);
+    if (normalized.page.layout.length === 0) {
+      return { status: 'empty', ...normalized };
+    }
+
+    return { status: 'ready', ...normalized };
+  } catch (reason) {
+    return { status: 'unavailable', error: toError(reason) };
   }
 }

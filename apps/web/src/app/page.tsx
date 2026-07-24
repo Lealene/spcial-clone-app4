@@ -6,7 +6,8 @@ import { getPageContent } from '@/lib/cms/pages';
 import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
 
 async function getHomePageContent() {
-  return (await getPageContent('home')) ?? homepageFixture;
+  const result = await getPageContent('home');
+  return result.status === 'ready' ? result.page : homepageFixture;
 }
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -1,0 +1,113 @@
+import {
+  CMS_PAGE_BLOCK_LIMITS,
+  CMS_PAGE_BLOCK_TYPES,
+  type CmsPageBlockType,
+} from '@mvp-realty/api-contracts';
+import type { Field } from 'payload';
+import { describe, expect, it } from 'vitest';
+
+import { Pages } from '../collections/Pages';
+import { pageBlocks, pageBlocksByType } from './index';
+
+function namedField(fields: Field[], name: string): Field | undefined {
+  return fields.find((field) => 'name' in field && field.name === name);
+}
+
+describe('Payload page block catalog', () => {
+  it('matches the canonical block catalog, slugs, and order', () => {
+    expect(Object.keys(pageBlocksByType)).toEqual([...CMS_PAGE_BLOCK_TYPES]);
+    expect(pageBlocks.map((block) => block.slug)).toEqual([...CMS_PAGE_BLOCK_TYPES]);
+    expect(new Set(pageBlocks.map((block) => block.slug)).size).toBe(pageBlocks.length);
+
+    CMS_PAGE_BLOCK_TYPES.forEach((blockType) => {
+      expect(pageBlocksByType[blockType].slug).toBe(blockType);
+      expect(pageBlocksByType[blockType].interfaceName).toBeTruthy();
+    });
+  });
+
+  it('gives every block one enabled field first with a true default', () => {
+    pageBlocks.forEach((block) => {
+      const enabledFields = block.fields.filter(
+        (field) => 'name' in field && field.name === 'enabled',
+      );
+      expect(enabledFields).toHaveLength(1);
+      expect(block.fields[0]).toMatchObject({
+        name: 'enabled',
+        type: 'checkbox',
+        defaultValue: true,
+      });
+    });
+  });
+
+  it('keeps repeatable authoring arrays required and bounded', () => {
+    const expectations: Array<{
+      blockType: CmsPageBlockType;
+      fieldName: string;
+      limits: { min: number; max: number };
+    }> = [
+      {
+        blockType: 'communitiesStrip',
+        fieldName: 'items',
+        limits: CMS_PAGE_BLOCK_LIMITS.communitiesStripItems,
+      },
+      {
+        blockType: 'featuredCommunities',
+        fieldName: 'manualCommunities',
+        limits: CMS_PAGE_BLOCK_LIMITS.featuredCommunities,
+      },
+      {
+        blockType: 'featuredResidences',
+        fieldName: 'manualListings',
+        limits: CMS_PAGE_BLOCK_LIMITS.featuredResidences,
+      },
+      {
+        blockType: 'lifestyle',
+        fieldName: 'tiles',
+        limits: CMS_PAGE_BLOCK_LIMITS.lifestyleTiles,
+      },
+      {
+        blockType: 'testimonials',
+        fieldName: 'stories',
+        limits: CMS_PAGE_BLOCK_LIMITS.testimonialStories,
+      },
+      {
+        blockType: 'amenities',
+        fieldName: 'amenities',
+        limits: CMS_PAGE_BLOCK_LIMITS.amenities,
+      },
+      {
+        blockType: 'ownerIntro',
+        fieldName: 'credentials',
+        limits: CMS_PAGE_BLOCK_LIMITS.ownerCredentials,
+      },
+    ];
+
+    expectations.forEach(({ blockType, fieldName, limits }) => {
+      expect(namedField(pageBlocksByType[blockType].fields, fieldName)).toMatchObject({
+        type: 'array',
+        required: true,
+        minRows: limits.min,
+        maxRows: limits.max,
+      });
+    });
+  });
+
+  it('requires whole-number visible item limits', () => {
+    expect(namedField(pageBlocksByType.communitiesStrip.fields, 'maxItems')).toMatchObject({
+      validate: expect.any(Function),
+    });
+    expect(namedField(pageBlocksByType.lifestyle.fields, 'maxTiles')).toMatchObject({
+      validate: expect.any(Function),
+    });
+  });
+
+  it('registers the canonical blocks and limits on Pages.layout', () => {
+    expect(namedField(Pages.fields, 'layout')).toMatchObject({
+      type: 'blocks',
+      blocks: pageBlocks,
+      required: true,
+      minRows: CMS_PAGE_BLOCK_LIMITS.layout.min,
+      maxRows: CMS_PAGE_BLOCK_LIMITS.layout.max,
+    });
+  });
+});

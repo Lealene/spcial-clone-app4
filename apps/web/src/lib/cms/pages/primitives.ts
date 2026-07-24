@@ -7,11 +7,15 @@ export function array(value: unknown): unknown[] {
 }
 
 export function text(value: unknown, fallback = ''): string {
-  return typeof value === 'string' && value.length > 0 ? value : fallback;
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
 }
 
 export function num(value: unknown, fallback = 0): number {
-  return typeof value === 'number' ? value : fallback;
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+export function optionalNum(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
 export function bool(value: unknown, fallback: boolean): boolean {
@@ -22,8 +26,8 @@ export function normalizeHeaderGroup(value: unknown) {
   const group = isRecord(value) ? value : {};
   return {
     anchorId: text(group.anchorId) || undefined,
-    kicker: text(group.kicker, 'Featured'),
-    heading: text(group.heading, 'Featured'),
+    kicker: text(group.kicker),
+    heading: text(group.heading),
     headingAccent: text(group.headingAccent) || undefined,
     lede: text(group.lede) || undefined,
   };
@@ -32,23 +36,34 @@ export function normalizeHeaderGroup(value: unknown) {
 export function normalizeTags(value: unknown): string[] {
   return array(value)
     .map((item) => {
-      if (typeof item === 'string') return item;
+      if (typeof item === 'string') return text(item);
       if (isRecord(item)) return text(item.label);
       return '';
     })
     .filter(Boolean);
 }
 
-export function normalizeFormField(
-  raw: unknown,
-  label: string,
-  placeholder: string,
-  required: boolean,
-) {
+export function mapValidRows<T>(
+  value: unknown,
+  mapper: (row: Record<string, unknown>) => T | null,
+): T[] {
+  return array(value).flatMap((item) => {
+    if (!isRecord(item)) return [];
+
+    try {
+      const mapped = mapper(item);
+      return mapped === null ? [] : [mapped];
+    } catch {
+      return [];
+    }
+  });
+}
+
+export function normalizeFormField(raw: unknown, required: boolean) {
   const field = isRecord(raw) ? raw : {};
   return {
-    label: text(field.label, label),
-    placeholder: text(field.placeholder, placeholder),
+    label: text(field.label),
+    placeholder: text(field.placeholder),
     required: bool(field.required, required),
   };
 }

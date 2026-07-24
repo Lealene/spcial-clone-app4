@@ -1,3 +1,4 @@
+import { CMS_PAGE_BLOCK_LIMITS, CMS_TEXT_LIMITS } from '@mvp-realty/api-contracts';
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
@@ -31,6 +32,7 @@ export const Pages: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      maxLength: CMS_TEXT_LIMITS.heading,
     },
     {
       name: 'slug',
@@ -38,15 +40,16 @@ export const Pages: CollectionConfig = {
       required: true,
       unique: true,
       index: true,
+      maxLength: CMS_TEXT_LIMITS.slug,
       admin: {
-        description: 'Use home for the / route. Do not include slashes.',
+        description: 'Use home for the / route. Enter a lowercase kebab-case segment.',
       },
       validate: (value: unknown) => {
         if (typeof value !== 'string' || value.trim().length === 0) return 'Slug is required.';
-        if (value.includes('/')) return 'Slug must not include slashes.';
-        if (reservedSlugs.has(value) && value !== 'home') {
-          return 'This slug is reserved by an existing app route.';
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+          return 'Slug must use lowercase letters, numbers, and single hyphens.';
         }
+        if (reservedSlugs.has(value)) return 'This slug is reserved by an existing app route.';
         return true;
       },
     },
@@ -56,7 +59,8 @@ export const Pages: CollectionConfig = {
       type: 'blocks',
       blocks: pageBlocks,
       required: true,
-      minRows: 1,
+      minRows: CMS_PAGE_BLOCK_LIMITS.layout.min,
+      maxRows: CMS_PAGE_BLOCK_LIMITS.layout.max,
       admin: {
         description:
           'Sort reusable CMS page blocks here. Visual style remains controlled by the frontend.',

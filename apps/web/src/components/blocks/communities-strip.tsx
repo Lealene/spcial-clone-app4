@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 
 import { Container } from '@/components/container';
+import { getLinkRenderProps } from '@/lib/cms/links';
 
 export function CommunitiesStrip({ block }: { block: CommunitiesStripBlock }) {
   const items = block.items.slice(0, block.maxItems ?? block.items.length);
@@ -18,8 +19,7 @@ export function CommunitiesStrip({ block }: { block: CommunitiesStripBlock }) {
         {items.map((c) => (
           <Link
             key={c.slug}
-            href={c.link.href}
-            aria-label={c.link.ariaLabel}
+            {...getLinkRenderProps(c.link)}
             className="group flex items-center gap-[19px] border-t border-white/10 px-[clamp(20px,3vw,44px)] py-[30px] transition-colors hover:bg-white/[0.035] sm:border-l sm:border-t-0 sm:first:border-l-0"
           >
             <span className="grid size-[58px] shrink-0 place-items-center rounded-full bg-[linear-gradient(155deg,rgba(255,255,255,.13),rgba(255,255,255,.03))] shadow-[inset_0_0_0_1.5px_var(--accent),inset_0_1px_0_rgba(255,255,255,.2),0_8px_20px_-12px_rgba(0,0,0,.7)] transition-transform duration-300 group-hover:-translate-y-0.5">
