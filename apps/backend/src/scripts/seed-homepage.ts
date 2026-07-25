@@ -1,44 +1,20 @@
-import { readFile, stat } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import type { File } from 'payload';
 import { getPayload } from 'payload';
 
 import config from '@payload-config';
-import type { Footer, Header, Media, Page } from '@/payload-types';
+import type { Footer, Header, Page } from '@/payload-types';
 
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-const imagesDir = path.resolve(dirname, '../../../web/public/images');
+import { validateHomepageSeedAssets } from './homepage-seed/assets';
+import { footerIsUnseeded, headerIsUnseeded } from './homepage-seed/fresh';
+import {
+  findHomepageSeedMediaForExistingPage,
+  placeholderHomepageSeedMedia,
+  reconcileHomepageSeedMedia,
+  type HomepageSeedMediaDoc,
+  type HomepageSeedMediaDocs,
+} from './homepage-seed/media';
+import { seedDataDifferencePaths, seedDataMatches } from './homepage-seed/normalize';
 
 const SEED_CONTEXT = { source: 'seed-homepage-local' };
-
-const imageFiles = {
-  hero: {
-    fileName: 'hero-naples-waterfront.jpg',
-    alt: 'Naples bayfront residences along the Gulf Coast at golden hour',
-  },
-  owner: {
-    fileName: 'owner-eleanor-voss.jpg',
-    alt: 'Portrait of Eleanor Voss, Broker and Owner of MVP Realty, with her Doberman',
-  },
-  bonitaBay: {
-    fileName: 'community-bonita-bay.jpg',
-    alt: "Bonita Bay's landmark stone entrance monument framed by oaks and flowering beds",
-  },
-  valenciaBonita: {
-    fileName: 'community-valencia-bonita.jpg',
-    alt: 'The 45,000-square-foot resort clubhouse at Valencia Bonita, framed by royal palms',
-  },
-  valenciaTrails: {
-    fileName: 'community-valencia-trails.jpg',
-    alt: 'Aerial of the resort-style beach-entry pool and clubhouse at Valencia Trails',
-  },
-} as const;
-
-type ImageKey = keyof typeof imageFiles;
-
-type MediaDoc = Pick<Media, 'id' | 'alt' | 'url'>;
 
 type LinkData = Header['brandHomeLink'];
 type CtaData = Header['primaryCta'];
@@ -67,59 +43,14 @@ function cta(label: string, href: string, ariaLabel?: string): CtaData {
   return { label, link: customLink(label, href), ariaLabel };
 }
 
-function media(image: MediaDoc, altOverride?: string): MediaFieldData {
+function media(image: HomepageSeedMediaDoc, altOverride?: string): MediaFieldData {
   return {
     image: image.id,
     altOverride,
   };
 }
 
-async function fileFor(imageKey: ImageKey): Promise<File> {
-  const image = imageFiles[imageKey];
-  const filePath = path.join(imagesDir, image.fileName);
-  const [data, stats] = await Promise.all([readFile(filePath), stat(filePath)]);
-
-  return {
-    data,
-    mimetype: 'image/jpeg',
-    name: image.fileName,
-    size: stats.size,
-  };
-}
-
-async function upsertMedia(payload: Awaited<ReturnType<typeof getPayload>>, imageKey: ImageKey) {
-  const image = imageFiles[imageKey];
-  const existing = await payload.find({
-    collection: 'media',
-    where: { alt: { equals: image.alt } },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  });
-
-  const existingDoc = existing.docs[0] as MediaDoc | undefined;
-  if (existingDoc) return existingDoc;
-
-  return (await payload.create({
-    collection: 'media',
-    data: { alt: image.alt },
-    file: await fileFor(imageKey),
-    overrideAccess: true,
-    context: SEED_CONTEXT,
-  })) as MediaDoc;
-}
-
-async function main() {
-  const payload = await getPayload({ config });
-
-  const mediaDocs = {
-    hero: await upsertMedia(payload, 'hero'),
-    owner: await upsertMedia(payload, 'owner'),
-    bonitaBay: await upsertMedia(payload, 'bonitaBay'),
-    valenciaBonita: await upsertMedia(payload, 'valenciaBonita'),
-    valenciaTrails: await upsertMedia(payload, 'valenciaTrails'),
-  };
-
+export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
   const header: Omit<Header, 'id' | 'createdAt' | 'updatedAt'> = {
     brandHomeLink: customLink('MVP Realty home', '/'),
     brandLabel: 'MVP Realty',
@@ -541,37 +472,85 @@ async function main() {
     ],
   };
 
-  await payload.updateGlobal({
-    slug: 'header',
-    data: header,
-    overrideAccess: true,
-    context: SEED_CONTEXT,
-  });
+  return { header, footer, pageData };
+}
 
-  await payload.updateGlobal({
-    slug: 'footer',
-    data: footer,
-    overrideAccess: true,
-    context: SEED_CONTEXT,
-  });
+export async function seedHomepage() {
+  await validateHomepageSeedAssets();
+  const payload = await getPayload({ config });
+  const placeholderData = buildHomepageSeedData(placeholderHomepageSeedMedia());
+  const [currentHeader, currentFooter, existingHome] = await Promise.all([
+    payload.findGlobal({ slug: 'header', depth: 0, overrideAccess: true }),
+    payload.findGlobal({ slug: 'footer', depth: 0, overrideAccess: true }),
+    payload.find({
+      collection: 'pages',
+      where: { slug: { equals: 'home' } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    }),
+  ]);
 
-  const existingHome = await payload.find({
-    collection: 'pages',
-    where: { slug: { equals: 'home' } },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  });
+  if (!seedDataMatches(currentHeader, placeholderData.header) && !headerIsUnseeded(currentHeader)) {
+    throw new Error(
+      `Header content differs from the canonical homepage seed at: ${seedDataDifferencePaths(currentHeader, placeholderData.header).join(', ')}.`,
+    );
+  }
+
+  if (!seedDataMatches(currentFooter, placeholderData.footer) && !footerIsUnseeded(currentFooter)) {
+    throw new Error(
+      `Footer content differs from the canonical homepage seed at: ${seedDataDifferencePaths(currentFooter, placeholderData.footer).join(', ')}.`,
+    );
+  }
 
   const existingDoc = existingHome.docs[0];
   if (existingDoc) {
-    await payload.update({
-      collection: 'pages',
-      id: existingDoc.id,
-      data: pageData,
+    const existingMedia = await findHomepageSeedMediaForExistingPage(payload);
+    const existingPageData = buildHomepageSeedData(existingMedia).pageData;
+    if (!seedDataMatches(existingDoc, existingPageData)) {
+      throw new Error(
+        `The home page differs from the canonical homepage seed at: ${seedDataDifferencePaths(existingDoc, existingPageData).join(', ')}.`,
+      );
+    }
+  }
+
+  const mediaResult = await reconcileHomepageSeedMedia(payload);
+  const { header, footer, pageData } = buildHomepageSeedData(mediaResult.mediaDocs);
+
+  let headerChanged = false;
+  if (!seedDataMatches(currentHeader, header)) {
+    await payload.updateGlobal({
+      slug: 'header',
+      data: header,
       overrideAccess: true,
       context: SEED_CONTEXT,
     });
+    headerChanged = true;
+  }
+
+  let footerChanged = false;
+  if (!seedDataMatches(currentFooter, footer)) {
+    await payload.updateGlobal({
+      slug: 'footer',
+      data: footer,
+      overrideAccess: true,
+      context: SEED_CONTEXT,
+    });
+    footerChanged = true;
+  }
+
+  let pageChanged = false;
+  if (existingDoc) {
+    if (!seedDataMatches(existingDoc, pageData)) {
+      await payload.update({
+        collection: 'pages',
+        id: existingDoc.id,
+        data: pageData,
+        overrideAccess: true,
+        context: SEED_CONTEXT,
+      });
+      pageChanged = true;
+    }
   } else {
     await payload.create({
       collection: 'pages',
@@ -579,9 +558,16 @@ async function main() {
       overrideAccess: true,
       context: SEED_CONTEXT,
     });
+    pageChanged = true;
   }
 
-  payload.logger.info('Seeded homepage page, header global, footer global, and media.');
+  payload.logger.info({
+    msg: 'Homepage seed complete.',
+    mediaCreated: mediaResult.created.length,
+    orphanFilesRemoved: mediaResult.removedOrphanFileNames.length,
+    modifiedFilesPreserved: mediaResult.preservedModifiedFileNames.length,
+    headerChanged,
+    footerChanged,
+    pageChanged,
+  });
 }
-
-await main();

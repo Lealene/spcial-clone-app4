@@ -130,13 +130,13 @@ Apply the committed Payload migrations:
 pnpm -C apps/backend migrate
 ```
 
-Add the starter homepage, Header, Footer, and media:
+Seed the starter homepage, Header, Footer, and media:
 
 ```bash
-pnpm -C apps/backend seed:homepage:local
+pnpm -C apps/backend seed:local
 ```
 
-The seed is safe to rerun when you need to refresh the starter CMS content.
+The seed validates the canonical media, reconciles the complete starter CMS content, and reports what changed. It is safe to rerun when the canonical starter content is unchanged: it reuses media by checksum, skips unchanged globals and pages, and refuses to overwrite conflicting editorial changes. It never copies or creates an admin account; each developer creates their own local user.
 
 ### 7. Start development
 
@@ -153,7 +153,7 @@ Wait until both apps report that they are ready, then open:
 
 A new database shows Payload's **first-user registration** screen at <http://localhost:3002/admin>. Create your own local email and password there.
 
-There is no shared default admin password. Your account exists only in your local PostgreSQL volume and must never be committed to the repository.
+There is no shared default admin password. Your account exists only in your local PostgreSQL volume and must never be committed to the repository. Normal colleague onboarding uses migrations and the canonical seed rather than a database dump, so password hashes, sessions, local secrets, generated IDs, and timestamps are not transferred.
 
 If the page shows a normal login form instead of first-user registration, that database already contains a user.
 
@@ -192,14 +192,14 @@ pnpm docker:down
 
 Committed Payload migrations are the schema source of truth.
 
-| Command                                    | What it does                                                            |
-| ------------------------------------------ | ----------------------------------------------------------------------- |
-| `pnpm docker:up`                           | Starts local PostgreSQL and waits for it to become healthy              |
-| `pnpm docker:down`                         | Stops PostgreSQL but preserves local data                               |
-| `pnpm -C apps/backend migrate`             | Applies pending Payload migrations                                      |
-| `pnpm -C apps/backend migrate:status`      | Shows applied and pending migrations                                    |
-| `pnpm -C apps/backend seed:homepage:local` | Creates or updates starter CMS content and media                        |
-| `pnpm docker:reset`                        | **Deletes the entire local PostgreSQL volume** and creates an empty one |
+| Command                               | What it does                                                                 |
+| ------------------------------------- | ---------------------------------------------------------------------------- |
+| `pnpm docker:up`                      | Starts local PostgreSQL and waits for it to become healthy                   |
+| `pnpm docker:down`                    | Stops PostgreSQL but preserves local data                                    |
+| `pnpm -C apps/backend migrate`        | Applies pending Payload migrations                                           |
+| `pnpm -C apps/backend migrate:status` | Shows applied and pending migrations                                         |
+| `pnpm -C apps/backend seed:local`     | Validates and reconciles starter CMS content and media without copying users |
+| `pnpm docker:reset`                   | **Deletes the local PostgreSQL volume** and recognized seed-media copies     |
 
 ### Completely reset local data
 
@@ -208,9 +208,11 @@ Only use this when you intentionally want to delete all local CMS content and us
 ```bash
 pnpm docker:reset
 pnpm -C apps/backend migrate
-pnpm -C apps/backend seed:homepage:local
+pnpm -C apps/backend seed:local
 pnpm dev
 ```
+
+The reset removes only recognized checksum-matching seed files from `apps/backend/media`; it never blanket-deletes unrelated local uploads. The PostgreSQL reset still deletes all database records, including users and editor-created media metadata.
 
 Then visit <http://localhost:3002/admin> and create a new first user.
 
@@ -298,7 +300,7 @@ A reset creates a blank database. Rebuild it in this order:
 
 ```bash
 pnpm -C apps/backend migrate
-pnpm -C apps/backend seed:homepage:local
+pnpm -C apps/backend seed:local
 ```
 
 Then create the first admin at <http://localhost:3002/admin>.
