@@ -21,9 +21,10 @@ Install these before continuing:
 
 - [Git](https://git-scm.com/)
 - [nvm](https://github.com/nvm-sh/nvm) for Node.js
+- [pnpm 11.2.1](https://pnpm.io/installation)
 - Docker Desktop **or** [Colima](https://github.com/abiosoft/colima)
 
-The repository selects Node 24 from `.nvmrc` and pins pnpm `11.2.1`. You do not need to install pnpm globally; Corepack handles it below.
+The repository selects Node 24 from `.nvmrc` and uses pnpm `11.2.1`.
 
 ## First-time setup
 
@@ -36,18 +37,16 @@ cd mvp-realty
 
 Replace `<repository-url>` with the URL your team provides.
 
-### 2. Install the correct Node and pnpm versions
+### 2. Use the correct Node and pnpm versions
 
 ```bash
 nvm install
 nvm use
-
-corepack enable
-corepack prepare pnpm@11.2.1 --activate
+node --version
 pnpm --version
 ```
 
-`pnpm --version` should print `11.2.1`.
+Node should report version 24 and pnpm should report `11.2.1`.
 
 ### 3. Install dependencies
 
@@ -241,12 +240,7 @@ pnpm -C apps/backend generate:types
 
 ### `pnpm: command not found`
 
-Enable the repository's pinned pnpm version:
-
-```bash
-corepack enable
-corepack prepare pnpm@11.2.1 --activate
-```
+Install [pnpm 11.2.1](https://pnpm.io/installation), restart your terminal, and run `pnpm --version` to confirm the installation.
 
 ### `ERR_PNPM_UNSUPPORTED_ENGINE`
 
