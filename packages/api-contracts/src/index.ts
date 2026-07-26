@@ -451,8 +451,8 @@ export const headerGlobalSchema = z.object({
     }),
   ),
   primaryCta: cmsCtaSchema,
-  mobileMenuLabel: z.string().default('Menu'),
-  mobileMenuCloseLabel: z.string().default('Close menu'),
+  mobileMenuLabel: z.string().min(1),
+  mobileMenuCloseLabel: z.string().min(1),
 });
 export type HeaderGlobal = z.infer<typeof headerGlobalSchema>;
 

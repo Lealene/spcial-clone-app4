@@ -17,16 +17,27 @@ export function BrandMark({ className }: { className?: string }) {
   );
 }
 
-/** "MVP Realty" wordmark with the gold accent on "Realty". */
-export function BrandWordmark({ className }: { className?: string }) {
+/** Brand wordmark with the final word highlighted in gold. */
+export function BrandWordmark({
+  className,
+  label = 'MVP Realty',
+}: {
+  className?: string;
+  label?: string;
+}) {
+  const words = label.trim().split(/\s+/);
+  const accent = words.pop() ?? label;
+  const prefix = words.join(' ');
+
   return (
     <b
       className={cn(
-        'text-primary font-serif text-[23px] leading-none font-bold tracking-[0.005em]',
+        'text-primary font-serif text-[23px] font-bold leading-none tracking-[0.005em]',
         className,
       )}
     >
-      MVP <i className="text-accent-deep not-italic">Realty</i>
+      {prefix ? `${prefix} ` : null}
+      <i className="text-accent-deep not-italic">{accent}</i>
     </b>
   );
 }

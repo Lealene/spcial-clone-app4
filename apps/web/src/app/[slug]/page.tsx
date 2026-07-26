@@ -14,8 +14,7 @@ function isReservedSlug(slug: string): boolean {
 }
 
 function requireCmsPage(result: CmsPageContentResult) {
-  if (result.status === 'unavailable') throw result.error;
-  if (result.status === 'missing' || result.status === 'empty') notFound();
+  if (result.status === 'missing') notFound();
   return result.page;
 }
 
@@ -24,11 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (isReservedSlug(slug)) return { title: 'Page Not Found — MVP Realty' };
 
   const result = await getPageContent(slug);
-  if (result.status === 'unavailable') throw result.error;
-  if (result.status === 'missing' || result.status === 'empty') {
-    return { title: 'Page Not Found — MVP Realty' };
-  }
-
+  if (result.status === 'missing') return { title: 'Page Not Found — MVP Realty' };
   return getCmsPageMetadata(result.page, `/${slug}`);
 }
 

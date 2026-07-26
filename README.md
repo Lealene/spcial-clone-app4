@@ -21,9 +21,10 @@ Install these before continuing:
 
 - [Git](https://git-scm.com/)
 - [nvm](https://github.com/nvm-sh/nvm) for Node.js
+- [pnpm 11.2.1](https://pnpm.io/installation)
 - Docker Desktop **or** [Colima](https://github.com/abiosoft/colima)
 
-The repository selects Node 24 from `.nvmrc` and pins pnpm `11.2.1`. You do not need to install pnpm globally; Corepack handles it below.
+The repository selects Node 24 from `.nvmrc` and uses pnpm `11.2.1`.
 
 ## First-time setup
 
@@ -36,18 +37,16 @@ cd mvp-realty
 
 Replace `<repository-url>` with the URL your team provides.
 
-### 2. Install the correct Node and pnpm versions
+### 2. Use the correct Node and pnpm versions
 
 ```bash
 nvm install
 nvm use
-
-corepack enable
-corepack prepare pnpm@11.2.1 --activate
+node --version
 pnpm --version
 ```
 
-`pnpm --version` should print `11.2.1`.
+Node should report version 24 and pnpm should report `11.2.1`.
 
 ### 3. Install dependencies
 
@@ -130,13 +129,13 @@ Apply the committed Payload migrations:
 pnpm -C apps/backend migrate
 ```
 
-Add the starter homepage, Header, Footer, and media:
+Seed the starter homepage, Header, Footer, and media:
 
 ```bash
-pnpm -C apps/backend seed:homepage:local
+pnpm -C apps/backend seed:local
 ```
 
-The seed is safe to rerun when you need to refresh the starter CMS content.
+`seed:local` is the complete bootstrap for everything currently owned by Payload: the five canonical media assets, Header, Footer, and the published `home` page with every registered page block. It validates postconditions after reconciliation and exits nonzero if any required CMS dependency is missing or invalid. It is safe to rerun when managed seeded fields are unchanged, and it never copies or creates users, passwords, or sessions.
 
 ### 7. Start development
 
@@ -153,7 +152,7 @@ Wait until both apps report that they are ready, then open:
 
 A new database shows Payload's **first-user registration** screen at <http://localhost:3002/admin>. Create your own local email and password there.
 
-There is no shared default admin password. Your account exists only in your local PostgreSQL volume and must never be committed to the repository.
+There is no shared default admin password. Your account exists only in your local PostgreSQL volume and must never be committed to the repository. Normal colleague onboarding uses migrations and the canonical seed rather than a database dump, so password hashes, sessions, local secrets, generated IDs, and timestamps are not transferred.
 
 If the page shows a normal login form instead of first-user registration, that database already contains a user.
 
@@ -167,7 +166,9 @@ A successful setup should satisfy all of these checks:
 4. Payload contains Header and Footer globals and five starter media records.
 5. `pnpm -C apps/backend migrate:status` reports the current migration as applied.
 
-> **Important:** the web app has a deliberate fixture fallback. It can display a complete-looking homepage when Payload is unavailable or its page data is invalid. Seeing the website alone does not prove the CMS is connected; check Payload admin or the `home` page API too.
+> **Important:** Payload-connected routes and site chrome do not silently fall back to editorial fixtures. If the required homepage, Header, Footer, media, or CMS service is missing or invalid, the web app reports the failure clearly. Listings, property details, community details, and `/ui` remain intentionally backed by static TypeScript data until corresponding Payload collections exist.
+
+Public CMS reads use a five-minute revalidation window, so a temporary revalidation failure may continue serving the last valid CMS response. A cold production web build still requires reachable, valid, published Payload content; `seed:local` is a local-development command and is not run automatically in production.
 
 ## Daily development
 
@@ -192,14 +193,14 @@ pnpm docker:down
 
 Committed Payload migrations are the schema source of truth.
 
-| Command                                    | What it does                                                            |
-| ------------------------------------------ | ----------------------------------------------------------------------- |
-| `pnpm docker:up`                           | Starts local PostgreSQL and waits for it to become healthy              |
-| `pnpm docker:down`                         | Stops PostgreSQL but preserves local data                               |
-| `pnpm -C apps/backend migrate`             | Applies pending Payload migrations                                      |
-| `pnpm -C apps/backend migrate:status`      | Shows applied and pending migrations                                    |
-| `pnpm -C apps/backend seed:homepage:local` | Creates or updates starter CMS content and media                        |
-| `pnpm docker:reset`                        | **Deletes the entire local PostgreSQL volume** and creates an empty one |
+| Command                               | What it does                                                                 |
+| ------------------------------------- | ---------------------------------------------------------------------------- |
+| `pnpm docker:up`                      | Starts local PostgreSQL and waits for it to become healthy                   |
+| `pnpm docker:down`                    | Stops PostgreSQL but preserves local data                                    |
+| `pnpm -C apps/backend migrate`        | Applies pending Payload migrations                                           |
+| `pnpm -C apps/backend migrate:status` | Shows applied and pending migrations                                         |
+| `pnpm -C apps/backend seed:local`     | Validates and reconciles starter CMS content and media without copying users |
+| `pnpm docker:reset`                   | **Deletes the local PostgreSQL volume** and recognized seed-media copies     |
 
 ### Completely reset local data
 
@@ -208,9 +209,11 @@ Only use this when you intentionally want to delete all local CMS content and us
 ```bash
 pnpm docker:reset
 pnpm -C apps/backend migrate
-pnpm -C apps/backend seed:homepage:local
+pnpm -C apps/backend seed:local
 pnpm dev
 ```
+
+The reset removes only recognized checksum-matching seed files from `apps/backend/media`; it never blanket-deletes unrelated local uploads. The PostgreSQL reset still deletes all database records, including users and editor-created media metadata.
 
 Then visit <http://localhost:3002/admin> and create a new first user.
 
@@ -239,12 +242,7 @@ pnpm -C apps/backend generate:types
 
 ### `pnpm: command not found`
 
-Enable the repository's pinned pnpm version:
-
-```bash
-corepack enable
-corepack prepare pnpm@11.2.1 --activate
-```
+Install [pnpm 11.2.1](https://pnpm.io/installation), restart your terminal, and run `pnpm --version` to confirm the installation.
 
 ### `ERR_PNPM_UNSUPPORTED_ENGINE`
 
@@ -298,14 +296,22 @@ A reset creates a blank database. Rebuild it in this order:
 
 ```bash
 pnpm -C apps/backend migrate
-pnpm -C apps/backend seed:homepage:local
+pnpm -C apps/backend seed:local
 ```
 
 Then create the first admin at <http://localhost:3002/admin>.
 
-### The web homepage works, but Payload does not
+### The web app reports that CMS content is unavailable
 
-The frontend is probably rendering its fixture fallback. Check the backend terminal output and open <http://localhost:3002/admin>. Also verify that the published `home` page exists in Payload.
+Confirm PostgreSQL and Payload are running, apply migrations, and run the complete local bootstrap:
+
+```bash
+pnpm docker:up
+pnpm -C apps/backend migrate
+pnpm -C apps/backend seed:local
+```
+
+The web app intentionally does not hide missing or invalid Payload content behind a fixture homepage.
 
 ### Payload cannot load `sharp` or process images
 

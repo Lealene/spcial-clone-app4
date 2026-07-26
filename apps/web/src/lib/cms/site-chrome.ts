@@ -5,72 +5,77 @@ import {
   type HeaderGlobal,
 } from '@mvp-realty/api-contracts';
 
-import { footerFixture, headerFixture } from '@/data/homepage-fixture';
 import { fetchJson } from './client';
 import { normalizeCta, normalizeLink } from './links';
 import { array, isRecord, text } from './pages/primitives';
 
+function requiredText(value: unknown, field: string): string {
+  const normalized = text(value);
+  if (!normalized) throw new Error(`CMS ${field} is required.`);
+  return normalized;
+}
+
 export function normalizeHeader(raw: unknown): HeaderGlobal {
-  const data = isRecord(raw) ? raw : {};
+  if (!isRecord(raw)) throw new Error('CMS header must be an object.');
+
   return headerGlobalSchema.parse({
-    brandHomeLink: normalizeLink(data.brandHomeLink, 'MVP Realty home', '/'),
-    brandLabel: text(data.brandLabel, 'MVP Realty'),
-    brandMarkAlt: text(data.brandMarkAlt) || undefined,
-    navItems: array(data.navItems).map((item) => {
-      const row = isRecord(item) ? item : {};
+    brandHomeLink: normalizeLink(raw.brandHomeLink),
+    brandLabel: requiredText(raw.brandLabel, 'header brand label'),
+    brandMarkAlt: text(raw.brandMarkAlt) || undefined,
+    navItems: array(raw.navItems).map((item) => {
+      if (!isRecord(item)) throw new Error('CMS header navigation item must be an object.');
+      const label = requiredText(item.label, 'header navigation label');
       return {
-        label: text(row.label, 'Link'),
-        link: normalizeLink(row.link, text(row.label, 'Link'), '#'),
-        ariaLabel: text(row.ariaLabel) || undefined,
+        label,
+        link: normalizeLink(item.link, label),
+        ariaLabel: text(item.ariaLabel) || undefined,
       };
     }),
-    primaryCta: normalizeCta(data.primaryCta, 'Request My Shortlist', '/#lead'),
-    mobileMenuLabel: text(data.mobileMenuLabel, 'Menu'),
-    mobileMenuCloseLabel: text(data.mobileMenuCloseLabel, 'Close menu'),
+    primaryCta: normalizeCta(raw.primaryCta),
+    mobileMenuLabel: requiredText(raw.mobileMenuLabel, 'mobile menu label'),
+    mobileMenuCloseLabel: requiredText(raw.mobileMenuCloseLabel, 'mobile menu close label'),
   });
 }
 
 export function normalizeFooter(raw: unknown): FooterGlobal {
-  const data = isRecord(raw) ? raw : {};
+  if (!isRecord(raw)) throw new Error('CMS footer must be an object.');
+
   return footerGlobalSchema.parse({
-    brandName: text(data.brandName, 'MVP'),
-    brandAccentText: text(data.brandAccentText) || undefined,
-    brandBlurb: text(data.brandBlurb, footerFixture.brandBlurb),
-    columns: array(data.columns).map((column) => {
-      const col = isRecord(column) ? column : {};
+    brandName: requiredText(raw.brandName, 'footer brand name'),
+    brandAccentText: text(raw.brandAccentText) || undefined,
+    brandBlurb: requiredText(raw.brandBlurb, 'footer brand blurb'),
+    columns: array(raw.columns).map((column) => {
+      if (!isRecord(column)) throw new Error('CMS footer column must be an object.');
       return {
-        title: text(col.title, 'Links'),
-        links: array(col.links).map((item) => {
-          const row = isRecord(item) ? item : {};
+        title: requiredText(column.title, 'footer column title'),
+        links: array(column.links).map((item) => {
+          if (!isRecord(item)) throw new Error('CMS footer link must be an object.');
+          const label = requiredText(item.label, 'footer link label');
           return {
-            label: text(row.label, 'Link'),
-            link: normalizeLink(row.link, text(row.label, 'Link'), '#'),
-            ariaLabel: text(row.ariaLabel) || undefined,
+            label,
+            link: normalizeLink(item.link, label),
+            ariaLabel: text(item.ariaLabel) || undefined,
           };
         }),
       };
     }),
-    bottomLeftText: text(data.bottomLeftText, footerFixture.bottomLeftText),
-    bottomRightLinks: array(data.bottomRightLinks).map((item) => {
+    bottomLeftText: requiredText(raw.bottomLeftText, 'footer bottom text'),
+    bottomRightLinks: array(raw.bottomRightLinks).map((item) => {
       const row = isRecord(item) ? item : {};
-      return normalizeLink(row.link ?? item, 'Link', '#');
+      return normalizeLink(row.link ?? item);
     }),
-    bottomRightTextFallback: text(data.bottomRightTextFallback) || undefined,
+    bottomRightTextFallback: text(raw.bottomRightTextFallback) || undefined,
   });
 }
 
 export async function getHeaderContent(): Promise<HeaderGlobal> {
-  try {
-    return normalizeHeader(await fetchJson('/api/globals/header?depth=2'));
-  } catch {
-    return headerFixture;
-  }
+  return normalizeHeader(
+    await fetchJson('/api/globals/header?depth=2', { tags: ['cms-global:header'] }),
+  );
 }
 
 export async function getFooterContent(): Promise<FooterGlobal> {
-  try {
-    return normalizeFooter(await fetchJson('/api/globals/footer?depth=2'));
-  } catch {
-    return footerFixture;
-  }
+  return normalizeFooter(
+    await fetchJson('/api/globals/footer?depth=2', { tags: ['cms-global:footer'] }),
+  );
 }

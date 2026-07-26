@@ -1,9 +1,13 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.stubEnv('NEXT_PUBLIC_BACKEND_URL', 'http://localhost:3002');
 vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3003');
 
 describe('site chrome CMS normalization', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('normalizes header links and preserves row-level aria labels', async () => {
     const { normalizeHeader } = await import('./site-chrome');
 
@@ -21,6 +25,8 @@ describe('site chrome CMS normalization', () => {
         label: 'Request My Shortlist',
         link: { type: 'anchor', anchor: '/#lead', label: 'Lead' },
       },
+      mobileMenuLabel: 'Menu',
+      mobileMenuCloseLabel: 'Close menu',
     });
 
     expect(header.brandHomeLink.href).toBe('/');
@@ -58,5 +64,35 @@ describe('site chrome CMS normalization', () => {
       link: { href: 'tel:2395550148' },
     });
     expect(footer.bottomRightLinks[0]).toMatchObject({ href: 'mailto:hello@example.com' });
+  });
+
+  it('rejects missing CMS-owned header and footer copy', async () => {
+    const { normalizeFooter, normalizeHeader } = await import('./site-chrome');
+
+    expect(() =>
+      normalizeHeader({
+        brandHomeLink: { type: 'custom', customUrl: '/', label: 'Home' },
+        brandLabel: 'MVP Realty',
+        navItems: [],
+        primaryCta: {
+          label: 'Contact',
+          link: { type: 'anchor', anchor: '/#lead', label: 'Contact' },
+        },
+      }),
+    ).toThrow('mobile menu label');
+    expect(() => normalizeFooter({ columns: [], bottomRightLinks: [] })).toThrow(
+      'footer brand name',
+    );
+  });
+
+  it('propagates CMS request failures instead of returning fixture chrome', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 503 }));
+    const { getHeaderContent } = await import('./site-chrome');
+
+    await expect(getHeaderContent()).rejects.toMatchObject({
+      name: 'CmsDataError',
+      kind: 'request-failed',
+      status: 503,
+    });
   });
 });

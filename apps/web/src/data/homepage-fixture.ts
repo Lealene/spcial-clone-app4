@@ -1,4 +1,4 @@
-import type { FooterGlobal, HeaderGlobal, CmsPage } from '@mvp-realty/api-contracts';
+import type { CmsPage } from '@mvp-realty/api-contracts';
 
 import { amenities } from './amenities';
 import { featuredCommunities, heroCommunities } from './communities';
@@ -8,59 +8,6 @@ import { featuredResidences } from './residences';
 import { testimonials } from './testimonials';
 
 const link = (label: string, href: string) => ({ label, href });
-
-export const headerFixture: HeaderGlobal = {
-  brandHomeLink: link('MVP Realty home', '/'),
-  brandLabel: 'MVP Realty',
-  navItems: [
-    { label: 'The Life', link: link('The Life', '/#lifestyle') },
-    { label: 'Amenities', link: link('Amenities', '/#amenities') },
-    { label: 'Communities', link: link('Communities', '/#communities') },
-    { label: 'Residences', link: link('Residences', '/listings') },
-  ],
-  primaryCta: link('Request My Shortlist', '/#lead'),
-  mobileMenuLabel: 'Menu',
-  mobileMenuCloseLabel: 'Close menu',
-};
-
-export const footerFixture: FooterGlobal = {
-  brandName: 'MVP',
-  brandAccentText: 'Realty',
-  brandBlurb:
-    'Florida’s Gulf-Coast concierge for luxury gated communities and beachfront residences, minutes from the sand.',
-  columns: [
-    {
-      title: 'Residences',
-      links: [
-        { label: 'The Anchorage', link: link('The Anchorage', '/listings') },
-        { label: 'Lakeside Villa', link: link('Lakeside Villa', '/listings') },
-        { label: 'The Lagoon Model', link: link('The Lagoon Model', '/listings') },
-        { label: 'Beachfront Homes', link: link('Beachfront Homes', '/listings') },
-      ],
-    },
-    {
-      title: 'Explore',
-      links: [
-        { label: 'Amenities', link: link('Amenities', '/#amenities') },
-        { label: 'Communities', link: link('Communities', '/#communities') },
-        { label: 'The Life', link: link('The Life', '/#lifestyle') },
-        { label: 'Meet the Owner', link: link('Meet the Owner', '/#concierge') },
-      ],
-    },
-    {
-      title: 'Concierge',
-      links: [
-        { label: 'Speak With Us', link: link('Speak With Us', '/#lead') },
-        { label: '(239) 555-0148', link: link('(239) 555-0148', 'tel:+12395550148') },
-        { label: 'By Appointment', link: link('By Appointment', '/#lead') },
-        { label: 'About MVP', link: link('About MVP', '/#concierge') },
-      ],
-    },
-  ],
-  bottomLeftText: '© 2026 MVP Realty. All rights reserved.',
-  bottomRightLinks: [],
-  bottomRightTextFallback: 'Equal Housing Opportunity · Privacy · Terms',
-};
 
 export const homepageFixture: CmsPage = {
   title: 'Home',

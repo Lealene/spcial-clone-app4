@@ -180,15 +180,22 @@ describe('CMS page contracts', () => {
     expect(CMS_PAGE_BLOCK_LIMITS.layout.max).toBe(24);
   });
 
-  it('parses header globals with menu labels', () => {
-    const parsed = headerGlobalSchema.parse({
+  it('requires authored header menu labels', () => {
+    const header = {
       brandHomeLink: link('Home', '/'),
       brandLabel: 'MVP Realty',
       navItems: [{ label: 'The Life', link: link('The Life', '/#lifestyle') }],
       primaryCta: link('Request My Shortlist', '/#lead'),
-    });
+      mobileMenuLabel: 'Menu',
+      mobileMenuCloseLabel: 'Close menu',
+    };
 
-    expect(parsed.mobileMenuLabel).toBe('Menu');
-    expect(parsed.mobileMenuCloseLabel).toBe('Close menu');
+    expect(headerGlobalSchema.parse(header)).toMatchObject({
+      mobileMenuLabel: 'Menu',
+      mobileMenuCloseLabel: 'Close menu',
+    });
+    expect(headerGlobalSchema.safeParse({ ...header, mobileMenuLabel: undefined }).success).toBe(
+      false,
+    );
   });
 });
