@@ -135,7 +135,7 @@ Seed the starter homepage, Header, Footer, and media:
 pnpm -C apps/backend seed:local
 ```
 
-The seed validates the canonical media, reconciles the complete starter CMS content, and reports what changed. It is safe to rerun when the canonical starter content is unchanged: it reuses media by checksum, skips unchanged globals and pages, and refuses to overwrite conflicting editorial changes. It never copies or creates an admin account; each developer creates their own local user.
+`seed:local` is the complete bootstrap for everything currently owned by Payload: the five canonical media assets, Header, Footer, and the published `home` page with every registered page block. It validates postconditions after reconciliation and exits nonzero if any required CMS dependency is missing or invalid. It is safe to rerun when managed seeded fields are unchanged, and it never copies or creates users, passwords, or sessions.
 
 ### 7. Start development
 
@@ -166,7 +166,9 @@ A successful setup should satisfy all of these checks:
 4. Payload contains Header and Footer globals and five starter media records.
 5. `pnpm -C apps/backend migrate:status` reports the current migration as applied.
 
-> **Important:** the web app has a deliberate fixture fallback. It can display a complete-looking homepage when Payload is unavailable or its page data is invalid. Seeing the website alone does not prove the CMS is connected; check Payload admin or the `home` page API too.
+> **Important:** Payload-connected routes and site chrome do not silently fall back to editorial fixtures. If the required homepage, Header, Footer, media, or CMS service is missing or invalid, the web app reports the failure clearly. Listings, property details, community details, and `/ui` remain intentionally backed by static TypeScript data until corresponding Payload collections exist.
+
+Public CMS reads use a five-minute revalidation window, so a temporary revalidation failure may continue serving the last valid CMS response. A cold production web build still requires reachable, valid, published Payload content; `seed:local` is a local-development command and is not run automatically in production.
 
 ## Daily development
 
@@ -299,9 +301,17 @@ pnpm -C apps/backend seed:local
 
 Then create the first admin at <http://localhost:3002/admin>.
 
-### The web homepage works, but Payload does not
+### The web app reports that CMS content is unavailable
 
-The frontend is probably rendering its fixture fallback. Check the backend terminal output and open <http://localhost:3002/admin>. Also verify that the published `home` page exists in Payload.
+Confirm PostgreSQL and Payload are running, apply migrations, and run the complete local bootstrap:
+
+```bash
+pnpm docker:up
+pnpm -C apps/backend migrate
+pnpm -C apps/backend seed:local
+```
+
+The web app intentionally does not hide missing or invalid Payload content behind a fixture homepage.
 
 ### Payload cannot load `sharp` or process images
 

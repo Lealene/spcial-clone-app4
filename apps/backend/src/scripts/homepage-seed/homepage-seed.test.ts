@@ -2,6 +2,7 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import { CMS_PAGE_BLOCK_TYPES } from '@mvp-realty/api-contracts';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { Footer, Header } from '@/payload-types';
@@ -13,7 +14,10 @@ import {
   homepageSeedUploadName,
 } from './assets';
 import { footerIsUnseeded, headerIsUnseeded } from './fresh';
+import type { HomepageSeedMediaDocs } from './media';
 import { seedDataDifferencePaths, seedDataMatches } from './normalize';
+import { homepageSeedAssets } from '../../../seed/homepage/manifest';
+import { buildHomepageSeedData } from '../seed-homepage';
 
 const temporaryDirectories: string[] = [];
 
@@ -84,6 +88,32 @@ describe('fresh Payload globals', () => {
   it('accepts an empty Footer as unseeded', () => {
     expect(footerIsUnseeded({ columns: [], bottomRightLinks: [] } as unknown as Footer)).toBe(true);
     expect(footerIsUnseeded({ brandName: 'Edited' } as unknown as Footer)).toBe(false);
+  });
+});
+
+describe('canonical local CMS seed inventory', () => {
+  it('covers every registered block and canonical media asset', () => {
+    const mediaDocs = Object.fromEntries(
+      Object.entries(homepageSeedAssets).map(([key, asset], index) => [
+        key,
+        {
+          id: index + 1,
+          alt: asset.alt,
+          filename: asset.fileName,
+          url: `/media/${asset.fileName}`,
+        },
+      ]),
+    ) as HomepageSeedMediaDocs;
+    const { header, footer, pageData } = buildHomepageSeedData(mediaDocs);
+    const serializedPage = JSON.stringify(pageData);
+
+    expect(pageData._status).toBe('published');
+    expect(pageData.layout.map((block) => block.blockType)).toEqual(CMS_PAGE_BLOCK_TYPES);
+    expect(header.navItems).toHaveLength(4);
+    expect(footer.columns).toHaveLength(3);
+    Object.values(mediaDocs).forEach((media) => {
+      expect(serializedPage).toContain(`"image":${String(media.id)}`);
+    });
   });
 });
 

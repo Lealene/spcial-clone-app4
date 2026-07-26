@@ -1,10 +1,41 @@
 import { env } from '@/env';
+import { CmsDataError } from './errors';
 
-export async function fetchJson(path: string): Promise<unknown> {
-  const response = await fetch(new URL(path, env.NEXT_PUBLIC_BACKEND_URL), {
-    next: { tags: ['cms'] },
-  });
+type FetchJsonOptions = {
+  tags?: string[];
+};
 
-  if (!response.ok) throw new Error(`CMS fetch failed: ${response.status}`);
-  return response.json();
+export async function fetchJson(path: string, options: FetchJsonOptions = {}): Promise<unknown> {
+  const resource = path.split('?')[0] ?? path;
+  let response: Response;
+
+  try {
+    response = await fetch(new URL(path, env.NEXT_PUBLIC_BACKEND_URL), {
+      next: { revalidate: 300, tags: ['cms', ...(options.tags ?? [])] },
+    });
+  } catch (cause) {
+    throw new CmsDataError('CMS request failed.', {
+      kind: 'request-failed',
+      resource,
+      cause,
+    });
+  }
+
+  if (!response.ok) {
+    throw new CmsDataError(`CMS request failed with status ${response.status}.`, {
+      kind: 'request-failed',
+      resource,
+      status: response.status,
+    });
+  }
+
+  try {
+    return await response.json();
+  } catch (cause) {
+    throw new CmsDataError('CMS returned an invalid JSON response.', {
+      kind: 'invalid-response',
+      resource,
+      cause,
+    });
+  }
 }

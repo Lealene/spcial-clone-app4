@@ -190,9 +190,12 @@ describe('CMS page adapters', () => {
     expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
       'http://localhost:3002/api/pages?where[slug][equals]=about%20us&depth=2&limit=1',
     );
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
+      next: { revalidate: 300, tags: ['cms', 'cms-page:about us'] },
+    });
   });
 
-  it('distinguishes missing, empty, and unavailable CMS pages', async () => {
+  it('returns missing pages but rejects empty or unavailable CMS content', async () => {
     const { getPageContent } = await import('./pages');
 
     vi.stubGlobal(
@@ -208,15 +211,19 @@ describe('CMS page adapters', () => {
         json: async () => ({ docs: [{ title: 'Empty', slug: 'empty', layout: [] }] }),
       }),
     );
-    await expect(getPageContent('empty')).resolves.toMatchObject({ status: 'empty' });
+    await expect(getPageContent('empty')).rejects.toMatchObject({
+      name: 'CmsDataError',
+      kind: 'no-renderable-blocks',
+    });
 
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({ ok: false, status: 503, json: async () => ({}) }),
     );
-    await expect(getPageContent('unavailable')).resolves.toMatchObject({
-      status: 'unavailable',
-      error: expect.any(Error),
+    await expect(getPageContent('unavailable')).rejects.toMatchObject({
+      name: 'CmsDataError',
+      kind: 'request-failed',
+      status: 503,
     });
   });
 });

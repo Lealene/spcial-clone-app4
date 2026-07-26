@@ -17,11 +17,11 @@ Files/modules involved:
 
 `apps/web/src/lib/cms/pages/index.ts` is the public homepage CMS module. It currently exposes:
 
-- `getHomepageContent()`
+- `getPageContent()`
 - `getHeaderContent()`
 - `getFooterContent()`
 
-The same file also contains low-level helpers, Header/Footer normalization, SEO normalization, a large `normalizeBlock` switch, per-block fallback defaults, and the fetch/fallback behavior that returns local fixtures when CMS data is missing or unavailable.
+The implementation now separates page transport, Header/Footer normalization, SEO normalization, and per-block adapters. Payload-connected content is authoritative: missing, unavailable, or invalid required CMS content raises an explicit route error instead of returning editorial fixtures.
 
 ## 3. Problem
 
@@ -38,7 +38,7 @@ Keep the public interface stable, but deepen the implementation:
 - each block gets a focused adapter under `apps/web/src/lib/cms/pages/adapters/`.
 - a registry maps CMS page block type to adapter.
 - unknown blocks continue to be ignored safely.
-- failed fetches, missing homepage docs, and empty layouts still fall back to `homepageFixture`.
+- failed fetches, missing required homepage content, and empty effective layouts fail clearly; fixtures remain test-only.
 
 ## 5. Implementation Notes
 
@@ -60,7 +60,7 @@ Reuse existing helpers instead of changing behavior:
 
 - `normalizeMediaField` from `apps/web/src/lib/cms/media.ts`
 - `normalizeLink` and `normalizeCta` from `apps/web/src/lib/cms/links.ts`
-- fallback data from `apps/web/src/data/homepage-fixture.ts`
+- representative block data from `apps/web/src/data/homepage-fixture.ts` in tests only
 - schemas/types from `@mvp-realty/api-contracts`
 
 ## 6. Verification
@@ -76,7 +76,7 @@ Add tests near the new adapter modules to verify:
 - every known block type has an adapter;
 - representative raw Payload-shaped input normalizes to each contract block;
 - unknown block types are dropped;
-- missing/empty homepage content falls back to fixture data.
+- missing, unavailable, invalid, or empty required homepage content raises the declared CMS error policy.
 
 ## 7. Status
 

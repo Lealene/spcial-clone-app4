@@ -1,6 +1,5 @@
-import { getPayload } from 'payload';
+import type { Payload } from 'payload';
 
-import config from '@payload-config';
 import type { Footer, Header, Page } from '@/payload-types';
 
 import { validateHomepageSeedAssets } from './homepage-seed/assets';
@@ -475,9 +474,17 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
   return { header, footer, pageData };
 }
 
-export async function seedHomepage() {
+export type HomepageSeedReport = {
+  mediaCreated: number;
+  orphanFilesRemoved: number;
+  modifiedFilesPreserved: number;
+  headerChanged: boolean;
+  footerChanged: boolean;
+  pageChanged: boolean;
+};
+
+export async function seedHomepage(payload: Payload): Promise<HomepageSeedReport> {
   await validateHomepageSeedAssets();
-  const payload = await getPayload({ config });
   const placeholderData = buildHomepageSeedData(placeholderHomepageSeedMedia());
   const [currentHeader, currentFooter, existingHome] = await Promise.all([
     payload.findGlobal({ slug: 'header', depth: 0, overrideAccess: true }),
@@ -561,13 +568,12 @@ export async function seedHomepage() {
     pageChanged = true;
   }
 
-  payload.logger.info({
-    msg: 'Homepage seed complete.',
+  return {
     mediaCreated: mediaResult.created.length,
     orphanFilesRemoved: mediaResult.removedOrphanFileNames.length,
     modifiedFilesPreserved: mediaResult.preservedModifiedFileNames.length,
     headerChanged,
     footerChanged,
     pageChanged,
-  });
+  };
 }

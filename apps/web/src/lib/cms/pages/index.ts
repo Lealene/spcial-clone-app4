@@ -1,6 +1,7 @@
 import type { CmsPage } from '@mvp-realty/api-contracts';
 
 import { fetchJson } from '../client';
+import { CmsDataError } from '../errors';
 import { getFooterContent, getHeaderContent } from '../site-chrome';
 import type { CmsPageBlockDiagnostic } from './block-adapters';
 import { reportCmsPageDiagnostics } from './diagnostics';
@@ -19,33 +20,26 @@ export { getFooterContent, getHeaderContent };
 
 export type CmsPageContentResult =
   | { status: 'ready'; page: CmsPage; diagnostics: CmsPageBlockDiagnostic[] }
-  | { status: 'empty'; page: CmsPage; diagnostics: CmsPageBlockDiagnostic[] }
-  | { status: 'missing' }
-  | { status: 'unavailable'; error: Error };
+  | { status: 'missing' };
 
 function pagePath(slug: string): string {
   const query = encodeURIComponent(slug);
   return `/api/pages?where[slug][equals]=${query}&depth=2&limit=1`;
 }
 
-function toError(reason: unknown): Error {
-  return reason instanceof Error ? reason : new Error('CMS page request failed.');
-}
-
 export async function getPageContent(slug: string): Promise<CmsPageContentResult> {
-  try {
-    const response = await fetchJson(pagePath(slug));
-    const envelope = parsePayloadPageEnvelope(response);
-    if (envelope.status === 'missing') return envelope;
+  const response = await fetchJson(pagePath(slug), { tags: [`cms-page:${slug}`] });
+  const envelope = parsePayloadPageEnvelope(response);
+  if (envelope.status === 'missing') return envelope;
 
-    const normalized = normalizePage(envelope.page);
-    reportCmsPageDiagnostics(normalized.diagnostics);
-    if (normalized.page.layout.length === 0) {
-      return { status: 'empty', ...normalized };
-    }
-
-    return { status: 'ready', ...normalized };
-  } catch (reason) {
-    return { status: 'unavailable', error: toError(reason) };
+  const normalized = normalizePage(envelope.page);
+  reportCmsPageDiagnostics(normalized.diagnostics);
+  if (normalized.page.layout.length === 0) {
+    throw new CmsDataError('CMS page has no renderable blocks.', {
+      kind: 'no-renderable-blocks',
+      resource: `page:${slug}`,
+    });
   }
+
+  return { status: 'ready', ...normalized };
 }

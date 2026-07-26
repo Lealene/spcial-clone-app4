@@ -30,11 +30,11 @@ export function SiteNavInteractive({ header }: { header: HeaderGlobal }) {
     >
       <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-6 px-[clamp(22px,5vw,76px)] py-4">
         <Link
-          {...getLinkRenderProps(header.brandHomeLink, header.brandLabel)}
+          {...getLinkRenderProps(header.brandHomeLink, header.brandMarkAlt ?? header.brandLabel)}
           className="flex items-center gap-[13px]"
         >
           <BrandMark />
-          <BrandWordmark />
+          <BrandWordmark label={header.brandLabel} />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">

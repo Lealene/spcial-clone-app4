@@ -18,7 +18,7 @@
     "migrate:fresh": "cross-env NODE_ENV=production PAYLOAD_MIGRATING=true NODE_OPTIONS=--no-deprecation payload migrate:fresh",
     "migrate:status": "cross-env NODE_ENV=production PAYLOAD_MIGRATING=true NODE_OPTIONS=--no-deprecation payload migrate:status",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
-    "seed:local": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/run-seed-homepage.ts",
+    "seed:local": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/run-seed-local.ts",
     "audit:cms-blocks": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/audit-cms-blocks.ts",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types"
