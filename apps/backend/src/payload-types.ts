@@ -70,7 +70,12 @@ export interface Config {
     users: User;
     media: Media;
     pages: Page;
+    brokers: Broker;
+    areas: Area;
+    listings: Listing;
+    'sync-logs': SyncLog;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -80,7 +85,12 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    brokers: BrokersSelect<false> | BrokersSelect<true>;
+    areas: AreasSelect<false> | AreasSelect<true>;
+    listings: ListingsSelect<false> | ListingsSelect<true>;
+    'sync-logs': SyncLogsSelect<false> | SyncLogsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -92,10 +102,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -103,7 +115,14 @@ export interface Config {
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      syncBridgeListings: TaskSyncBridgeListings;
+      mirrorListingHero: TaskMirrorListingHero;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -310,36 +329,41 @@ export interface CommunitiesStripBlock {
    */
   anchorId?: string | null;
   /**
-   * Reserved for selected/query modes after communities exist.
+   * Areas mode loads strip items from Areas (kind=community). Edit name/blurb on the Area document.
    */
-  sourceMode?: 'manual' | null;
+  sourceMode?: ('areas' | 'manual') | null;
   /**
-   * Recommended: 3 compact community links.
+   * Legacy manual strip items. Prefer Areas collection.
    */
-  items: {
-    name: string;
-    blurb: string;
-    slug: string;
-    link: {
-      label?: string | null;
-      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
-      page?: (number | null) | Page;
-      /**
-       * Use a single-leading-slash app route or an HTTP(S) URL.
-       */
-      customUrl?: string | null;
-      /**
-       * Examples: #lead, /#lead.
-       */
-      anchor?: string | null;
-      phone?: string | null;
-      email?: string | null;
-      newTab?: boolean | null;
-      ariaLabel?: string | null;
-    };
-    icon?: 'mapPin' | null;
-    id?: string | null;
-  }[];
+  items?:
+    | {
+        name: string;
+        blurb: string;
+        slug: string;
+        link: {
+          label?: string | null;
+          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+          page?: (number | null) | Page;
+          /**
+           * Use a single-leading-slash app route or an HTTP(S) URL.
+           */
+          customUrl?: string | null;
+          /**
+           * Examples: #lead, /#lead.
+           */
+          anchor?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          newTab?: boolean | null;
+          ariaLabel?: string | null;
+        };
+        icon?: 'mapPin' | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How many community Areas to show in the strip.
+   */
   maxItems?: number | null;
   id?: string | null;
   blockName?: string | null;
@@ -368,59 +392,61 @@ export interface FeaturedCommunitiesBlock {
     lede?: string | null;
   };
   /**
-   * Reserved for selected/query modes after communities exist.
+   * Areas mode loads community cards from Areas (kind=community). Edit blurbs, gallery, ratings, and tags there — not here.
    */
-  sourceMode?: 'manual' | null;
+  sourceMode?: ('areas' | 'manual') | null;
   /**
-   * Community cards. Images should be 16:11.
+   * Legacy manual cards. Prefer Areas collection.
    */
-  manualCommunities: {
-    slug: string;
-    name: string;
-    locality: string;
-    rating: number;
-    reviews: number;
-    reviewsLabel?: string | null;
-    priceRange: string;
-    tags?:
-      | {
-          label: string;
-          id?: string | null;
-        }[]
-      | null;
-    residences: number;
-    residencesLabel?: string | null;
-    nowSelling: number;
-    nowSellingLabel?: string | null;
-    image: {
-      /**
-       * Recommended aspect ratio: 16:11.
-       */
-      image: number | Media;
-      /**
-       * Optional. Falls back to the media alt text.
-       */
-      altOverride?: string | null;
-    };
-    link: {
-      label?: string | null;
-      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
-      page?: (number | null) | Page;
-      /**
-       * Use a single-leading-slash app route or an HTTP(S) URL.
-       */
-      customUrl?: string | null;
-      /**
-       * Examples: #lead, /#lead.
-       */
-      anchor?: string | null;
-      phone?: string | null;
-      email?: string | null;
-      newTab?: boolean | null;
-      ariaLabel?: string | null;
-    };
-    id?: string | null;
-  }[];
+  manualCommunities?:
+    | {
+        slug: string;
+        name: string;
+        locality: string;
+        rating: number;
+        reviews: number;
+        reviewsLabel?: string | null;
+        priceRange: string;
+        tags?:
+          | {
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+        residences: number;
+        residencesLabel?: string | null;
+        nowSelling: number;
+        nowSellingLabel?: string | null;
+        image: {
+          /**
+           * Recommended aspect ratio: 16:11.
+           */
+          image: number | Media;
+          /**
+           * Optional. Falls back to the media alt text.
+           */
+          altOverride?: string | null;
+        };
+        link: {
+          label?: string | null;
+          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+          page?: (number | null) | Page;
+          /**
+           * Use a single-leading-slash app route or an HTTP(S) URL.
+           */
+          customUrl?: string | null;
+          /**
+           * Examples: #lead, /#lead.
+           */
+          anchor?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          newTab?: boolean | null;
+          ariaLabel?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
   moreLink?: {
     label?: string | null;
     link?: {
@@ -826,6 +852,493 @@ export interface LeadCaptureBlock {
   blockType: 'leadCapture';
 }
 /**
+ * Agent/broker identity for community concierge and listing PDP asides.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brokers".
+ */
+export interface Broker {
+  id: number;
+  /**
+   * Display name, e.g. Eleanor Voss.
+   */
+  name: string;
+  /**
+   * Lowercase kebab-case, e.g. eleanor-voss.
+   */
+  slug: string;
+  /**
+   * Role line, e.g. Broker & Owner.
+   */
+  title: string;
+  /**
+   * Brokerage name. PDP joins with ·; community aside joins with ,.
+   */
+  brokerage: string;
+  /**
+   * `{community}` is replaced with the area name; omit the token for a fixed label.
+   */
+  conciergeLabel?: string | null;
+  /**
+   * Square portrait.
+   */
+  headshot?: (number | null) | Media;
+  /**
+   * Display format; tel: href is derived at read time.
+   */
+  phone?: string | null;
+  email?: string | null;
+  /**
+   * Plain text (not rich text).
+   */
+  bio?: string | null;
+  signature?: string | null;
+  credentials?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Display-only, manually maintained. Leave empty to hide.
+   */
+  rating?: number | null;
+  /**
+   * Display-only, manually maintained. Leave empty to hide.
+   */
+  reviewCount?: number | null;
+  /**
+   * Rendered as "N min". Leave empty to hide.
+   */
+  avgResponseMinutes?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * MLS sync targets. Community Areas power homepage community cards/strip and detail pages; cities feed listings filters.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "areas".
+ */
+export interface Area {
+  id: number;
+  /**
+   * Lowercase kebab-case, e.g. bonita-bay.
+   */
+  slug: string;
+  name: string;
+  kind: 'community' | 'city';
+  /**
+   * Display city, e.g. Bonita Springs.
+   */
+  city: string;
+  /**
+   * e.g. Lee or Collier.
+   */
+  county: string;
+  /**
+   * Exact NABOR MLSAreaMajor value (uppercase), used with MlsStatus eq Active.
+   */
+  mlsAreaMajor: string;
+  syncEnabled?: boolean | null;
+  /**
+   * Updated by the Bridge sync job.
+   */
+  lastSyncedAt?: string | null;
+  /**
+   * Community concierge. Cities may set a fallback too.
+   */
+  broker?: (number | null) | Broker;
+  /**
+   * Homepage strip line, e.g. "Bonita Springs · golf, marina & a private Gulf beach park".
+   */
+  blurb?: string | null;
+  /**
+   * Detail-page intro under the H1. Distinct from `blurb`, the one-line homepage strip label.
+   */
+  detailBlurb?: string | null;
+  /**
+   * Card subtitle under the name, e.g. "Bonita Springs · private Gulf beach park".
+   */
+  locality?: string | null;
+  /**
+   * Display price band for cards, e.g. "From the $400s – $5M+".
+   */
+  priceRange?: string | null;
+  /**
+   * Total homes in the community (not active listings). Shown on featured cards.
+   */
+  totalResidences?: number | null;
+  /**
+   * Total photo count for the gallery "All N photos" button.
+   */
+  photoCount?: number | null;
+  phone?: string | null;
+  /**
+   * Overview fact strip on the community detail page.
+   */
+  facts?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * First image is used on homepage community cards. Recommended 16:11.
+   */
+  gallery?:
+    | {
+        image: number | Media;
+        alt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  about?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Amenity titles also appear as tags on homepage community cards.
+   */
+  amenities?:
+    | {
+        icon:
+          | 'golf'
+          | 'marina'
+          | 'beach'
+          | 'racquet'
+          | 'fitness'
+          | 'dining'
+          | 'trails'
+          | 'pool'
+          | 'club'
+          | 'spa'
+          | 'gate'
+          | 'dog';
+        title: string;
+        id?: string | null;
+      }[]
+    | null;
+  clubs?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  faqs?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Similar nearby communities rail on the detail page.
+   */
+  similar?: (number | Area)[] | null;
+  rating?: number | null;
+  reviewCount?: number | null;
+  /**
+   * Homes this brokerage has sold in this community. Manually maintained — not derived from MLS data. Leave empty to hide the tile.
+   */
+  soldCount?: number | null;
+  reviewBars?:
+    | {
+        label: string;
+        pct: number;
+        score: string;
+        id?: string | null;
+      }[]
+    | null;
+  reviews?:
+    | {
+        quote: string;
+        who: string;
+        meta?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Written by sync from active listings in this area.
+   */
+  activeCount?: number | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  avgPricePerSqft?: number | null;
+  bedsMin?: number | null;
+  bedsMax?: number | null;
+  sqftMin?: number | null;
+  sqftMax?: number | null;
+  hoaMin?: number | null;
+  hoaMax?: number | null;
+  yearBuiltMin?: number | null;
+  yearBuiltMax?: number | null;
+  is55Plus?: boolean | null;
+  isGated?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * MLS listings ingested from Bridge. Public read for the web listings PLP/PDP.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listings".
+ */
+export interface Listing {
+  id: number;
+  /**
+   * Bridge/RESO ListingKey — upsert key for sync.
+   */
+  listingKey: string;
+  mlsId: string;
+  /**
+   * {street}-{city}-fl-{mlsId}
+   */
+  slug: string;
+  area: number | Area;
+  /**
+   * Optional override for the listing PDP aside. Falls back to the area broker when empty.
+   */
+  broker?: (number | null) | Broker;
+  /**
+   * False when delisted; page can stay live, grids hide it.
+   */
+  isActive?: boolean | null;
+  syncedAt?: string | null;
+  /**
+   * RESO ModificationTimestamp from the feed.
+   */
+  modificationTimestamp?: string | null;
+  fullAddress: string;
+  streetAddress?: string | null;
+  city: string;
+  state?: string | null;
+  zip?: string | null;
+  price: number;
+  beds?: number | null;
+  baths?: number | null;
+  sqft?: number | null;
+  pricePerSqft?: number | null;
+  propertyType?: ('single-family' | 'condo' | 'townhouse' | 'multi-family' | 'villa' | 'land' | 'other') | null;
+  mlsStatus: 'active' | 'pending' | 'under-contract' | 'sold' | 'coming-soon';
+  features?: ('waterfront' | 'private-pool' | 'golf' | 'gated' | '55-plus')[] | null;
+  yearBuilt?: number | null;
+  lotSqft?: number | null;
+  taxesYearly?: number | null;
+  hoaMonthly?: number | null;
+  /**
+   * Primary photo mirrored to R2 by the hero job.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * Bridge MediaKey of the mirrored hero — skip re-download when unchanged.
+   */
+  heroMediaKey?: string | null;
+  gallery?:
+    | {
+        /**
+         * Bridge CDN URL — always present.
+         */
+        url: string;
+        /**
+         * Change-detection key from Bridge MediaKey.
+         */
+        mediaKey: string;
+        order: number;
+        /**
+         * Unused in Phase 1; reserved for full-gallery mirror.
+         */
+        media?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  publicRemarks?: string | null;
+  listAgentName?: string | null;
+  listOfficeName?: string | null;
+  interiorSpecs?: {
+    interiorFeatures?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    appliances?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    flooring?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    heating?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    cooling?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    laundryFeatures?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  exteriorSpecs?: {
+    roof?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    constructionMaterials?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    parkingFeatures?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    poolFeatures?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    lotFeatures?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    sewer?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    waterSource?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Optional marketing label. Sync never writes this.
+   */
+  badge?: string | null;
+  /**
+   * Show on the homepage curated residences rail. Sync never writes this.
+   */
+  isFeatured?: boolean | null;
+  /**
+   * Marketing price tier — not an MLS field.
+   */
+  isEstate?: boolean | null;
+  neighborhoodBlurb?: string | null;
+  highlights?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Author-only room list; hide on PDP when empty.
+   */
+  floorPlan?:
+    | {
+        area: string;
+        name: string;
+        note?: string | null;
+        tone?: ('primary' | 'common') | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Full RESO record for debugging / later field extraction.
+   */
+  rawData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Bridge MLS sync run history. Zero-listing areas are flagged as warnings.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sync-logs".
+ */
+export interface SyncLog {
+  id: number;
+  runAt: string;
+  trigger: 'cron' | 'manual';
+  durationMs?: number | null;
+  status: 'success' | 'warning' | 'error';
+  /**
+   * High-level summary, e.g. zero-listing warnings.
+   */
+  message?: string | null;
+  areas?:
+    | {
+        area: number | Area;
+        areaSlug?: string | null;
+        fetched: number;
+        created: number;
+        updated: number;
+        deactivated: number;
+        warnings?:
+          | {
+              item: string;
+              id?: string | null;
+            }[]
+          | null;
+        errors?:
+          | {
+              item: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -841,6 +1354,107 @@ export interface PayloadKv {
     | number
     | boolean
     | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'syncBridgeListings' | 'mirrorListingHero';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'syncBridgeListings' | 'mirrorListingHero') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -860,6 +1474,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'brokers';
+        value: number | Broker;
+      } | null)
+    | ({
+        relationTo: 'areas';
+        value: number | Area;
+      } | null)
+    | ({
+        relationTo: 'listings';
+        value: number | Listing;
+      } | null)
+    | ({
+        relationTo: 'sync-logs';
+        value: number | SyncLog;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1457,11 +2087,353 @@ export interface LeadCaptureBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brokers_select".
+ */
+export interface BrokersSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  title?: T;
+  brokerage?: T;
+  conciergeLabel?: T;
+  headshot?: T;
+  phone?: T;
+  email?: T;
+  bio?: T;
+  signature?: T;
+  credentials?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  rating?: T;
+  reviewCount?: T;
+  avgResponseMinutes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "areas_select".
+ */
+export interface AreasSelect<T extends boolean = true> {
+  slug?: T;
+  name?: T;
+  kind?: T;
+  city?: T;
+  county?: T;
+  mlsAreaMajor?: T;
+  syncEnabled?: T;
+  lastSyncedAt?: T;
+  broker?: T;
+  blurb?: T;
+  detailBlurb?: T;
+  locality?: T;
+  priceRange?: T;
+  totalResidences?: T;
+  photoCount?: T;
+  phone?: T;
+  facts?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  gallery?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        id?: T;
+      };
+  about?: T;
+  amenities?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        id?: T;
+      };
+  clubs?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  similar?: T;
+  rating?: T;
+  reviewCount?: T;
+  soldCount?: T;
+  reviewBars?:
+    | T
+    | {
+        label?: T;
+        pct?: T;
+        score?: T;
+        id?: T;
+      };
+  reviews?:
+    | T
+    | {
+        quote?: T;
+        who?: T;
+        meta?: T;
+        id?: T;
+      };
+  activeCount?: T;
+  priceMin?: T;
+  priceMax?: T;
+  avgPricePerSqft?: T;
+  bedsMin?: T;
+  bedsMax?: T;
+  sqftMin?: T;
+  sqftMax?: T;
+  hoaMin?: T;
+  hoaMax?: T;
+  yearBuiltMin?: T;
+  yearBuiltMax?: T;
+  is55Plus?: T;
+  isGated?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "listings_select".
+ */
+export interface ListingsSelect<T extends boolean = true> {
+  listingKey?: T;
+  mlsId?: T;
+  slug?: T;
+  area?: T;
+  broker?: T;
+  isActive?: T;
+  syncedAt?: T;
+  modificationTimestamp?: T;
+  fullAddress?: T;
+  streetAddress?: T;
+  city?: T;
+  state?: T;
+  zip?: T;
+  price?: T;
+  beds?: T;
+  baths?: T;
+  sqft?: T;
+  pricePerSqft?: T;
+  propertyType?: T;
+  mlsStatus?: T;
+  features?: T;
+  yearBuilt?: T;
+  lotSqft?: T;
+  taxesYearly?: T;
+  hoaMonthly?: T;
+  heroImage?: T;
+  heroMediaKey?: T;
+  gallery?:
+    | T
+    | {
+        url?: T;
+        mediaKey?: T;
+        order?: T;
+        media?: T;
+        id?: T;
+      };
+  publicRemarks?: T;
+  listAgentName?: T;
+  listOfficeName?: T;
+  interiorSpecs?:
+    | T
+    | {
+        interiorFeatures?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        appliances?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        flooring?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        heating?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        cooling?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        laundryFeatures?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+      };
+  exteriorSpecs?:
+    | T
+    | {
+        roof?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        constructionMaterials?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        parkingFeatures?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        poolFeatures?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        lotFeatures?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        sewer?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        waterSource?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+      };
+  badge?: T;
+  isFeatured?: T;
+  isEstate?: T;
+  neighborhoodBlurb?: T;
+  highlights?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  floorPlan?:
+    | T
+    | {
+        area?: T;
+        name?: T;
+        note?: T;
+        tone?: T;
+        id?: T;
+      };
+  rawData?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sync-logs_select".
+ */
+export interface SyncLogsSelect<T extends boolean = true> {
+  runAt?: T;
+  trigger?: T;
+  durationMs?: T;
+  status?: T;
+  message?: T;
+  areas?:
+    | T
+    | {
+        area?: T;
+        areaSlug?: T;
+        fetched?: T;
+        created?: T;
+        updated?: T;
+        deactivated?: T;
+        warnings?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        errors?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  meta?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1638,6 +2610,24 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1761,6 +2751,16 @@ export interface FooterSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -1768,6 +2768,34 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSyncBridgeListings".
+ */
+export interface TaskSyncBridgeListings {
+  input: {
+    trigger: 'cron' | 'manual';
+    areaSlug?: string | null;
+    full?: boolean | null;
+  };
+  output: {
+    syncLogId: string;
+    status: 'success' | 'warning' | 'error';
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskMirrorListingHero".
+ */
+export interface TaskMirrorListingHero {
+  input: {
+    listingId: string;
+  };
+  output: {
+    skipped: boolean;
+    mediaId?: string | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
