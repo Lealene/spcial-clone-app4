@@ -14,7 +14,13 @@ const QUICK: {
 }[] = [
   { key: 'waterfront', label: 'Waterfront', facet: 'features', value: 'waterfront', icon: Waves },
   { key: '55plus', label: '55+ Living', facet: 'features', value: '55plus', icon: Sun },
-  { key: 'new', label: 'New Construction', facet: 'status', value: 'new-model', icon: Sparkles },
+  {
+    key: 'coming-soon',
+    label: 'Coming Soon',
+    facet: 'status',
+    value: 'coming-soon',
+    icon: Sparkles,
+  },
   { key: 'golf', label: 'Golf Community', facet: 'features', value: 'golf', icon: Trees },
   { key: 'pool', label: 'Private Pool', facet: 'features', value: 'pool', icon: Wind },
 ];
@@ -38,7 +44,7 @@ export function QuickFilterBar({
           onClick={onClear}
           aria-pressed={!hasAnyActive}
           className={cn(
-            'shrink-0 rounded-full border px-4 py-[9px] font-sans text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color,border-color,transform] hover:-translate-y-px',
+            'shrink-0 cursor-pointer rounded-full border px-4 py-[9px] font-sans text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color,border-color,transform] hover:-translate-y-px',
             !hasAnyActive
               ? 'border-primary bg-primary text-on-primary'
               : 'border-line bg-surface text-ink-soft hover:border-accent-deep',
@@ -56,7 +62,7 @@ export function QuickFilterBar({
               onClick={() => onToggleFacet(q.facet, q.value)}
               aria-pressed={on}
               className={cn(
-                'inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-[9px] font-sans text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color,border-color,transform] hover:-translate-y-px',
+                'inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full border px-4 py-[9px] font-sans text-[13.5px] font-bold whitespace-nowrap transition-[color,background-color,border-color,transform] hover:-translate-y-px',
                 on
                   ? 'border-primary bg-primary text-on-primary'
                   : 'border-line bg-surface text-ink-soft hover:border-accent-deep',

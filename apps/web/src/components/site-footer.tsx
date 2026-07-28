@@ -6,7 +6,7 @@ import { getLinkRenderProps } from '@/lib/cms/links';
 export function SiteFooter({ footer }: { footer: FooterGlobal }) {
   return (
     <footer className="bg-primary-deep text-white/65">
-      <div className="mx-auto max-w-[1240px] px-[clamp(22px,5vw,76px)]">
+      <div className="mx-auto max-w-[1440px] px-[clamp(22px,4vw,64px)]">
         <div className="grid gap-12 py-[78px] pb-[50px] md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr]">
           <div>
             <b className="font-serif text-2xl font-bold text-white">
@@ -22,7 +22,7 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
 
           {footer.columns.map((col) => (
             <div key={col.title}>
-              <h4 className="mb-5 font-sans text-[13px] font-semibold uppercase tracking-[0.14em] text-white">
+              <h4 className="mb-5 font-sans text-[13px] font-semibold tracking-[0.14em] text-white uppercase">
                 {col.title}
               </h4>
               <ul className="grid gap-[13px] font-sans text-[15.5px]">

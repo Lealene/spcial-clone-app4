@@ -19,12 +19,18 @@ export function PropertyCommunity({
   communityName,
   blurb,
   facts,
+  hasDetailPage,
 }: {
   communitySlug: string;
   communityName: string;
   blurb: string;
   facts: CommunityFact[];
+  hasDetailPage: boolean;
 }) {
+  const exploreHref = hasDetailPage
+    ? `/communities/${communitySlug}`
+    : `/listings?community=${communitySlug}`;
+
   return (
     <section id="community" className="bg-primary-deep relative overflow-hidden text-white">
       <div
@@ -69,14 +75,16 @@ export function PropertyCommunity({
 
         <div className="mt-[clamp(30px,3.4vw,42px)] flex flex-wrap gap-3.5">
           <Button asChild variant="cta">
-            <Link href={`/communities/${communitySlug}`}>
-              Explore the community
+            <Link href={exploreHref}>
+              {hasDetailPage ? 'Explore the community' : 'Browse homes in this area'}
               <ArrowRight />
             </Link>
           </Button>
-          <Button asChild variant="glass">
-            <Link href={`/communities/${communitySlug}`}>Amenities &amp; clubs</Link>
-          </Button>
+          {hasDetailPage && (
+            <Button asChild variant="glass">
+              <Link href={exploreHref}>Amenities &amp; clubs</Link>
+            </Button>
+          )}
         </div>
       </Container>
     </section>

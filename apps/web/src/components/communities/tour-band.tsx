@@ -14,8 +14,15 @@ const INPUT =
  * Bottom navy "Request a Tour" band — split copy + a stubbed tour-request form
  * (fakes success). TODO: wire backend (lead capture) when Payload is ready.
  */
-export function TourBand({ communityName }: { communityName: string }) {
+export function TourBand({
+  communityName,
+  brokerFirstName,
+}: {
+  communityName: string;
+  brokerFirstName?: string;
+}) {
   const [sent, setSent] = useState(false);
+  const firstName = brokerFirstName ?? 'Your concierge';
 
   return (
     <section id="tour" className="bg-primary relative overflow-hidden text-white">
@@ -33,7 +40,7 @@ export function TourBand({ communityName }: { communityName: string }) {
             Let a concierge plan your <em className="text-accent-soft italic">private tour.</em>
           </h2>
           <p className="mt-5 max-w-[46ch] font-sans text-[18px] leading-[1.7] text-white/85">
-            Tell us what you&rsquo;re looking for and Eleanor will arrange a walk-through of the
+            Tell us what you&rsquo;re looking for and {firstName} will arrange a walk-through of the
             clubhouses, the amenities, and the residences that fit — along with current pricing and
             incentives. No obligation, no sales floor.
           </p>
@@ -49,8 +56,8 @@ export function TourBand({ communityName }: { communityName: string }) {
                 Your tour request is in.
               </p>
               <p className="mt-2 font-sans text-[14.5px] text-white/75">
-                Eleanor will reach out within one business day to plan your visit to {communityName}
-                .
+                {firstName} will reach out within one business day to plan your visit to{' '}
+                {communityName}.
               </p>
             </div>
           ) : (

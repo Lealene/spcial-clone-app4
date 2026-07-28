@@ -1,42 +1,66 @@
+import type { CmsImage } from '@mvp-realty/api-contracts';
+import { cn } from '@mvp-realty/ui/lib/utils';
 import Image from 'next/image';
-import { LayoutGrid } from 'lucide-react';
 
 import { Container } from '@/components/container';
-import { cn } from '@mvp-realty/ui/lib/utils';
-import type { Image as ImageType } from '@/data/types';
+import { GalleryPhotosDialog } from './gallery-photos-dialog';
 
 /**
- * Gallery mosaic — one lead image spanning two rows plus four tiles, with an
- * "All N photos" button anchored over the last tile. The button is a stub link
- * to the gallery anchor (no lightbox yet). Mirrors the source `c-gallery`.
+ * Grid templates keyed by tile count (0–4 after the lead).
+ * Complete literal class strings so Tailwind's CSS-first scan can see them.
  */
-export function Gallery({ images, photoCount }: { images: ImageType[]; photoCount: number }) {
-  const [lead, ...tiles] = images;
+const GRID_BY_TILES: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: 'grid-cols-1 grid-rows-1',
+  1: 'grid-cols-2 grid-rows-1',
+  2: 'grid-cols-[1.4fr_1fr] grid-rows-2',
+  3: 'grid-cols-[1.4fr_1fr] grid-rows-2 md:grid-cols-[1.62fr_1fr_1fr]',
+  4: 'grid-cols-[1.4fr_1fr] grid-rows-2 md:grid-cols-[1.62fr_1fr_1fr]',
+};
+
+const LEAD_BY_TILES: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: '',
+  1: '',
+  2: 'row-span-2',
+  3: 'row-span-2',
+  4: 'row-span-2',
+};
+
+/**
+ * Gallery mosaic — one lead image plus up to four tiles. "All N photos" opens
+ * a dialog of every CMS gallery image (not the authored marketing photoCount).
+ */
+export function Gallery({ images }: { images: CmsImage[]; photoCount: number }) {
+  const visible = images.slice(0, 5);
+  const [lead, ...rest] = visible;
   if (!lead) return null;
+
+  const tiles = rest.slice(0, 4);
+  const tileCount = Math.min(tiles.length, 4) as 0 | 1 | 2 | 3 | 4;
+  // Show whenever there is more than one photo to browse in the modal.
+  const allPhotosButton = images.length > 1 ? <GalleryPhotosDialog images={images} /> : null;
 
   return (
     <div className="pt-[clamp(20px,2.4vw,30px)]">
       <Container>
-        <div className="grid aspect-[16/10] grid-cols-[1.4fr_1fr] grid-rows-2 gap-3.5 overflow-hidden rounded-xl md:aspect-[1.92/1] md:grid-cols-[1.62fr_1fr_1fr]">
-          <GalleryTile image={lead} className="row-span-2" sizes="(max-width: 768px) 60vw, 45vw" />
+        <div
+          className={cn(
+            'grid aspect-[16/10] gap-3.5 overflow-hidden rounded-xl md:aspect-[1.92/1]',
+            GRID_BY_TILES[tileCount],
+          )}
+        >
+          <GalleryTile
+            image={lead}
+            className={LEAD_BY_TILES[tileCount]}
+            sizes="(max-width: 768px) 60vw, 45vw"
+            overlay={tiles.length === 0 ? allPhotosButton : null}
+          />
           {tiles.map((tile, i) => (
             <GalleryTile
               key={tile.src}
               image={tile}
-              // Tiles 4 + 5 (0-indexed 2 + 3) collapse on small screens.
-              className={cn(i >= 2 && 'hidden md:block')}
+              className={cn(tileCount === 4 && i >= 2 && 'hidden md:block')}
               sizes="(max-width: 768px) 40vw, 22vw"
-              overlay={
-                i === tiles.length - 1 ? (
-                  <a
-                    href="#gallery"
-                    className="border-accent-deep/45 bg-surface-soft/95 text-primary shadow-card hover:shadow-lift absolute right-4 bottom-4 z-[3] inline-flex items-center gap-[9px] rounded-md border px-[17px] py-[11px] font-sans text-[14px] font-bold transition-[transform,box-shadow] hover:-translate-y-0.5"
-                  >
-                    <LayoutGrid className="text-accent-deep size-4" strokeWidth={1.9} />
-                    All {photoCount} photos
-                  </a>
-                ) : null
-              }
+              overlay={i === tiles.length - 1 ? allPhotosButton : null}
             />
           ))}
         </div>
@@ -51,7 +75,7 @@ function GalleryTile({
   sizes,
   overlay,
 }: {
-  image: ImageType;
+  image: CmsImage;
   className?: string;
   sizes: string;
   overlay?: React.ReactNode;

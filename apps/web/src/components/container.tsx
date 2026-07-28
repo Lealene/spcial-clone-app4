@@ -2,7 +2,7 @@ import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
 
-/** Centered 1240px content rail with the design's fluid side padding. */
+/** Centered content rail with the design's fluid side padding. */
 export function Container({
   children,
   className,
@@ -15,7 +15,7 @@ export function Container({
 } & Omit<HTMLAttributes<HTMLElement>, 'className' | 'children'>) {
   const Tag = (as ?? 'div') as ElementType;
   return (
-    <Tag className={cn('mx-auto max-w-[1240px] px-[clamp(22px,5vw,76px)]', className)} {...rest}>
+    <Tag className={cn('mx-auto max-w-[1440px] px-[clamp(22px,4vw,64px)]', className)} {...rest}>
       {children}
     </Tag>
   );

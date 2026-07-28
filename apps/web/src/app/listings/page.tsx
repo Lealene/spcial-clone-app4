@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
-import { listings } from '@/data/listings';
 import { ListingsHero } from '@/components/listings/listings-hero';
 import { ListingsBrowser } from '@/components/listings/listings-browser';
 import { ConciergeCta } from '@/components/listings/concierge-cta';
+import { getActiveListings } from '@/lib/cms/listings';
 
 export const metadata: Metadata = {
   title: 'Browse Residences — MVP Realty',
@@ -12,7 +12,8 @@ export const metadata: Metadata = {
     "Browse luxury residences across Southwest Florida's premier gated communities. Refine by community, price, beds, and features — or let a concierge build your shortlist.",
 };
 
-export default function ListingsPage() {
+export default async function ListingsPage() {
+  const listings = await getActiveListings();
   const communities = new Set(listings.map((l) => l.community)).size;
 
   return (

@@ -23,7 +23,7 @@ export function ActiveFilterChips({
             type="button"
             onClick={() => onRemove(chip)}
             aria-label={`Remove ${chip.label}`}
-            className="bg-line-soft text-ink-soft hover:bg-primary hover:text-on-primary grid size-5 place-items-center rounded-full transition-colors"
+            className="bg-line-soft text-ink-soft hover:bg-primary hover:text-on-primary grid size-5 cursor-pointer place-items-center rounded-full transition-colors"
           >
             <X className="size-[11px]" strokeWidth={2.4} />
           </button>

@@ -21,9 +21,11 @@ export function Hero({ block }: { block: HeroBlock }) {
   return (
     <section
       id={block.anchorId}
-      className="relative flex min-h-[clamp(600px,86vh,860px)] items-end overflow-hidden text-white"
+      // Sticky nav is in document flow (not fixed), so the hero already starts
+      // below it. Keep a modest min-height, grow with content, never clip copy.
+      className="relative flex min-h-[clamp(520px,72vh,780px)] flex-col justify-end text-white"
     >
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <Image
           src={block.backgroundImage.src}
           alt={block.backgroundImage.alt}
@@ -32,19 +34,19 @@ export function Hero({ block }: { block: HeroBlock }) {
           sizes="100vw"
           className="animate-hero-zoom object-cover"
         />
+        <div className="absolute inset-0" style={{ background: HERO_VEIL }} aria-hidden />
       </div>
-      <div className="absolute inset-0 z-10" style={{ background: HERO_VEIL }} />
 
-      <Container className="relative z-20 w-full pb-[clamp(54px,6vw,96px)]">
+      <Container className="relative z-20 w-full pt-8 pb-[clamp(48px,5.5vw,80px)]">
         <span
-          className="animate-hero-rise border-accent/70 mb-[26px] inline-flex items-center gap-3 border-b pb-3.5 font-sans text-[13px] font-bold uppercase tracking-[0.26em] text-white"
+          className="animate-hero-rise border-accent/70 mb-6 inline-flex items-center gap-3 border-b pb-3.5 font-sans text-[13px] font-bold tracking-[0.26em] text-white uppercase"
           style={{ animationDelay: '0.12s' }}
         >
           {block.showEyebrowMarker && <span className="bg-accent size-[7px] rotate-45" />}
           {block.eyebrow}
         </span>
         <h1
-          className="animate-hero-rise m-0 max-w-[15ch] font-serif text-[clamp(46px,6.6vw,86px)] font-semibold leading-[1.02] tracking-[-0.012em] [text-shadow:0_1px_2px_rgba(6,20,38,.4),0_4px_40px_rgba(6,20,38,.6)]"
+          className="animate-hero-rise m-0 max-w-[16ch] font-serif text-[clamp(36px,5.2vw,72px)] leading-[1.06] font-semibold tracking-[-0.012em] [text-shadow:0_1px_2px_rgba(6,20,38,.4),0_4px_40px_rgba(6,20,38,.6)]"
           style={{ animationDelay: '0.26s' }}
         >
           {block.heading}{' '}
@@ -53,7 +55,7 @@ export function Hero({ block }: { block: HeroBlock }) {
           )}
         </h1>
         <p
-          className="animate-hero-rise my-[24px] mb-[34px] max-w-[50ch] font-sans text-[clamp(18px,1.35vw,21px)] font-medium leading-[1.65] text-white/95 [text-shadow:0_1px_14px_rgba(8,26,48,.5)]"
+          className="animate-hero-rise mt-5 mb-8 max-w-[48ch] font-sans text-[clamp(16px,1.25vw,19px)] leading-[1.65] font-medium text-white/95 [text-shadow:0_1px_14px_rgba(8,26,48,.5)]"
           style={{ animationDelay: '0.4s' }}
         >
           {block.lede}

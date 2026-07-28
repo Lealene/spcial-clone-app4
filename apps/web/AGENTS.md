@@ -1,6 +1,6 @@
 # `@mvp-realty/web` agent instructions
 
-Customer-facing Next.js app. App Router + Turbopack + React + Tailwind. Dev server starts at `3003` (`cross-env PORT=3003 next dev`) and increments if busy. It talks to the Payload backend through `NEXT_PUBLIC_BACKEND_URL`, defaulting to `http://localhost:3002`.
+Customer-facing Next.js app. App Router + Turbopack + React + Tailwind. Dev server starts at `3003` (`cross-env PORT=3003 next dev`) and increments if busy. It talks to the Payload backend through `NEXT_PUBLIC_BACKEND_URL`, defaulting to `http://localhost:3002`. When Payload Media is served from R2/S3, set `NEXT_PUBLIC_MEDIA_URL` to the same public origin as backend `S3_PUBLIC_URL` (allow-listed in CMS media normalization and `images.remotePatterns`).
 
 Root rules in `/AGENTS.md` apply. This file carries only web-specific conventions.
 
@@ -49,4 +49,4 @@ When viewing the dev server over LAN IP or tunnels, ensure the origin is covered
 
 - Server Component data fetching uses Next cache semantics. Use `cache: 'no-store'` for personalized data; default caching is fine for static content.
 - Prefer Suspense/streaming for content-heavy flows instead of blocking an entire route.
-- The current product data is local static TS data; do not pretend it is Payload-backed until integration exists.
+- Listings and community detail pages are Payload-backed via `src/lib/cms/`. Homepage page blocks still mix CMS fetches with fixture fallbacks where noted.

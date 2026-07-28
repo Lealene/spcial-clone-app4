@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-import type { CommunityAmenityIcon } from '@/data/community-detail';
+import type { CommunityAmenityIcon } from '@mvp-realty/api-contracts';
 
 /** Maps the detail amenity vocabulary onto lucide glyphs. */
 const ICONS: Record<CommunityAmenityIcon, LucideIcon> = {

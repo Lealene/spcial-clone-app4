@@ -24,11 +24,11 @@ export function SiteNavInteractive({ header }: { header: HeaderGlobal }) {
   return (
     <header
       className={cn(
-        'border-line-soft bg-surface-soft/80 z-60 sticky top-0 border-b backdrop-blur-[16px] backdrop-saturate-150 transition-shadow duration-300',
+        'border-line-soft bg-surface-soft/80 sticky top-0 z-60 border-b backdrop-blur-[16px] backdrop-saturate-150 transition-shadow duration-300',
         scrolled && 'shadow-[0_1px_0_var(--line-soft),0_16px_34px_-28px_rgba(8,26,48,0.4)]',
       )}
     >
-      <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-6 px-[clamp(22px,5vw,76px)] py-4">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-[clamp(22px,4vw,64px)] py-4">
         <Link
           {...getLinkRenderProps(header.brandHomeLink, header.brandMarkAlt ?? header.brandLabel)}
           className="flex items-center gap-[13px]"
@@ -68,7 +68,7 @@ export function SiteNavInteractive({ header }: { header: HeaderGlobal }) {
 
       {menuOpen && (
         <div className="border-line-soft bg-surface-soft border-t lg:hidden">
-          <nav className="mx-auto flex max-w-[1240px] flex-col px-[clamp(22px,5vw,76px)] py-2">
+          <nav className="mx-auto flex max-w-[1440px] flex-col px-[clamp(22px,4vw,64px)] py-2">
             {header.navItems.map((item) => (
               <Link
                 key={`${item.label}-${item.link.href}`}
@@ -79,7 +79,7 @@ export function SiteNavInteractive({ header }: { header: HeaderGlobal }) {
                 {item.label}
               </Link>
             ))}
-            <Button asChild variant="primary" size="full" className="mb-2 mt-4">
+            <Button asChild variant="primary" size="full" className="mt-4 mb-2">
               <Link {...getLinkRenderProps(header.primaryCta)} onClick={() => setMenuOpen(false)}>
                 {header.primaryCta.label}
               </Link>
