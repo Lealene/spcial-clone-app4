@@ -10,13 +10,28 @@ export const CMS_TEXT_LIMITS = {
   url: 2048,
 } as const;
 
+export const CMS_AREA_DETAIL_LIMITS = {
+  facts: { max: 6 },
+  amenities: { max: 24 },
+  clubs: { max: 24 },
+  reviewBars: { max: 8 },
+  reviews: { max: 12 },
+  faqs: { max: 12 },
+  similar: { max: 6 },
+  credentials: { max: 3 },
+  gallery: { min: 1 },
+  aboutParagraphs: { max: 12 },
+  rating: { min: 0, max: 5 },
+} as const;
+
 export const CMS_LINK_TYPES = ['internal', 'custom', 'anchor', 'phone', 'email'] as const;
 export type CmsLinkType = (typeof CMS_LINK_TYPES)[number];
 
 export const CMS_PAGE_BLOCK_LIMITS = {
   layout: { min: 1, max: 24 },
-  communitiesStripItems: { min: 1, max: 3 },
-  featuredCommunities: { min: 1, max: 3 },
+  // Community cards/strip load from Areas; manual rows are optional legacy/fallback.
+  communitiesStripItems: { min: 0, max: 3 },
+  featuredCommunities: { min: 0, max: 3 },
   featuredResidences: { min: 1, max: 3 },
   lifestyleTiles: { min: 1, max: 3 },
   testimonialStories: { min: 1, max: 8 },
@@ -143,13 +158,8 @@ export type HeroBlock = z.infer<typeof heroBlockSchema>;
 export const communitiesStripBlockSchema = z.object({
   blockType: z.literal('communitiesStrip'),
   anchorId: cmsAnchorIdSchema.optional(),
-  sourceMode: z.literal('manual').default('manual'),
-  maxItems: z
-    .number()
-    .int()
-    .min(CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.min)
-    .max(CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.max)
-    .optional(),
+  sourceMode: z.enum(['areas', 'manual']).default('areas'),
+  maxItems: z.number().int().min(1).max(CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.max).optional(),
   items: z
     .array(
       z.object({
@@ -161,7 +171,8 @@ export const communitiesStripBlockSchema = z.object({
       }),
     )
     .min(CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.min)
-    .max(CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.max),
+    .max(CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.max)
+    .default([]),
 });
 export type CommunitiesStripBlock = z.infer<typeof communitiesStripBlockSchema>;
 
@@ -169,7 +180,7 @@ export const featuredCommunitiesBlockSchema = z.object({
   blockType: z.literal('featuredCommunities'),
   anchorId: cmsAnchorIdSchema.default('communities'),
   header: sectionHeaderSchema,
-  sourceMode: z.literal('manual').default('manual'),
+  sourceMode: z.enum(['areas', 'manual']).default('areas'),
   manualCommunities: z
     .array(
       z.object({
@@ -192,7 +203,8 @@ export const featuredCommunitiesBlockSchema = z.object({
       }),
     )
     .min(CMS_PAGE_BLOCK_LIMITS.featuredCommunities.min)
-    .max(CMS_PAGE_BLOCK_LIMITS.featuredCommunities.max),
+    .max(CMS_PAGE_BLOCK_LIMITS.featuredCommunities.max)
+    .default([]),
   moreLink: cmsCtaSchema.optional(),
   emptyStateHeading: z.string().optional(),
   emptyStateBody: z.string().optional(),
@@ -477,3 +489,288 @@ export const footerGlobalSchema = z.object({
   bottomRightTextFallback: z.string().optional(),
 });
 export type FooterGlobal = z.infer<typeof footerGlobalSchema>;
+
+// ---------------------------------------------------------------------------
+// MLS listings (Payload → web)
+// ---------------------------------------------------------------------------
+
+export const LISTING_PROPERTY_TYPES = [
+  'single-family',
+  'condo',
+  'townhouse',
+  'multi-family',
+  'villa',
+  'land',
+  'other',
+] as const;
+
+export const LISTING_MLS_STATUSES = [
+  'active',
+  'pending',
+  'under-contract',
+  'sold',
+  'coming-soon',
+] as const;
+
+/** Payload feature values stored on the collection. */
+export const LISTING_PAYLOAD_FEATURES = [
+  'waterfront',
+  'private-pool',
+  'golf',
+  'gated',
+  '55-plus',
+] as const;
+
+/** UI / filter feature values (mapped from Payload). */
+export const LISTING_UI_FEATURES = ['waterfront', 'pool', 'golf', 'gated', '55plus'] as const;
+
+/** PLP type facet — estate is marketing (`isEstate`), rest are propertyType. */
+export const LISTING_TYPE_FACETS = [
+  'estate',
+  'single-family',
+  'condo',
+  'townhouse',
+  'multi-family',
+  'villa',
+  'land',
+  'other',
+] as const;
+
+export const listingPropertyTypeSchema = z.enum(LISTING_PROPERTY_TYPES);
+export type ListingPropertyType = z.infer<typeof listingPropertyTypeSchema>;
+
+export const listingMlsStatusSchema = z.enum(LISTING_MLS_STATUSES);
+export type ListingMlsStatus = z.infer<typeof listingMlsStatusSchema>;
+
+export const listingPayloadFeatureSchema = z.enum(LISTING_PAYLOAD_FEATURES);
+export type ListingPayloadFeature = z.infer<typeof listingPayloadFeatureSchema>;
+
+export const listingUiFeatureSchema = z.enum(LISTING_UI_FEATURES);
+export type ListingUiFeature = z.infer<typeof listingUiFeatureSchema>;
+
+export const listingTypeFacetSchema = z.enum(LISTING_TYPE_FACETS);
+export type ListingTypeFacet = z.infer<typeof listingTypeFacetSchema>;
+
+export const listingCardSchema = z.object({
+  slug: z.string().min(1),
+  name: z.string().min(1),
+  /** Area slug — drives `?community=` and community-page join. */
+  community: z.string().min(1),
+  communityName: z.string().min(1),
+  city: z.string().min(1),
+  price: z.number().finite().nonnegative(),
+  beds: z.number().finite().nonnegative(),
+  baths: z.number().finite().nonnegative(),
+  sqft: z.number().finite().nonnegative(),
+  propertyType: listingPropertyTypeSchema.optional(),
+  /** Filter facet value (estate when isEstate, else propertyType). */
+  type: listingTypeFacetSchema,
+  /** MLS status — also the `status` URL facet. */
+  status: listingMlsStatusSchema,
+  features: z.array(listingUiFeatureSchema),
+  isEstate: z.boolean(),
+  isActive: z.boolean(),
+  image: cmsImageSchema,
+});
+export type ListingCard = z.infer<typeof listingCardSchema>;
+
+export const listingGalleryShotSchema = z.object({
+  src: z.string().min(1),
+  alt: z.string().min(1),
+});
+export type ListingGalleryShot = z.infer<typeof listingGalleryShotSchema>;
+
+export const listingSpecItemSchema = z.object({
+  label: z.string().min(1),
+  value: z.string().optional(),
+});
+export type ListingSpecItem = z.infer<typeof listingSpecItemSchema>;
+
+export const listingSpecGroupSchema = z.object({
+  heading: z.string().min(1),
+  items: z.array(listingSpecItemSchema),
+  layout: z.enum(['check', 'kv']),
+});
+export type ListingSpecGroup = z.infer<typeof listingSpecGroupSchema>;
+
+export const listingFloorRoomSchema = z.object({
+  area: z.string().min(1),
+  name: z.string().min(1),
+  note: z.string().optional(),
+  tone: z.enum(['primary', 'common']).optional(),
+});
+export type ListingFloorRoom = z.infer<typeof listingFloorRoomSchema>;
+
+export const brokerCredentialSchema = z.object({
+  value: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  label: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+});
+export type BrokerCredential = z.infer<typeof brokerCredentialSchema>;
+
+export const brokerSchema = z.object({
+  slug: z.string().min(1).max(CMS_TEXT_LIMITS.slug),
+  name: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
+  /** Derived from `name` — first whitespace-separated token. */
+  firstName: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  title: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  brokerage: z.string().min(1).max(CMS_TEXT_LIMITS.label).optional(),
+  conciergeLabel: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
+  headshot: cmsImageSchema.optional(),
+  phone: z.string().min(1).max(CMS_TEXT_LIMITS.label).optional(),
+  phoneHref: cmsHrefSchema.optional(),
+  email: z.string().email().optional(),
+  bio: z.string().max(CMS_TEXT_LIMITS.longCopy).optional(),
+  signature: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+  credentials: z.array(brokerCredentialSchema).max(CMS_AREA_DETAIL_LIMITS.credentials.max),
+  rating: z
+    .number()
+    .min(CMS_AREA_DETAIL_LIMITS.rating.min)
+    .max(CMS_AREA_DETAIL_LIMITS.rating.max)
+    .optional(),
+  reviewCount: z.number().int().nonnegative().optional(),
+  avgResponseMinutes: z.number().int().nonnegative().optional(),
+});
+export type Broker = z.infer<typeof brokerSchema>;
+
+export const listingDetailSchema = listingCardSchema.extend({
+  mlsId: z.string().min(1),
+  fullAddress: z.string().min(1),
+  streetAddress: z.string().optional(),
+  state: z.string().default('FL'),
+  zip: z.string().optional(),
+  pricePerSqft: z.number().finite().positive().optional(),
+  yearBuilt: z.number().int().optional(),
+  lotSqft: z.number().finite().positive().optional(),
+  taxesYearly: z.number().finite().nonnegative().optional(),
+  hoaMonthly: z.number().finite().nonnegative().optional(),
+  publicRemarks: z.string().optional(),
+  listAgentName: z.string().optional(),
+  listOfficeName: z.string().optional(),
+  badge: z.string().optional(),
+  neighborhoodBlurb: z.string().optional(),
+  highlights: z.array(z.string()),
+  gallery: z.array(listingGalleryShotSchema).min(1),
+  interior: z.array(listingSpecGroupSchema),
+  exterior: z.array(listingSpecGroupSchema),
+  floorPlan: z.array(listingFloorRoomSchema),
+  broker: brokerSchema.nullable(),
+});
+export type ListingDetail = z.infer<typeof listingDetailSchema>;
+
+export const AREA_KINDS = ['community', 'city'] as const;
+export const areaKindSchema = z.enum(AREA_KINDS);
+export type AreaKind = z.infer<typeof areaKindSchema>;
+
+export const areaCardSchema = z.object({
+  slug: z.string().min(1),
+  name: z.string().min(1),
+  kind: areaKindSchema,
+  city: z.string().min(1),
+});
+export type AreaCard = z.infer<typeof areaCardSchema>;
+
+export const COMMUNITY_AMENITY_ICONS = [
+  'golf',
+  'marina',
+  'beach',
+  'racquet',
+  'fitness',
+  'dining',
+  'trails',
+  'pool',
+  'club',
+  'spa',
+  'gate',
+  'dog',
+] as const;
+export const communityAmenityIconSchema = z.enum(COMMUNITY_AMENITY_ICONS);
+export type CommunityAmenityIcon = z.infer<typeof communityAmenityIconSchema>;
+
+export const communityFactSchema = z.object({
+  label: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  value: z.string().min(1).max(CMS_TEXT_LIMITS.shortCopy),
+});
+export type CommunityFact = z.infer<typeof communityFactSchema>;
+
+export const communityAmenitySchema = z.object({
+  icon: communityAmenityIconSchema,
+  title: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+});
+export type CommunityAmenity = z.infer<typeof communityAmenitySchema>;
+
+export const communityReviewBarSchema = z.object({
+  label: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  pct: z.number().min(0).max(100),
+  score: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+});
+export type CommunityReviewBar = z.infer<typeof communityReviewBarSchema>;
+
+export const communityReviewSchema = z.object({
+  quote: z.string().min(1).max(CMS_TEXT_LIMITS.longCopy),
+  who: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  meta: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+});
+export type CommunityReview = z.infer<typeof communityReviewSchema>;
+
+export const communityFaqSchema = z.object({
+  q: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
+  a: z.string().min(1).max(CMS_TEXT_LIMITS.longCopy),
+});
+export type CommunityFaq = z.infer<typeof communityFaqSchema>;
+
+export const similarCommunitySchema = z.object({
+  slug: z.string().min(1).max(CMS_TEXT_LIMITS.slug),
+  name: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
+  locality: z.string().min(1).max(CMS_TEXT_LIMITS.shortCopy),
+  rating: z
+    .number()
+    .min(CMS_AREA_DETAIL_LIMITS.rating.min)
+    .max(CMS_AREA_DETAIL_LIMITS.rating.max)
+    .nullable(),
+  reviews: z.number().int().nonnegative(),
+  priceRange: z.string().min(1).max(CMS_TEXT_LIMITS.shortCopy),
+  residences: z.number().int().nonnegative().nullable(),
+  image: cmsImageSchema,
+});
+export type SimilarCommunity = z.infer<typeof similarCommunitySchema>;
+
+export const communityDetailSchema = z.object({
+  slug: z.string().min(1).max(CMS_TEXT_LIMITS.slug),
+  name: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
+  city: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  blurb: z.string().min(1).max(CMS_TEXT_LIMITS.longCopy),
+  rating: z
+    .number()
+    .min(CMS_AREA_DETAIL_LIMITS.rating.min)
+    .max(CMS_AREA_DETAIL_LIMITS.rating.max)
+    .nullable(),
+  reviews: z.number().int().nonnegative(),
+  photoCount: z.number().int().nonnegative(),
+  gallery: z.array(cmsImageSchema).min(CMS_AREA_DETAIL_LIMITS.gallery.min),
+  facts: z.array(communityFactSchema).max(CMS_AREA_DETAIL_LIMITS.facts.max),
+  about: z.array(z.string()).max(CMS_AREA_DETAIL_LIMITS.aboutParagraphs.max),
+  amenities: z.array(communityAmenitySchema).max(CMS_AREA_DETAIL_LIMITS.amenities.max),
+  clubs: z.array(z.string().min(1)).max(CMS_AREA_DETAIL_LIMITS.clubs.max),
+  reviewBars: z.array(communityReviewBarSchema).max(CMS_AREA_DETAIL_LIMITS.reviewBars.max),
+  reviewCards: z.array(communityReviewSchema).max(CMS_AREA_DETAIL_LIMITS.reviews.max),
+  faqs: z.array(communityFaqSchema).max(CMS_AREA_DETAIL_LIMITS.faqs.max),
+  phone: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+  phoneHref: cmsHrefSchema.optional(),
+  soldCount: z.number().int().nonnegative().optional(),
+  similar: z.array(similarCommunitySchema).max(CMS_AREA_DETAIL_LIMITS.similar.max),
+  broker: brokerSchema.nullable(),
+});
+export type CommunityDetail = z.infer<typeof communityDetailSchema>;
+
+export const areaPdpMetaSchema = z.object({
+  slug: z.string().min(1),
+  name: z.string().min(1),
+  city: z.string().min(1),
+  totalResidences: z.number().int().nonnegative().nullable(),
+  isGated: z.boolean().nullable(),
+  is55Plus: z.boolean().nullable(),
+  soldCount: z.number().int().nonnegative().optional(),
+  detailBlurb: z.string().optional(),
+  broker: brokerSchema.nullable(),
+});
+export type AreaPdpMeta = z.infer<typeof areaPdpMetaSchema>;
