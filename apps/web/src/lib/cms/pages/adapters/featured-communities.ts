@@ -11,11 +11,13 @@ function finiteNumber(value: unknown): number | null {
 export function normalizeFeaturedCommunitiesBlock(
   raw: Record<string, unknown>,
 ): FeaturedCommunitiesBlock {
+  const sourceMode = text(raw.sourceMode) === 'manual' ? 'manual' : 'areas';
+
   return {
     blockType: 'featuredCommunities',
     anchorId: text(raw.anchorId, 'communities'),
     header: normalizeHeaderGroup(raw.header),
-    sourceMode: 'manual',
+    sourceMode,
     manualCommunities: mapValidRows(raw.manualCommunities, (row) => {
       const slug = text(row.slug);
       const name = text(row.name);

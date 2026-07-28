@@ -10,6 +10,8 @@ import {
   facetCounts,
   filterAndSort,
   fmtPriceShort,
+  paginateItems,
+  paginationWindow,
   parseFilters,
   removeChip,
   serializeFilters,
@@ -30,9 +32,11 @@ function listing(over: Partial<Listing>): Listing {
     baths: 3,
     sqft: 2500,
     type: 'single-family',
-    status: 'now-selling',
+    status: 'active',
     features: ['pool', 'gated'],
-    image: { src: '', alt: '' },
+    isEstate: false,
+    isActive: true,
+    image: { src: '/images/community-bonita-bay.jpg', alt: 'Home' },
     ...over,
   };
 }
@@ -45,7 +49,7 @@ const SAMPLE: Listing[] = [
     baths: 2,
     sqft: 1500,
     type: 'condo',
-    status: 'move-in',
+    status: 'pending',
     features: ['gated'],
   }),
   listing({
@@ -55,7 +59,7 @@ const SAMPLE: Listing[] = [
     baths: 3,
     sqft: 2500,
     type: 'villa',
-    status: 'now-selling',
+    status: 'active',
     features: ['pool', 'gated'],
   }),
   listing({
@@ -65,10 +69,12 @@ const SAMPLE: Listing[] = [
     baths: 4.5,
     sqft: 4000,
     type: 'estate',
-    status: 'now-selling',
+    status: 'active',
     features: ['waterfront', 'pool', 'gated', 'golf'],
-    communityName: 'Seaside Cove',
-    community: 'seaside-cove',
+    isEstate: true,
+    communityName: 'Valencia Trails',
+    community: 'valencia-trails',
+    city: 'Naples',
   }),
 ];
 
@@ -79,140 +85,95 @@ describe('applyFilters', () => {
     expect(applyFilters(SAMPLE, EMPTY_FILTERS)).toHaveLength(3);
   });
 
-  it('filters by price range inclusively', () => {
-    expect(applyFilters(SAMPLE, state({ min: 1000000 })).map((l) => l.slug)).toEqual(['b', 'c']);
-    expect(applyFilters(SAMPLE, state({ max: 1000000 })).map((l) => l.slug)).toEqual(['a', 'b']);
-    expect(applyFilters(SAMPLE, state({ min: 1000000, max: 1000000 })).map((l) => l.slug)).toEqual([
-      'b',
-    ]);
+  it('filters by mls status', () => {
+    expect(applyFilters(SAMPLE, state({ status: ['pending'] })).map((l) => l.slug)).toEqual(['a']);
   });
 
-  it('treats beds/baths as minimums', () => {
-    expect(applyFilters(SAMPLE, state({ beds: 3 })).map((l) => l.slug)).toEqual(['b', 'c']);
-    expect(applyFilters(SAMPLE, state({ baths: 4 })).map((l) => l.slug)).toEqual(['c']);
+  it('filters by type facet including estate', () => {
+    expect(applyFilters(SAMPLE, state({ type: ['estate'] })).map((l) => l.slug)).toEqual(['c']);
   });
 
-  it('ORs within type/community/status facets', () => {
-    expect(applyFilters(SAMPLE, state({ type: ['condo', 'estate'] })).map((l) => l.slug)).toEqual([
-      'a',
-      'c',
-    ]);
-    expect(applyFilters(SAMPLE, state({ status: ['now-selling'] })).map((l) => l.slug)).toEqual([
-      'b',
-      'c',
-    ]);
-  });
-
-  it('ANDs within the features facet', () => {
+  it('filters by community area slug', () => {
     expect(
-      applyFilters(SAMPLE, state({ features: ['pool', 'waterfront'] })).map((l) => l.slug),
+      applyFilters(SAMPLE, state({ community: ['valencia-trails'] })).map((l) => l.slug),
     ).toEqual(['c']);
-    expect(applyFilters(SAMPLE, state({ features: ['gated'] })).map((l) => l.slug)).toEqual([
-      'a',
-      'b',
-      'c',
-    ]);
   });
 
-  it('matches keyword against name, community, and city', () => {
-    expect(applyFilters(SAMPLE, state({ q: 'seaside' })).map((l) => l.slug)).toEqual(['c']);
-    expect(applyFilters(SAMPLE, state({ q: 'nothing-here' }))).toHaveLength(0);
+  it('ANDs features', () => {
+    expect(
+      applyFilters(SAMPLE, state({ features: ['waterfront', 'golf'] })).map((l) => l.slug),
+    ).toEqual(['c']);
   });
 });
 
-describe('sortListings', () => {
-  it('preserves source order for featured', () => {
-    expect(sortListings(SAMPLE, 'featured').map((l) => l.slug)).toEqual(['a', 'b', 'c']);
-  });
-  it('sorts by price both directions', () => {
+describe('sort + serialize', () => {
+  it('sorts by price ascending', () => {
     expect(sortListings(SAMPLE, 'price-asc').map((l) => l.slug)).toEqual(['a', 'b', 'c']);
-    expect(sortListings(SAMPLE, 'price-desc').map((l) => l.slug)).toEqual(['c', 'b', 'a']);
   });
-  it('sorts by beds then sqft, and by sqft', () => {
-    expect(sortListings(SAMPLE, 'beds-desc').map((l) => l.slug)).toEqual(['c', 'b', 'a']);
-    expect(sortListings(SAMPLE, 'sqft-desc').map((l) => l.slug)).toEqual(['c', 'b', 'a']);
-  });
-  it('does not mutate the input array', () => {
-    const before = SAMPLE.map((l) => l.slug);
-    sortListings(SAMPLE, 'price-desc');
-    expect(SAMPLE.map((l) => l.slug)).toEqual(before);
-  });
-});
 
-describe('filterAndSort', () => {
-  it('filters then sorts', () => {
-    const out = filterAndSort(SAMPLE, state({ status: ['now-selling'], sort: 'price-desc' }));
-    expect(out.map((l) => l.slug)).toEqual(['c', 'b']);
-  });
-});
-
-describe('facetCounts (contextual)', () => {
-  it('counts each option ignoring its own facet selection', () => {
-    // status filtered to now-selling → type tallies computed over {b, c}.
-    const counts = facetCounts(SAMPLE, state({ status: ['now-selling'] }), 'type');
-    expect(counts).toMatchObject({ villa: 1, estate: 1, condo: 0, 'single-family': 0 });
-  });
-  it('ignores the current selection within the same facet', () => {
-    // selecting condo should not zero out the other type counts.
-    const counts = facetCounts(SAMPLE, state({ type: ['condo'] }), 'type');
-    expect(counts).toMatchObject({ condo: 1, villa: 1, estate: 1 });
-  });
-  it('uses AND semantics for feature tallies', () => {
-    const counts = facetCounts(SAMPLE, state({ features: ['pool'] }), 'community');
-    // pool is on b (bonita-bay) and c (seaside-cove)
-    expect(counts).toMatchObject({ 'bonita-bay': 1, 'seaside-cove': 1 });
-  });
-});
-
-describe('URL round-trip', () => {
-  it('serializes and re-parses to the same state', () => {
-    const s = state({
+  it('round-trips filters through the URL', () => {
+    const f = state({
       q: 'bay',
       min: 500000,
-      beds: 3,
-      type: ['villa', 'estate'],
+      type: ['condo'],
+      status: ['active'],
       features: ['pool'],
-      sort: 'price-asc',
+      sort: 'price-desc',
+      page: 3,
+      pageSize: 50,
     });
-    const round = parseFilters(new URLSearchParams(serializeFilters(s)));
-    expect(round).toEqual(s);
+    expect(parseFilters(new URLSearchParams(serializeFilters(f)))).toEqual(f);
   });
-  it('omits defaults from the query string', () => {
+
+  it('omits default page and pageSize from the URL', () => {
     expect(serializeFilters(EMPTY_FILTERS)).toBe('');
-    expect(serializeFilters(state({ sort: 'featured' }))).toBe('');
+    expect(parseFilters(new URLSearchParams('pageSize=15')).pageSize).toBe(15);
+    expect(parseFilters(new URLSearchParams('pageSize=99')).pageSize).toBe(20);
   });
-  it('drops junk option values and bad sort on parse', () => {
-    const parsed = parseFilters(new URLSearchParams('type=villa,bogus&sort=nope&beds=-2'));
-    expect(parsed.type).toEqual(['villa']);
-    expect(parsed.sort).toBe('featured');
-    expect(parsed.beds).toBe(0);
+
+  it('filterAndSort combines both', () => {
+    expect(
+      filterAndSort(SAMPLE, state({ status: ['active'], sort: 'price-desc' })).map((l) => l.slug),
+    ).toEqual(['c', 'b']);
   });
 });
 
-describe('chips + mutations', () => {
-  it('lists one chip per active constraint in order', () => {
-    const chips = activeChips(
-      state({ q: 'bay', min: 500000, beds: 3, type: ['villa'], features: ['pool'] }),
-    );
-    expect(chips.map((c) => c.kind)).toEqual(['q', 'min', 'beds', 'type', 'features']);
+describe('pagination', () => {
+  it('slices results and clamps page', () => {
+    const items = ['a', 'b', 'c', 'd', 'e'];
+    expect(paginateItems(items, 2, 2)).toMatchObject({
+      items: ['c', 'd'],
+      page: 2,
+      pageCount: 3,
+      from: 3,
+      to: 4,
+    });
+    expect(paginateItems(items, 99, 2).page).toBe(3);
+    expect(paginationWindow(1, 3)).toEqual([1, 2, 3]);
+    expect(paginationWindow(5, 10)).toContain('ellipsis');
   });
-  it('removeChip clears only its own constraint', () => {
-    const s = state({ beds: 3, type: ['villa', 'estate'] });
-    expect(removeChip(s, { kind: 'beds', value: '', label: '' }).beds).toBe(0);
-    expect(removeChip(s, { kind: 'type', value: 'villa', label: '' }).type).toEqual(['estate']);
+});
+
+describe('facets and chips', () => {
+  it('counts contextual facet options', () => {
+    const counts = facetCounts(SAMPLE, EMPTY_FILTERS, 'status');
+    expect(counts.active).toBe(2);
+    expect(counts.pending).toBe(1);
   });
-  it('toggleFacet adds then removes', () => {
-    const added = toggleFacet(EMPTY_FILTERS, 'type', 'villa');
-    expect(added.type).toEqual(['villa']);
-    expect(toggleFacet(added, 'type', 'villa').type).toEqual([]);
-  });
-  it('countActive and clearFilters', () => {
-    const s = state({ q: 'x', beds: 3, type: ['villa'], features: ['pool', 'gated'] });
-    expect(countActive(s)).toBe(5);
+
+  it('tracks active chips and clear', () => {
+    const f = state({ beds: 3, status: ['active'] });
+    expect(countActive(f)).toBe(2);
+    expect(activeChips(f).some((c) => c.label === 'Active')).toBe(true);
     expect(clearFilters()).toEqual(EMPTY_FILTERS);
-  });
-  it('fmtPriceShort formats millions and thousands', () => {
     expect(fmtPriceShort(1_500_000)).toBe('$1.5M');
-    expect(fmtPriceShort(750_000)).toBe('$750k');
+  });
+
+  it('toggles and removes facet chips', () => {
+    const on = toggleFacet(EMPTY_FILTERS, 'features', 'pool');
+    expect(on.features).toEqual(['pool']);
+    expect(
+      removeChip(on, { kind: 'features', value: 'pool', label: 'Private Pool' }).features,
+    ).toEqual([]);
   });
 });

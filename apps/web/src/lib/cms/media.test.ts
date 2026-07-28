@@ -46,4 +46,27 @@ describe('CMS media helpers', () => {
       }),
     ).toThrow();
   });
+
+  it('allows absolute media URLs on the configured media origin', async () => {
+    vi.stubEnv('NEXT_PUBLIC_MEDIA_URL', 'https://pub-example.r2.dev');
+    vi.resetModules();
+    const { normalizeMediaField } = await import('./media');
+    expect(
+      normalizeMediaField({
+        image: {
+          url: 'https://pub-example.r2.dev/seed-homepage--hero.jpg',
+          alt: 'Hero image',
+          width: 2000,
+          height: 1200,
+          mimeType: 'image/jpeg',
+        },
+      }),
+    ).toEqual({
+      src: 'https://pub-example.r2.dev/seed-homepage--hero.jpg',
+      alt: 'Hero image',
+      width: 2000,
+      height: 1200,
+      caption: undefined,
+    });
+  });
 });
