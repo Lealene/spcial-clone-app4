@@ -1,9 +1,9 @@
 import { CMS_PAGE_BLOCK_TYPES } from '@mvp-realty/api-contracts';
 import type { Payload } from 'payload';
 
-import { buildHomepageSeedData } from '../seed-homepage';
-import { findHomepageSeedMedia, inspectHomepageMediaOrphans } from '../homepage-seed/media';
-import { seedDataDifferencePaths, seedDataMatches } from '../homepage-seed/normalize';
+import { findHomepageSeedMedia, inspectHomepageMediaOrphans } from './media';
+import { seedDataDifferencePaths, seedDataMatches } from './normalize';
+import { buildHomepageSeedData } from './seed';
 
 function assertSeed(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);

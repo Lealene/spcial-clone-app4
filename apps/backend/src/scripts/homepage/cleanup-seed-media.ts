@@ -1,4 +1,4 @@
-import { cleanupHomepageSeedMediaFiles } from './homepage-seed/assets';
+import { cleanupHomepageSeedMediaFiles } from './assets';
 
 if (!process.argv.includes('after-database-reset')) {
   throw new Error('This cleanup may run only after the local database volume has been removed.');

@@ -17,7 +17,7 @@ import { footerIsUnseeded, headerIsUnseeded } from './fresh';
 import type { HomepageSeedMediaDocs } from './media';
 import { seedDataDifferencePaths, seedDataMatches } from './normalize';
 import { homepageSeedAssets } from '../../../seed/homepage/manifest';
-import { buildHomepageSeedData } from '../seed-homepage';
+import { buildHomepageSeedData } from './seed';
 
 const temporaryDirectories: string[] = [];
 
@@ -120,6 +120,7 @@ describe('canonical local CMS seed inventory', () => {
 describe('homepage seed media cleanup', () => {
   it('recognizes deterministic and legacy Payload filenames', () => {
     expect(assetKeyForSeedFileName(homepageSeedUploadName('hero'))).toBe('hero');
+    expect(homepageSeedUploadName('hero')).toMatch(/^seed-homepage--hero--[a-f0-9]{12}\.jpg$/);
     expect(assetKeyForSeedFileName('hero-naples-waterfront-2.jpg')).toBe('hero');
     expect(assetKeyForSeedFileName('editor-upload.jpg')).toBeUndefined();
   });

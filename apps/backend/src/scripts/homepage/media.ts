@@ -49,6 +49,17 @@ async function findMatchingMedia(
       continue;
     }
 
+    // Canonical managed name (works when bytes live in R2 and not on local disk).
+    if (
+      candidate.filename === asset.uploadName ||
+      checksumMatchesSeedFileName(candidate.filename, asset.sha256)
+    ) {
+      if (candidate.alt === asset.alt || !candidate.alt) {
+        matching.push(candidate);
+        continue;
+      }
+    }
+
     const checksum = await checksumForMediaFile(candidate.filename);
     if (checksum === asset.sha256) {
       matching.push(candidate);

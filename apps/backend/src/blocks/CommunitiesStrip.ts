@@ -19,20 +19,26 @@ export const CommunitiesStripBlock: Block = {
     {
       name: 'sourceMode',
       type: 'select',
-      defaultValue: 'manual',
-      options: [{ label: 'Manual', value: 'manual' }],
+      defaultValue: 'areas',
+      options: [
+        { label: 'Areas collection', value: 'areas' },
+        { label: 'Manual (legacy)', value: 'manual' },
+      ],
       admin: {
-        hidden: true,
-        description: 'Reserved for selected/query modes after communities exist.',
+        description:
+          'Areas mode loads strip items from Areas (kind=community). Edit name/blurb on the Area document.',
       },
     },
     {
       name: 'items',
       type: 'array',
-      required: true,
+      required: false,
       minRows: CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.min,
       maxRows: CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.max,
-      admin: { description: 'Recommended: 3 compact community links.' },
+      admin: {
+        condition: (_, siblingData) => siblingData?.sourceMode === 'manual',
+        description: 'Legacy manual strip items. Prefer Areas collection.',
+      },
       fields: [
         { name: 'name', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },
         {
@@ -56,9 +62,12 @@ export const CommunitiesStripBlock: Block = {
       name: 'maxItems',
       type: 'number',
       defaultValue: CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.max,
-      min: CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.min,
+      min: 1,
       max: CMS_PAGE_BLOCK_LIMITS.communitiesStripItems.max,
       validate: integerValidator,
+      admin: {
+        description: 'How many community Areas to show in the strip.',
+      },
     },
   ],
 };

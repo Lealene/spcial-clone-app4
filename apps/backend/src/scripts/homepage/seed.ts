@@ -2,16 +2,16 @@ import type { Payload } from 'payload';
 
 import type { Footer, Header, Page } from '@/payload-types';
 
-import { validateHomepageSeedAssets } from './homepage-seed/assets';
-import { footerIsUnseeded, headerIsUnseeded } from './homepage-seed/fresh';
+import { seedAreaGalleries, seedAreas } from '../areas/seed';
+import { validateHomepageSeedAssets } from './assets';
+import { footerIsUnseeded, headerIsUnseeded } from './fresh';
 import {
-  findHomepageSeedMediaForExistingPage,
   placeholderHomepageSeedMedia,
   reconcileHomepageSeedMedia,
   type HomepageSeedMediaDoc,
   type HomepageSeedMediaDocs,
-} from './homepage-seed/media';
-import { seedDataDifferencePaths, seedDataMatches } from './homepage-seed/normalize';
+} from './media';
+import { seedDataDifferencePaths, seedDataMatches } from './normalize';
 
 const SEED_CONTEXT = { source: 'seed-homepage-local' };
 
@@ -135,31 +135,9 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
       {
         enabled: true,
         blockType: 'communitiesStrip',
-        sourceMode: 'manual',
+        sourceMode: 'areas',
         maxItems: 3,
-        items: [
-          {
-            slug: 'bonita-bay',
-            name: 'Bonita Bay',
-            blurb: 'Bonita Springs · golf, marina & a private Gulf beach park',
-            link: customLink('Bonita Bay', '/communities/bonita-bay'),
-            icon: 'mapPin',
-          },
-          {
-            slug: 'valencia-bonita',
-            name: 'Valencia Bonita',
-            blurb: 'Bonita Springs · 55+ gated with a resort clubhouse',
-            link: customLink('Valencia Bonita', '/communities/valencia-bonita'),
-            icon: 'mapPin',
-          },
-          {
-            slug: 'valencia-trails',
-            name: 'Valencia Trails',
-            blurb: 'Naples · 55+ gated, resort pool minutes from the sand',
-            link: customLink('Valencia Trails', '/communities/valencia-trails'),
-            icon: 'mapPin',
-          },
-        ],
+        items: [],
       },
       {
         enabled: true,
@@ -170,61 +148,8 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
           heading: 'Three favorites to start your search.',
           lede: 'A short, hand-picked set of the Southwest Florida communities our clients keep coming back to.',
         },
-        sourceMode: 'manual',
-        manualCommunities: [
-          {
-            slug: 'bonita-bay',
-            name: 'Bonita Bay',
-            locality: 'Bonita Springs · private Gulf beach park',
-            rating: 4.8,
-            reviews: 57,
-            reviewsLabel: 'reviews',
-            priceRange: 'From the $400s – $5M+',
-            tags: [{ label: 'Golf & Marina' }, { label: 'Gated' }, { label: 'Beach Park' }],
-            residences: 320,
-            residencesLabel: 'residences',
-            nowSelling: 14,
-            nowSellingLabel: 'now selling',
-            image: media(mediaDocs.bonitaBay),
-            link: customLink('Bonita Bay', '/communities/bonita-bay'),
-          },
-          {
-            slug: 'valencia-bonita',
-            name: 'Valencia Bonita',
-            locality: 'Bonita Springs · 55+ gated',
-            rating: 4.9,
-            reviews: 83,
-            reviewsLabel: 'reviews',
-            priceRange: 'From the $500s – $1M',
-            tags: [
-              { label: '55+ Gated' },
-              { label: 'Resort Clubhouse' },
-              { label: 'Tennis & Pickleball' },
-            ],
-            residences: 410,
-            residencesLabel: 'residences',
-            nowSelling: 22,
-            nowSellingLabel: 'now selling',
-            image: media(mediaDocs.valenciaBonita),
-            link: customLink('Valencia Bonita', '/communities/valencia-bonita'),
-          },
-          {
-            slug: 'valencia-trails',
-            name: 'Valencia Trails',
-            locality: 'Naples · 55+ gated',
-            rating: 4.7,
-            reviews: 41,
-            reviewsLabel: 'reviews',
-            priceRange: 'From the $600s – $1.3M',
-            tags: [{ label: 'New & Resale' }, { label: '55+ Gated' }, { label: 'Resort Pool' }],
-            residences: 275,
-            residencesLabel: 'residences',
-            nowSelling: 9,
-            nowSellingLabel: 'now selling',
-            image: media(mediaDocs.valenciaTrails),
-            link: customLink('Valencia Trails', '/communities/valencia-trails'),
-          },
-        ],
+        sourceMode: 'areas',
+        manualCommunities: [],
         moreLink: cta('Explore all communities', '/listings'),
       },
       {
@@ -510,19 +435,26 @@ export async function seedHomepage(payload: Payload): Promise<HomepageSeedReport
     );
   }
 
-  const existingDoc = existingHome.docs[0];
-  if (existingDoc) {
-    const existingMedia = await findHomepageSeedMediaForExistingPage(payload);
-    const existingPageData = buildHomepageSeedData(existingMedia).pageData;
-    if (!seedDataMatches(existingDoc, existingPageData)) {
-      throw new Error(
-        `The home page differs from the canonical homepage seed at: ${seedDataDifferencePaths(existingDoc, existingPageData).join(', ')}.`,
-      );
-    }
-  }
-
+  // Recreate missing seed media before the drift check — deleting Media nulls page
+  // relationships, and find-by-existing-media would throw before we can repair.
   const mediaResult = await reconcileHomepageSeedMedia(payload);
   const { header, footer, pageData } = buildHomepageSeedData(mediaResult.mediaDocs);
+
+  const existingDoc = existingHome.docs[0];
+  if (existingDoc && mediaResult.created.length === 0) {
+    if (!seedDataMatches(existingDoc, pageData)) {
+      const driftPaths = seedDataDifferencePaths(existingDoc, pageData);
+      // Safe to repair: broken media refs, or community blocks moving to Areas source.
+      const onlyReparableDrift = driftPaths.every(
+        (path) => /\.image$/.test(path) || /^layout\[1\]/.test(path) || /^layout\[2\]/.test(path),
+      );
+      if (!onlyReparableDrift) {
+        throw new Error(
+          `The home page differs from the canonical homepage seed at: ${driftPaths.join(', ')}.`,
+        );
+      }
+    }
+  }
 
   let headerChanged = false;
   if (!seedDataMatches(currentHeader, header)) {
@@ -567,6 +499,9 @@ export async function seedHomepage(payload: Payload): Promise<HomepageSeedReport
     });
     pageChanged = true;
   }
+
+  await seedAreas(payload);
+  await seedAreaGalleries(payload, mediaResult.mediaDocs);
 
   return {
     mediaCreated: mediaResult.created.length,

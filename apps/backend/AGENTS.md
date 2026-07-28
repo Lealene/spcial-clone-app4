@@ -35,6 +35,12 @@ Regenerate Payload outputs with `pnpm -C apps/backend generate:types` and `pnpm 
 - `src/app/(payload)/` — Payload admin UI and API routes; generated import map lives here.
 - `src/app/(frontend)/` — backend-owned SSR pages, currently template-level.
 - `src/types/css.d.ts` — CSS module declarations for Payload side-effect imports.
+- `src/scripts/` — CLI entrypoints and seed/media helpers, grouped by domain pack:
+  - `homepage/` — `seed:local` (homepage + areas), media reconcile/remirror library, cleanup, postconditions
+  - `communities/` — `seed:community` (areas + brokers + editorial + remirror when S3 is set)
+  - `areas/`, `brokers/` — seed libraries only (invoked by the pipelines above; no standalone npm scripts)
+  - `shared/` — seed-asset helpers, media paths, lexical converters, shared remirror CLI
+  - root `run-bridge-sync.ts`, `run-remirror-listing-heroes.ts`, `audit-cms-blocks.ts` — job/ops CLIs
 - `next.config.ts` — wrapped with `withPayload`, workspace transpilation, image patterns, and browser-to-terminal logging.
 
 ## Workflow
@@ -52,8 +58,8 @@ Browser console output is forwarded to the dev terminal via `logging.browserToTe
 ## Gotchas
 
 - `Users` has `auth: true` and backs admin login. Do not remove it. End-user/customer accounts need a separate collection.
-- `Media` requires `upload: true`. Local disk is fine for dev; production needs an upload adapter such as S3 or R2 before real media usage.
+- `Media` requires `upload: true`. Local disk is fine for dev. Production (and hero mirroring) uses Cloudflare R2 via `@payloadcms/storage-s3` when `S3_*` env vars are set — not `@payloadcms/storage-r2` (Workers binding only). R2 ignores object ACLs; use bucket-level public access + `S3_PUBLIC_URL`.
 - Do not import from `apps/web`. Shared contracts belong in `@mvp-realty/api-contracts`.
 - Use `payload.logger` inside hooks and endpoints instead of `console.log`; it carries request context.
 - Use Payload transactions for multi-step writes that must succeed or fail atomically.
-- No domain collections exist yet for listings, communities, leads, saved listings, or tours; do not claim backend integration exists until those are implemented.
+- Domain collections currently include Areas, Brokers, Listings, and SyncLogs. Seed with `pnpm -C apps/backend seed:local` (homepage + areas) and `seed:community` (areas + brokers + community detail). Remirror seed media with `media:remirror-homepage` / `media:remirror-communities` when R2 bytes need a force rewrite.

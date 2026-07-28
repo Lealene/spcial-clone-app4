@@ -19,7 +19,7 @@
     "clean": "turbo run clean && rm -rf node_modules .turbo",
     "docker:up": "docker compose up -d --wait",
     "docker:down": "docker compose down",
-    "docker:reset": "docker compose down -v && pnpm -C apps/backend payload run src/scripts/cleanup-homepage-seed-media.ts after-database-reset && docker compose up -d --wait",
+    "docker:reset": "docker compose down -v && pnpm -C apps/backend payload run src/scripts/homepage/cleanup-seed-media.ts after-database-reset && docker compose up -d --wait",
     "prepare": "lefthook install || true"
   },
   "devDependencies": {
