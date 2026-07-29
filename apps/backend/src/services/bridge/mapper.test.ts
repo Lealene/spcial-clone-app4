@@ -132,6 +132,39 @@ describe('mapBridgePropertyToListing', () => {
     ).toBe('other');
   });
 
+  it('maps RESO Latitude/Longitude, coercing numeric strings', () => {
+    const numeric = mapBridgePropertyToListing(
+      baseProperty({ Latitude: 26.3398, Longitude: -81.7787 }),
+    );
+    expect(numeric.latitude).toBe(26.3398);
+    expect(numeric.longitude).toBe(-81.7787);
+
+    const strings = mapBridgePropertyToListing(
+      baseProperty({ Latitude: '26.3398', Longitude: '-81.7787' }),
+    );
+    expect(strings.latitude).toBe(26.3398);
+    expect(strings.longitude).toBe(-81.7787);
+  });
+
+  it('omits both coordinates when either axis is missing, out of range, or the 0,0 sentinel', () => {
+    const cases: Array<Partial<BridgeProperty>> = [
+      {},
+      { Latitude: null, Longitude: null },
+      { Latitude: 26.3398, Longitude: undefined },
+      { Latitude: undefined, Longitude: -81.7787 },
+      { Latitude: 26.3398, Longitude: 'not-a-number' },
+      { Latitude: 126.5, Longitude: -81.7787 },
+      { Latitude: 26.3398, Longitude: -181 },
+      { Latitude: 0, Longitude: 0 },
+    ];
+
+    for (const overrides of cases) {
+      const mapped = mapBridgePropertyToListing(baseProperty(overrides));
+      expect(mapped, JSON.stringify(overrides)).not.toHaveProperty('latitude');
+      expect(mapped, JSON.stringify(overrides)).not.toHaveProperty('longitude');
+    }
+  });
+
   it('maps string-list specs and omits empty spec groups', () => {
     const mapped = mapBridgePropertyToListing(
       baseProperty({

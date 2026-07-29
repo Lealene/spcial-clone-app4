@@ -22,6 +22,9 @@ export type BridgeProperty = {
   City?: string | null;
   StateOrProvince?: string | null;
   PostalCode?: string | null;
+  /** NABOR occasionally serializes RESO decimals as strings. */
+  Latitude?: number | string | null;
+  Longitude?: number | string | null;
   ListPrice?: number | null;
   BedroomsTotal?: number | null;
   BathroomsTotalDecimal?: number | null;
@@ -100,6 +103,8 @@ export type MappedListingData = {
   streetAddress?: string;
   state?: string;
   zip?: string;
+  latitude?: number;
+  longitude?: number;
   beds?: number;
   baths?: number;
   sqft?: number;

@@ -1135,6 +1135,14 @@ export interface Listing {
   city: string;
   state?: string | null;
   zip?: string | null;
+  /**
+   * RESO Latitude — centers the PDP location map.
+   */
+  latitude?: number | null;
+  /**
+   * RESO Longitude — centers the PDP location map.
+   */
+  longitude?: number | null;
   price: number;
   beds?: number | null;
   baths?: number | null;
@@ -2295,6 +2303,8 @@ export interface ListingsSelect<T extends boolean = true> {
   city?: T;
   state?: T;
   zip?: T;
+  latitude?: T;
+  longitude?: T;
   price?: T;
   beds?: T;
   baths?: T;

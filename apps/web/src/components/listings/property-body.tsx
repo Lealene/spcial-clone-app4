@@ -1,7 +1,9 @@
-import { Check, MapPin } from 'lucide-react';
+import { Check } from 'lucide-react';
 
+import { ListingMap } from '@/components/listings/listing-map';
 import { Kicker } from '@/components/section-header';
-import { Button } from '@/components/ui/button';
+// Restore alongside AskAboutAreaButton below when the map CTA comes back.
+// import { Button } from '@/components/ui/button';
 import { cn } from '@mvp-realty/ui/lib/utils';
 import type { FloorRoom, PropertyView, SpecGroup } from '@/data/property';
 
@@ -130,46 +132,53 @@ function FloorPlan({ rooms }: { rooms: FloorRoom[] }) {
   );
 }
 
-/** Stylized "map" block — no real map; navy pin + abstract terrain. */
-function LocationMap({ view }: { view: PropertyView }) {
+/**
+ * Caption for the pin, shared by the real map and the fallback. Leads with the street
+ * address because the community and city are already the section heading above; the
+ * accent line carries the community only as context for the address.
+ */
+function LocationCard({ view, className }: { view: PropertyView; className?: string }) {
   return (
     <div
-      className="border-line shadow-card relative mt-7 h-[340px] overflow-hidden rounded-xl"
-      role="img"
-      aria-label={`Stylized map showing the home's location within ${view.listing.communityName}.`}
-      style={{
-        background:
-          'radial-gradient(130% 90% at 100% 0%, var(--surface), var(--surface-muted) 64%)',
-      }}
+      className={cn(
+        'bg-primary shadow-card pointer-events-none absolute top-[18px] left-[18px] z-[3] max-w-[62%] rounded-md px-3.5 py-[9px] font-sans text-[13px] font-semibold text-white',
+        className,
+      )}
     >
-      <span
-        className="absolute top-[14%] left-[8%] h-[54%] w-[46%] -rotate-[8deg] rounded-[48%_52%_46%_54%]"
-        style={{ background: 'rgba(95,211,208,.14)' }}
-      />
-      <span
-        className="absolute right-[6%] bottom-[8%] h-[44%] w-[38%] rotate-[10deg] rounded-[48%_52%_46%_54%]"
-        style={{ background: 'rgba(255,183,3,.10)' }}
-      />
-      <span
-        className="bg-accent-deep/40 absolute top-[48%] left-[14%] h-0.5 w-[60%] rotate-[8deg]"
-        aria-hidden
-      />
-      <span
-        className="bg-accent-deep/40 absolute top-[30%] left-[40%] h-0.5 w-[36%] -rotate-[58deg]"
-        aria-hidden
-      />
-      <div className="bg-primary shadow-card absolute top-[18px] left-[18px] z-[3] rounded-md px-3.5 py-[9px] font-sans text-[13px] font-semibold text-white">
-        <b className="text-accent block text-[12px] tracking-[0.04em]">{view.neighborhood}</b>
-        {view.listing.communityName} · {view.listing.city}
-      </div>
-      <div className="absolute top-[46%] left-[46%] z-[2] -translate-x-1/2 -translate-y-full">
-        <span className="bg-primary grid size-[34px] -rotate-45 place-items-center rounded-[50%_50%_50%_0] shadow-[0_10px_22px_-8px_rgba(8,26,48,.7),inset_0_0_0_2px_var(--accent)]">
-          <MapPin className="text-accent size-[15px] rotate-45" strokeWidth={2.4} />
-        </span>
-      </div>
-      <Button asChild variant="primary" size="sm" className="absolute right-4 bottom-4 z-[3]">
-        <a href="#tour">Ask about the area</a>
-      </Button>
+      <b className="text-accent block text-[12px] tracking-[0.04em]">{view.addressLine}</b>
+      {view.cityLine}
+    </div>
+  );
+}
+
+// Hidden for now — kept so the map CTA can come back without rebuilding it.
+// function AskAboutAreaButton({ className }: { className?: string }) {
+//   return (
+//     <Button
+//       asChild
+//       variant="primary"
+//       size="sm"
+//       className={cn('absolute right-4 bottom-4 z-[3]', className)}
+//     >
+//       <a href="#tour">Ask about the area</a>
+//     </Button>
+//   );
+// }
+
+/** Real OpenStreetMap view, centered on the listing's MLS coordinates. */
+function LocationMap({
+  view,
+  coordinates,
+}: {
+  view: PropertyView;
+  coordinates: { lat: number; lon: number };
+}) {
+  return (
+    <div className="border-line shadow-card relative mt-7 h-[340px] overflow-hidden rounded-xl border">
+      <ListingMap lat={coordinates.lat} lon={coordinates.lon} label={view.addressLine} />
+      {/* Leaflet's panes and controls climb to z-index 800+, so overlays must sit above that. */}
+      <LocationCard view={view} className="z-[1000]" />
+      {/* <AskAboutAreaButton className="bottom-9 z-[1000]" /> */}
     </div>
   );
 }
@@ -224,7 +233,9 @@ export function PropertyBody({ view }: { view: PropertyView }) {
         <p className="text-ink-soft mt-5 font-sans text-[17px] leading-[1.75]">
           {view.locationBlurb}
         </p>
-        <LocationMap view={view} />
+        {/* No map at all when the MLS feed has no coordinates — a decorative stand-in
+            would imply a location we don't have. The blurb above still carries the area. */}
+        {view.coordinates && <LocationMap view={view} coordinates={view.coordinates} />}
       </Section>
 
       <section className="border-line border-t py-[clamp(34px,4vw,52px)]">

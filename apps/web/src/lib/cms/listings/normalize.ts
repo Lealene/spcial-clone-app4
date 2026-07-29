@@ -34,6 +34,22 @@ function finiteNumber(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
+/**
+ * Map coordinates, both axes or neither. Bad values are dropped here rather than
+ * failing `listingDetailSchema` — a nonsense latitude must not 404 the whole PDP.
+ */
+function coordinates(
+  rawLatitude: unknown,
+  rawLongitude: unknown,
+): { latitude: number; longitude: number } | Record<string, never> {
+  const latitude = finiteNumber(rawLatitude);
+  const longitude = finiteNumber(rawLongitude);
+  if (latitude === undefined || longitude === undefined) return {};
+  if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return {};
+  if (latitude === 0 && longitude === 0) return {};
+  return { latitude, longitude };
+}
+
 function allowedImageOrigins(): string[] {
   const origins = [new URL(env.NEXT_PUBLIC_BACKEND_URL).origin];
   if (env.NEXT_PUBLIC_MEDIA_URL) {
@@ -282,6 +298,7 @@ export function normalizeListingDetail(raw: unknown): ListingDetail | null {
     streetAddress: text(raw.streetAddress),
     state: text(raw.state) ?? 'FL',
     zip: text(raw.zip),
+    ...coordinates(raw.latitude, raw.longitude),
     pricePerSqft: finiteNumber(raw.pricePerSqft),
     yearBuilt: finiteNumber(raw.yearBuilt),
     lotSqft: finiteNumber(raw.lotSqft),

@@ -125,6 +125,25 @@ export const Listings: CollectionConfig = {
             {
               type: 'row',
               fields: [
+                {
+                  name: 'latitude',
+                  type: 'number',
+                  admin: {
+                    description: 'RESO Latitude — centers the PDP location map.',
+                  },
+                },
+                {
+                  name: 'longitude',
+                  type: 'number',
+                  admin: {
+                    description: 'RESO Longitude — centers the PDP location map.',
+                  },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
                 { name: 'price', type: 'number', required: true },
                 { name: 'beds', type: 'number' },
                 { name: 'baths', type: 'number' },

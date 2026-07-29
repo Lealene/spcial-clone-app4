@@ -9,6 +9,7 @@ import * as migration_20260728_233845_leads_and_lead_name_split_add from './2026
 import * as migration_20260728_233911_drop_lead_capture_legacy_name from './20260728_233911_drop_lead_capture_legacy_name';
 import * as migration_20260728_235518_add_sync_lead_task_slug from './20260728_235518_add_sync_lead_task_slug';
 import * as migration_20260729_163225_drop_lead_crm_client_id from './20260729_163225_drop_lead_crm_client_id';
+import * as migration_20260729_220708_listing_coordinates from './20260729_220708_listing_coordinates';
 
 export const migrations = [
   {
@@ -65,5 +66,10 @@ export const migrations = [
     up: migration_20260729_163225_drop_lead_crm_client_id.up,
     down: migration_20260729_163225_drop_lead_crm_client_id.down,
     name: '20260729_163225_drop_lead_crm_client_id',
+  },
+  {
+    up: migration_20260729_220708_listing_coordinates.up,
+    down: migration_20260729_220708_listing_coordinates.down,
+    name: '20260729_220708_listing_coordinates',
   },
 ];
