@@ -375,7 +375,12 @@ export const leadCaptureBlockSchema = z.object({
     afterLinkText: z.string().default(''),
   }),
   fields: z.object({
-    name: z.object({
+    firstName: z.object({
+      label: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+      placeholder: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+      required: z.boolean().default(true),
+    }),
+    lastName: z.object({
       label: z.string().min(1).max(CMS_TEXT_LIMITS.label),
       placeholder: z.string().min(1).max(CMS_TEXT_LIMITS.label),
       required: z.boolean().default(true),
@@ -774,3 +779,74 @@ export const areaPdpMetaSchema = z.object({
   broker: brokerSchema.nullable(),
 });
 export type AreaPdpMeta = z.infer<typeof areaPdpMetaSchema>;
+
+// ---------------------------------------------------------------------------
+// Lead capture (web → Payload → Wise Agent CRM)
+// ---------------------------------------------------------------------------
+
+/**
+ * Two field sets across every lead surface: `tour` adds a free-text message,
+ * `shortlist` does not. Presentation (tone, copy, layout) varies per call site
+ * but the payload shape does not.
+ */
+export const LEAD_FORM_TYPES = ['tour', 'shortlist'] as const;
+export const leadFormTypeSchema = z.enum(LEAD_FORM_TYPES);
+export type LeadFormType = z.infer<typeof leadFormTypeSchema>;
+
+/**
+ * Wise Agent `Source` per form type. Drives their lead rules, so these strings
+ * are contract — changing one silently re-routes leads in the CRM.
+ */
+export const LEAD_SOURCES = {
+  tour: 'MVP Realty Website - Tour Request',
+  shortlist: 'MVP Realty Website - Shortlist',
+} as const satisfies Record<LeadFormType, string>;
+
+/**
+ * Which component submitted the lead. Reporting only — `Source` is derived from
+ * `formType`, so adding a surface never needs CRM reconfiguration.
+ */
+export const LEAD_SURFACES = [
+  'concierge-cta',
+  'page-lead-capture',
+  'property-tour-form',
+  'community-tour-band',
+  'community-agent-aside',
+] as const;
+export const leadSurfaceSchema = z.enum(LEAD_SURFACES);
+export type LeadSurface = z.infer<typeof leadSurfaceSchema>;
+
+export const LEAD_FIELD_LIMITS = {
+  name: 120,
+  email: 254,
+  phone: 40,
+  message: 2000,
+  pageUrl: CMS_TEXT_LIMITS.url,
+} as const;
+
+/**
+ * Shared by the web route handler and the Payload ingest endpoint — validated
+ * on both sides so the endpoint never trusts the proxy.
+ */
+export const leadSubmissionSchema = z.object({
+  firstName: z.string().trim().min(1).max(LEAD_FIELD_LIMITS.name),
+  lastName: z.string().trim().min(1).max(LEAD_FIELD_LIMITS.name),
+  email: z.string().trim().email().max(LEAD_FIELD_LIMITS.email),
+  phone: z.string().trim().max(LEAD_FIELD_LIMITS.phone).optional(),
+  message: z.string().trim().max(LEAD_FIELD_LIMITS.message).optional(),
+  formType: leadFormTypeSchema,
+  surface: leadSurfaceSchema,
+  pageUrl: z.string().trim().max(LEAD_FIELD_LIMITS.pageUrl).optional(),
+  /** Area slug for community surfaces. Resolved to a relationship server-side. */
+  areaSlug: z.string().trim().max(CMS_TEXT_LIMITS.slug).optional(),
+  /** Listing slug for PDP surfaces. Resolved to a relationship server-side. */
+  listingSlug: z.string().trim().max(CMS_TEXT_LIMITS.slug).optional(),
+  /** Honeypot. Bots fill it; humans never see it. Non-empty means silent drop. */
+  company: z.string().max(LEAD_FIELD_LIMITS.name).optional(),
+});
+export type LeadSubmission = z.infer<typeof leadSubmissionSchema>;
+
+/** CRM sync state stored on the Payload lead so retries stay idempotent. */
+export const LEAD_CRM_STATUSES = ['pending', 'synced', 'failed', 'skipped'] as const;
+export const leadCrmStatusSchema = z.enum(LEAD_CRM_STATUSES);
+export type LeadCrmStatus = z.infer<typeof leadCrmStatusSchema>;
