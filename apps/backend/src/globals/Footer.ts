@@ -1,7 +1,9 @@
+import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { GlobalConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
 import { linkField } from '../fields/link';
+import { revalidateGlobalAfterChange } from '../hooks/revalidate';
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -9,6 +11,9 @@ export const Footer: GlobalConfig = {
   access: {
     read: () => true,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateGlobalAfterChange([CMS_CACHE_TAGS.footer])],
   },
   fields: [
     { name: 'brandName', type: 'text', required: true },

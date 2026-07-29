@@ -1,3 +1,5 @@
+import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
+
 import { env } from '@/env';
 import { CmsDataError } from './errors';
 
@@ -11,7 +13,7 @@ export async function fetchJson(path: string, options: FetchJsonOptions = {}): P
 
   try {
     response = await fetch(new URL(path, env.NEXT_PUBLIC_BACKEND_URL), {
-      next: { revalidate: 300, tags: ['cms', ...(options.tags ?? [])] },
+      next: { revalidate: 300, tags: [CMS_CACHE_TAGS.all, ...(options.tags ?? [])] },
     });
   } catch (cause) {
     throw new CmsDataError('CMS request failed.', {

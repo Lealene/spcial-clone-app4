@@ -1,4 +1,4 @@
-import type { Payload } from 'payload';
+import type { Payload, RequestContext } from 'payload';
 
 type ListingStatsRow = {
   price?: number | null;
@@ -19,6 +19,7 @@ function minMax(values: number[]): { min?: number; max?: number } {
 export async function computeAndWriteAreaStats(
   payload: Payload,
   areaId: number | string,
+  context?: RequestContext,
 ): Promise<void> {
   const result = await payload.find({
     collection: 'listings',
@@ -67,5 +68,6 @@ export async function computeAndWriteAreaStats(
       isGated: listings.some((l) => l.features?.includes('gated')),
     },
     overrideAccess: true,
+    context,
   });
 }

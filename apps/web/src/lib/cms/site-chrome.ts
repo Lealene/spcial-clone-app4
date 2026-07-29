@@ -1,4 +1,5 @@
 import {
+  CMS_CACHE_TAGS,
   footerGlobalSchema,
   headerGlobalSchema,
   type FooterGlobal,
@@ -70,12 +71,12 @@ export function normalizeFooter(raw: unknown): FooterGlobal {
 
 export async function getHeaderContent(): Promise<HeaderGlobal> {
   return normalizeHeader(
-    await fetchJson('/api/globals/header?depth=2', { tags: ['cms-global:header'] }),
+    await fetchJson('/api/globals/header?depth=2', { tags: [CMS_CACHE_TAGS.header] }),
   );
 }
 
 export async function getFooterContent(): Promise<FooterGlobal> {
   return normalizeFooter(
-    await fetchJson('/api/globals/footer?depth=2', { tags: ['cms-global:footer'] }),
+    await fetchJson('/api/globals/footer?depth=2', { tags: [CMS_CACHE_TAGS.footer] }),
   );
 }

@@ -1,6 +1,10 @@
+import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { CollectionConfig, Field } from 'payload';
 
 import { authenticated } from '../access/authenticated';
+import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate';
+
+const CACHE_TAGS = [CMS_CACHE_TAGS.listings, CMS_CACHE_TAGS.listingsFeatured];
 
 const stringList = (name: string, label?: string): Field => ({
   name,
@@ -29,6 +33,10 @@ export const Listings: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange(CACHE_TAGS)],
+    afterDelete: [revalidateAfterDelete(CACHE_TAGS)],
   },
   fields: [
     {

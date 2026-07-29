@@ -25,6 +25,13 @@ export const env = createEnv({
     // the ingest endpoint rejects every unauthenticated request.
     LEADS_INGEST_SECRET: z.string().min(16).optional(),
 
+    // On-demand cache invalidation for the web app. Origin of the Next.js app
+    // plus the bearer secret its /api/revalidate route checks. Both optional:
+    // unset (as in local dev) means content edits fall back to the web app's
+    // time-based revalidation instead of failing a save.
+    WEB_APP_URL: z.string().url().optional(),
+    CMS_REVALIDATE_SECRET: z.string().min(16).optional(),
+
     // Outbound SMTP, used for admin password resets and Wise Agent lead parsing.
     // SMTP rather than a provider SDK so switching providers is an env change.
     // Resend: host smtp.resend.com, port 465, user "resend", password = API key.
@@ -59,6 +66,11 @@ export const env = createEnv({
 
 export function hasBridgeConfig(): boolean {
   return Boolean(env.BRIDGE_API_TOKEN && env.BRIDGE_DATASET_ID);
+}
+
+/** Both halves are required before the web app will accept an invalidation. */
+export function hasRevalidateConfig(): boolean {
+  return Boolean(env.WEB_APP_URL && env.CMS_REVALIDATE_SECRET);
 }
 
 /** Every field the nodemailer adapter needs before Payload can send anything. */

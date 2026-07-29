@@ -1,6 +1,11 @@
+import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
+import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate';
+
+// Listings carry the area name and community facet, so both caches go stale.
+const CACHE_TAGS = [CMS_CACHE_TAGS.areas, CMS_CACHE_TAGS.listings];
 
 // Payload condition signature is (data, siblingData) — document data is the first arg.
 const isCommunity = (data?: { kind?: string } | null) => data?.kind === 'community';
@@ -50,6 +55,10 @@ export const Areas: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange(CACHE_TAGS)],
+    afterDelete: [revalidateAfterDelete(CACHE_TAGS)],
   },
   fields: [
     {

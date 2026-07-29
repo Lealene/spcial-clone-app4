@@ -32,6 +32,7 @@ Regenerate Payload outputs with `pnpm -C apps/backend generate:types` and `pnpm 
 - `src/payload.config.ts` — Payload config: collections, db adapter, editor, plugins, generated type output.
 - `src/collections/` — collection schemas. Stock collections are `Users` and `Media`.
 - `src/env.ts` — Zod-validated env using `@t3-oss/env-core`.
+- `src/hooks/revalidate.ts` — hooks that invalidate the web app's Next.js Data Cache.
 - `src/app/(payload)/` — Payload admin UI and API routes; generated import map lives here.
 - `src/app/(frontend)/` — backend-owned SSR pages, currently template-level.
 - `src/types/css.d.ts` — CSS module declarations for Payload side-effect imports.
@@ -48,6 +49,8 @@ Regenerate Payload outputs with `pnpm -C apps/backend generate:types` and `pnpm 
 - **Schema changes**: update collections, regenerate Payload types, and commit schema plus regenerated types together.
 - **Migrations**: use Payload migration commands such as `pnpm -C apps/backend payload migrate:create` and `pnpm -C apps/backend payload migrate`. Do not hand-author Drizzle migrations.
 - **Local DB reset**: use `pnpm docker:reset` from the repo root when you intentionally want to wipe local Postgres volumes.
+- **Web-visible content**: any collection or global the web app reads needs revalidation hooks from `src/hooks/revalidate.ts`, or edits will not appear until the web app's time-based `revalidate` lapses. Cache tag names are shared through `CMS_CACHE_TAGS` in `@mvp-realty/api-contracts` — never hardcode a tag string on one side.
+- **Bulk writers** (sync jobs, batch scripts) pass `context: { disableRevalidate: true }` on each write and call `revalidateWebTags` once at the end, so a run does not fire one request per document.
 
 ## Next.js work
 

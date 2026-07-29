@@ -1,4 +1,4 @@
-import type { CmsPage } from '@mvp-realty/api-contracts';
+import { cmsPageCacheTag, type CmsPage } from '@mvp-realty/api-contracts';
 
 import { fetchJson } from '../client';
 import { CmsDataError } from '../errors';
@@ -28,7 +28,7 @@ function pagePath(slug: string): string {
 }
 
 export async function getPageContent(slug: string): Promise<CmsPageContentResult> {
-  const response = await fetchJson(pagePath(slug), { tags: [`cms-page:${slug}`] });
+  const response = await fetchJson(pagePath(slug), { tags: [cmsPageCacheTag(slug)] });
   const envelope = parsePayloadPageEnvelope(response);
   if (envelope.status === 'missing') return envelope;
 

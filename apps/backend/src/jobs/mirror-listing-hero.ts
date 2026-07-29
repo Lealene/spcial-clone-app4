@@ -1,7 +1,14 @@
 import type { Payload, TaskConfig } from 'payload';
 
 import { hasS3StorageConfig } from '../env';
+import { DISABLE_REVALIDATE } from '../hooks/revalidate';
 import { putPublicObject } from '../services/s3';
+
+/**
+ * Mirrored images are plumbing for a listing, not standalone library media, so
+ * they skip Media's blanket invalidation — the listing update below covers them.
+ */
+const MIRROR_CONTEXT = { [DISABLE_REVALIDATE]: true };
 
 function extensionFromContentType(contentType: string | null): string {
   if (!contentType) return 'jpg';
@@ -47,6 +54,7 @@ export async function mirrorRemoteImageToMedia(
       size: buffer.length,
     },
     overrideAccess: true,
+    context: MIRROR_CONTEXT,
   });
 
   // Payload's storage adapter can skip/fail the object write; ensure R2 has the bytes.

@@ -1,9 +1,17 @@
+import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { Payload, TaskConfig } from 'payload';
 
 import { hasBridgeConfig, env } from '../env';
+import { DISABLE_REVALIDATE, revalidateWebTags } from '../hooks/revalidate';
 import { BridgeClient } from '../services/bridge/client';
 import { mapBridgePropertyToListing } from '../services/bridge/mapper';
 import { computeAndWriteAreaStats } from './compute-area-stats';
+
+/**
+ * A sync touches every listing in an area. Per-document invalidation would fire
+ * hundreds of identical requests, so writes opt out and the run invalidates once.
+ */
+const SYNC_CONTEXT = { [DISABLE_REVALIDATE]: true };
 
 export type SyncTrigger = 'cron' | 'manual';
 
@@ -157,6 +165,7 @@ export async function syncBridgeListings(
               id: previous.id,
               data,
               overrideAccess: true,
+              context: SYNC_CONTEXT,
             });
             listingId = previous.id;
             result.updated += 1;
@@ -165,6 +174,7 @@ export async function syncBridgeListings(
               collection: 'listings',
               data,
               overrideAccess: true,
+              context: SYNC_CONTEXT,
             });
             listingId = created.id;
             result.created += 1;
@@ -207,18 +217,20 @@ export async function syncBridgeListings(
                 mlsStatus: 'sold',
               },
               overrideAccess: true,
+              context: SYNC_CONTEXT,
             });
             result.deactivated += 1;
           }
         }
       }
 
-      await computeAndWriteAreaStats(payload, area.id);
+      await computeAndWriteAreaStats(payload, area.id, SYNC_CONTEXT);
       await payload.update({
         collection: 'areas',
         id: area.id,
         data: { lastSyncedAt: syncedAt },
         overrideAccess: true,
+        context: SYNC_CONTEXT,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -263,6 +275,15 @@ export async function syncBridgeListings(
     },
     overrideAccess: true,
   });
+
+  const touched = areaResults.some((r) => r.created + r.updated + r.deactivated > 0);
+  if (touched) {
+    await revalidateWebTags(payload, [
+      CMS_CACHE_TAGS.listings,
+      CMS_CACHE_TAGS.listingsFeatured,
+      CMS_CACHE_TAGS.areas,
+    ]);
+  }
 
   return { syncLogId: syncLog.id, status };
 }
