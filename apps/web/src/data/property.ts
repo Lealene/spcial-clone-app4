@@ -62,8 +62,9 @@ export type PropertyView = {
   interior: SpecGroup[];
   floorPlan: FloorRoom[];
   exterior: SpecGroup[];
-  neighborhood: string;
   locationBlurb: string;
+  /** Null when the MLS feed has no usable coordinates, in which case no map renders. */
+  coordinates: { lat: number; lon: number } | null;
   courtesyAgent: string;
   courtesyBrokerage: string;
   mlsId: string;
@@ -199,11 +200,14 @@ export function buildPropertyView(
     interior: detail.interior,
     floorPlan: detail.floorPlan,
     exterior: detail.exterior,
-    neighborhood: detail.communityName,
     locationBlurb:
       detail.neighborhoodBlurb ??
       communityMeta.blurb ??
       `${detail.communityName} in ${detail.city}, Florida.`,
+    coordinates:
+      detail.latitude !== undefined && detail.longitude !== undefined
+        ? { lat: detail.latitude, lon: detail.longitude }
+        : null,
     courtesyAgent: detail.listAgentName ?? 'Listing agent',
     courtesyBrokerage: detail.listOfficeName ?? 'See MLS for brokerage',
     mlsId: detail.mlsId,
