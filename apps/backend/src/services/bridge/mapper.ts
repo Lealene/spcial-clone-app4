@@ -127,6 +127,30 @@ function toStringList(value: string[] | string | null | undefined): StringListIt
   return items.length > 0 ? items : undefined;
 }
 
+function toCoordinate(value: number | string | null | undefined): number | undefined {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+  return undefined;
+}
+
+/**
+ * RESO Latitude/Longitude → map coordinates.
+ * Both axes must be valid; a lone axis is unusable. `0,0` is a feed sentinel, not Florida.
+ */
+function mapCoordinates(
+  property: BridgeProperty,
+): { latitude: number; longitude: number } | undefined {
+  const latitude = toCoordinate(property.Latitude);
+  const longitude = toCoordinate(property.Longitude);
+  if (latitude === undefined || longitude === undefined) return undefined;
+  if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return undefined;
+  if (latitude === 0 && longitude === 0) return undefined;
+  return { latitude, longitude };
+}
+
 function mapGallery(media: BridgeMedia[] | null | undefined): MappedListingData['gallery'] {
   if (!present(media) || media.length === 0) return undefined;
 
@@ -190,6 +214,11 @@ export function mapBridgePropertyToListing(property: BridgeProperty): MappedList
   setIfPresent(mapped, 'streetAddress', streetAddress);
   setIfPresent(mapped, 'state', property.StateOrProvince?.trim());
   setIfPresent(mapped, 'zip', property.PostalCode?.trim());
+
+  const coordinates = mapCoordinates(property);
+  setIfPresent(mapped, 'latitude', coordinates?.latitude);
+  setIfPresent(mapped, 'longitude', coordinates?.longitude);
+
   setIfPresent(mapped, 'beds', property.BedroomsTotal);
   setIfPresent(mapped, 'baths', property.BathroomsTotalDecimal);
   setIfPresent(mapped, 'sqft', property.LivingArea);

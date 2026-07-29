@@ -14,6 +14,8 @@ const PROPERTY_SELECT = [
   'City',
   'StateOrProvince',
   'PostalCode',
+  'Latitude',
+  'Longitude',
   'ListPrice',
   'BedroomsTotal',
   'BathroomsTotalDecimal',
