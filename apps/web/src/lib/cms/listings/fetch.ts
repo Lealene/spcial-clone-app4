@@ -1,8 +1,8 @@
 import { fetchJson } from '../client';
 import { normalizeListingCard, normalizeListingDetail } from './normalize';
-import type { ListingCard, ListingDetail } from '@mvp-realty/api-contracts';
+import { CMS_CACHE_TAGS, type ListingCard, type ListingDetail } from '@mvp-realty/api-contracts';
 
-const LISTINGS_TAG = 'listings';
+const LISTINGS_TAG = CMS_CACHE_TAGS.listings;
 const PAGE_LIMIT = 100;
 
 type PayloadListResponse = {
@@ -61,7 +61,7 @@ export async function getFeaturedListings(limit = 12): Promise<ListingCard[]> {
     depth: '1',
   });
   const raw = (await fetchJson(listingsPath(params.toString()), {
-    tags: [LISTINGS_TAG, 'listings-featured'],
+    tags: [LISTINGS_TAG, CMS_CACHE_TAGS.listingsFeatured],
   })) as PayloadListResponse;
 
   return (raw.docs ?? [])

@@ -1,4 +1,4 @@
-import type { AreaPdpMeta, CommunityDetail } from '@mvp-realty/api-contracts';
+import { CMS_CACHE_TAGS, type AreaPdpMeta, type CommunityDetail } from '@mvp-realty/api-contracts';
 
 import { fetchJson } from '../client';
 import {
@@ -10,7 +10,7 @@ import {
   type CommunityAreaStripItem,
 } from './normalize';
 
-const AREAS_TAG = 'areas';
+const AREAS_TAG = CMS_CACHE_TAGS.areas;
 
 type PayloadListResponse = {
   docs?: unknown[];
