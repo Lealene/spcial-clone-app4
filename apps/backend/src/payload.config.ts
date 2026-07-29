@@ -76,6 +76,10 @@ export default buildConfig({
         email: nodemailerAdapter({
           defaultFromAddress: env.EMAIL_FROM_ADDRESS!,
           defaultFromName: env.EMAIL_FROM_NAME,
+          // The adapter awaits transport.verify() while the config is built, and
+          // a blocked SMTP host stalls Payload init for the full socket timeout —
+          // long enough for the first request after a cold start to 502.
+          skipVerify: true,
           transportOptions: {
             host: env.SMTP_HOST,
             port: env.SMTP_PORT,
