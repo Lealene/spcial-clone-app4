@@ -11,7 +11,10 @@ import {
   cmsPageBlockTypeSchema,
   cmsPageSchema,
   headerGlobalSchema,
+  LEAD_FORM_TYPES,
+  LEAD_SOURCES,
   leadCaptureBlockSchema,
+  leadSubmissionSchema,
 } from './index.js';
 
 const image = {
@@ -112,7 +115,8 @@ describe('CMS page contracts', () => {
         link: link('by request', '#lead'),
       },
       fields: {
-        name: { label: 'Your name', placeholder: 'Jane & Robert Ellison' },
+        firstName: { label: 'First name', placeholder: 'Jane' },
+        lastName: { label: 'Last name', placeholder: 'Ellison' },
         email: { label: 'Email address', placeholder: 'you@example.com' },
         phone: { label: 'Phone (optional)', placeholder: '(239) 555-0148', required: false },
       },
@@ -125,7 +129,8 @@ describe('CMS page contracts', () => {
     });
 
     expect(parsed.helperNote.icon).toBe('waves');
-    expect(parsed.fields.name.required).toBe(true);
+    expect(parsed.fields.firstName.required).toBe(true);
+    expect(parsed.fields.lastName.required).toBe(true);
     expect(parsed.fields.phone.required).toBe(false);
   });
 
@@ -197,5 +202,42 @@ describe('CMS page contracts', () => {
     expect(headerGlobalSchema.safeParse({ ...header, mobileMenuLabel: undefined }).success).toBe(
       false,
     );
+  });
+});
+
+describe('lead submission contracts', () => {
+  const submission = {
+    firstName: '  Jane  ',
+    lastName: 'Ellison',
+    email: '  Jane@Example.com ',
+    formType: 'shortlist' as const,
+    surface: 'concierge-cta' as const,
+  };
+
+  it('trims names and email while leaving optional fields absent', () => {
+    const parsed = leadSubmissionSchema.parse(submission);
+
+    expect(parsed.firstName).toBe('Jane');
+    expect(parsed.email).toBe('Jane@Example.com');
+    expect(parsed.phone).toBeUndefined();
+    expect(parsed.message).toBeUndefined();
+  });
+
+  it('requires both name parts because webcontact needs CFirst and CLast', () => {
+    expect(leadSubmissionSchema.safeParse({ ...submission, lastName: '   ' }).success).toBe(false);
+    expect(leadSubmissionSchema.safeParse({ ...submission, firstName: '' }).success).toBe(false);
+  });
+
+  it('rejects an unusable email and an unknown surface', () => {
+    expect(leadSubmissionSchema.safeParse({ ...submission, email: 'jane@' }).success).toBe(false);
+    expect(leadSubmissionSchema.safeParse({ ...submission, surface: 'nope' }).success).toBe(false);
+  });
+
+  it('maps every form type to a distinct Wise Agent Source', () => {
+    const sources = LEAD_FORM_TYPES.map((formType) => LEAD_SOURCES[formType]);
+
+    expect(Object.keys(LEAD_SOURCES)).toEqual([...LEAD_FORM_TYPES]);
+    expect(new Set(sources).size).toBe(LEAD_FORM_TYPES.length);
+    expect(sources.every((source) => source.startsWith('MVP Realty Website - '))).toBe(true);
   });
 });

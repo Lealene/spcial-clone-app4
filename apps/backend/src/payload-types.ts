@@ -73,6 +73,7 @@ export interface Config {
     brokers: Broker;
     areas: Area;
     listings: Listing;
+    leads: Lead;
     'sync-logs': SyncLog;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
@@ -88,6 +89,7 @@ export interface Config {
     brokers: BrokersSelect<false> | BrokersSelect<true>;
     areas: AreasSelect<false> | AreasSelect<true>;
     listings: ListingsSelect<false> | ListingsSelect<true>;
+    leads: LeadsSelect<false> | LeadsSelect<true>;
     'sync-logs': SyncLogsSelect<false> | SyncLogsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
@@ -118,6 +120,7 @@ export interface Config {
     tasks: {
       syncBridgeListings: TaskSyncBridgeListings;
       mirrorListingHero: TaskMirrorListingHero;
+      syncLeadToWiseAgent: TaskSyncLeadToWiseAgent;
       inline: {
         input: unknown;
         output: unknown;
@@ -825,7 +828,12 @@ export interface LeadCaptureBlock {
    * Field set is code-defined; labels and placeholders are editable.
    */
   fields: {
-    name: {
+    firstName: {
+      label: string;
+      placeholder: string;
+      required?: boolean | null;
+    };
+    lastName: {
       label: string;
       placeholder: string;
       required?: boolean | null;
@@ -1297,6 +1305,58 @@ export interface Listing {
   createdAt: string;
 }
 /**
+ * Website lead submissions. Source of truth — Wise Agent sync is an outbound mirror, so a failed sync never loses a lead.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads".
+ */
+export interface Lead {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string | null;
+  /**
+   * Sent to Wise Agent in the lead email, not as a contact field.
+   */
+  message?: string | null;
+  /**
+   * Determines the Wise Agent Source. Do not repurpose existing values.
+   */
+  formType: 'tour' | 'shortlist';
+  /**
+   * Which component submitted. Reporting only.
+   */
+  surface:
+    | 'concierge-cta'
+    | 'page-lead-capture'
+    | 'property-tour-form'
+    | 'community-tour-band'
+    | 'community-agent-aside';
+  pageUrl?: string | null;
+  /**
+   * Resolved from the submitted community slug.
+   */
+  area?: (number | null) | Area;
+  /**
+   * Resolved from the submitted listing slug.
+   */
+  listing?: (number | null) | Listing;
+  /**
+   * Written by the syncLeadToWiseAgent job, which emails the Wise Agent lead-capture address. Read-only in practice.
+   */
+  crm: {
+    /**
+     * synced means the mail provider accepted the lead email — email parsing sends no confirmation back. skipped means no lead-capture address or SMTP transport was configured when the job ran; requeue with `leads:resync`.
+     */
+    status: 'pending' | 'synced' | 'failed' | 'skipped';
+    syncedAt?: string | null;
+    error?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Bridge MLS sync run history. Zero-listing areas are flagged as warnings.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1407,7 +1467,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'syncBridgeListings' | 'mirrorListingHero';
+        taskSlug: 'inline' | 'syncBridgeListings' | 'mirrorListingHero' | 'syncLeadToWiseAgent';
         taskID: string;
         input?:
           | {
@@ -1440,7 +1500,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'syncBridgeListings' | 'mirrorListingHero') | null;
+  taskSlug?: ('inline' | 'syncBridgeListings' | 'mirrorListingHero' | 'syncLeadToWiseAgent') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1486,6 +1546,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'listings';
         value: number | Listing;
+      } | null)
+    | ({
+        relationTo: 'leads';
+        value: number | Lead;
       } | null)
     | ({
         relationTo: 'sync-logs';
@@ -2054,7 +2118,14 @@ export interface LeadCaptureBlockSelect<T extends boolean = true> {
   fields?:
     | T
     | {
-        name?:
+        firstName?:
+          | T
+          | {
+              label?: T;
+              placeholder?: T;
+              required?: T;
+            };
+        lastName?:
           | T
           | {
               label?: T;
@@ -2356,6 +2427,31 @@ export interface ListingsSelect<T extends boolean = true> {
         id?: T;
       };
   rawData?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
+  formType?: T;
+  surface?: T;
+  pageUrl?: T;
+  area?: T;
+  listing?: T;
+  crm?:
+    | T
+    | {
+        status?: T;
+        syncedAt?: T;
+        error?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2795,6 +2891,18 @@ export interface TaskMirrorListingHero {
   output: {
     skipped: boolean;
     mediaId?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSyncLeadToWiseAgent".
+ */
+export interface TaskSyncLeadToWiseAgent {
+  input: {
+    leadId: string;
+  };
+  output: {
+    status: string;
   };
 }
 /**

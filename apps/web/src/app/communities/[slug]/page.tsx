@@ -90,6 +90,7 @@ export default async function CommunityPage({ params }: { params: Promise<Params
         />
         <AgentAside
           communityName={community.name}
+          communitySlug={community.slug}
           broker={community.broker}
           phone={community.phone}
           phoneHref={community.phoneHref}
@@ -97,7 +98,11 @@ export default async function CommunityPage({ params }: { params: Promise<Params
       </Container>
 
       <SimilarCommunities communities={community.similar} />
-      <TourBand communityName={community.name} brokerFirstName={community.broker?.firstName} />
+      <TourBand
+        communityName={community.name}
+        communitySlug={community.slug}
+        brokerFirstName={community.broker?.firstName}
+      />
     </>
   );
 }

@@ -22,6 +22,9 @@ export const Brokers: CollectionConfig = {
     conciergeLabel: true,
     brokerage: true,
     phone: true,
+    // Needed by the PDP "Message the Concierge" mailto link; without it the
+    // populated broker has no email and the button silently never renders.
+    email: true,
     headshot: true,
     rating: true,
     reviewCount: true,
