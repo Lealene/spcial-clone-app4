@@ -113,6 +113,54 @@ describe('normalizeListingCard / Detail', () => {
     expect(detail?.broker?.slug).toBe('listing-broker');
   });
 
+  it('keeps valid coordinates and drops unusable pairs without failing the detail', async () => {
+    vi.resetModules();
+    const { normalizeListingDetail } = await import('./normalize');
+
+    const base = {
+      slug: '123-harbor-bonita-springs-fl-225077871',
+      mlsId: '225077871',
+      fullAddress: '123 Harbor Way, Bonita Springs, FL 34134',
+      streetAddress: '123 Harbor Way',
+      city: 'Bonita Springs',
+      price: 1250000,
+      beds: 3,
+      baths: 2,
+      sqft: 2400,
+      mlsStatus: 'active',
+      isActive: true,
+      area: { slug: 'bonita-bay', name: 'Bonita Bay' },
+      heroImage: { url: 'https://pub-example.r2.dev/hero.jpg', alt: 'Primary photo' },
+      gallery: [],
+      interiorSpecs: {},
+      exteriorSpecs: {},
+      highlights: [],
+      floorPlan: [],
+    };
+
+    const withCoords = normalizeListingDetail({
+      ...base,
+      latitude: 26.3398,
+      longitude: -81.7787,
+    });
+    expect(withCoords?.latitude).toBe(26.3398);
+    expect(withCoords?.longitude).toBe(-81.7787);
+
+    for (const bad of [
+      { latitude: 26.3398 },
+      { longitude: -81.7787 },
+      { latitude: 26.3398, longitude: null },
+      { latitude: 999, longitude: -81.7787 },
+      { latitude: 0, longitude: 0 },
+    ]) {
+      const detail = normalizeListingDetail({ ...base, ...bad });
+      // A bad coordinate must never null out the whole PDP.
+      expect(detail, JSON.stringify(bad)).not.toBeNull();
+      expect(detail?.latitude, JSON.stringify(bad)).toBeUndefined();
+      expect(detail?.longitude, JSON.stringify(bad)).toBeUndefined();
+    }
+  });
+
   it('uses estate type facet when isEstate is true', async () => {
     vi.resetModules();
     const { normalizeListingCard } = await import('./normalize');
