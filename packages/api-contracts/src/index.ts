@@ -456,6 +456,42 @@ export const cmsPageSchema = z.object({
 });
 export type CmsPage = z.infer<typeof cmsPageSchema>;
 
+/**
+ * Next.js Data Cache tags. The web app tags every CMS fetch with these and the
+ * backend names them when asking the web app to invalidate, so both sides must
+ * agree on the exact strings — hence living here rather than in either app.
+ *
+ * `all` is attached to every CMS request, so invalidating it drops everything.
+ */
+export const CMS_CACHE_TAGS = {
+  all: 'cms',
+  listings: 'listings',
+  listingsFeatured: 'listings-featured',
+  areas: 'areas',
+  header: 'cms-global:header',
+  footer: 'cms-global:footer',
+} as const;
+
+/** Per-page tag so editing one page does not invalidate the others. */
+export function cmsPageCacheTag(slug: string): string {
+  return `cms-page:${slug}`;
+}
+
+/**
+ * Next.js rejects cache tags longer than this. It has to exceed
+ * `CMS_TEXT_LIMITS.slug` because `cmsPageCacheTag` prefixes the slug.
+ */
+export const CMS_CACHE_TAG_MAX_LENGTH = 256;
+
+/**
+ * Body of `POST /api/revalidate` on the web app. Tags are opaque strings here:
+ * page tags are slug-derived, so an enum would not cover them.
+ */
+export const cmsRevalidateRequestSchema = z.object({
+  tags: z.array(z.string().min(1).max(CMS_CACHE_TAG_MAX_LENGTH)).min(1).max(50),
+});
+export type CmsRevalidateRequest = z.infer<typeof cmsRevalidateRequestSchema>;
+
 export const headerGlobalSchema = z.object({
   brandHomeLink: cmsLinkSchema,
   brandLabel: z.string().min(1),

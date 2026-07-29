@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  CMS_CACHE_TAG_MAX_LENGTH,
   CMS_PAGE_BLOCK_LIMITS,
   CMS_PAGE_BLOCK_TYPES,
+  CMS_TEXT_LIMITS,
   cmsAnchorIdSchema,
+  cmsPageCacheTag,
+  cmsRevalidateRequestSchema,
   cmsCanonicalUrlSchema,
   cmsCtaSchema,
   cmsHrefSchema,
@@ -202,6 +206,27 @@ describe('CMS page contracts', () => {
     expect(headerGlobalSchema.safeParse({ ...header, mobileMenuLabel: undefined }).success).toBe(
       false,
     );
+  });
+});
+
+describe('cache revalidation contracts', () => {
+  it('accepts a page tag built from the longest allowed slug', () => {
+    const tag = cmsPageCacheTag('a'.repeat(CMS_TEXT_LIMITS.slug));
+
+    expect(tag.length).toBeGreaterThan(CMS_TEXT_LIMITS.slug);
+    expect(tag.length).toBeLessThanOrEqual(CMS_CACHE_TAG_MAX_LENGTH);
+    expect(cmsRevalidateRequestSchema.safeParse({ tags: [tag] }).success).toBe(true);
+  });
+
+  it('rejects an empty tag list and blank tags', () => {
+    expect(cmsRevalidateRequestSchema.safeParse({ tags: [] }).success).toBe(false);
+    expect(cmsRevalidateRequestSchema.safeParse({ tags: [''] }).success).toBe(false);
+  });
+
+  it('rejects a tag past the Next.js length limit', () => {
+    const tooLong = 'x'.repeat(CMS_CACHE_TAG_MAX_LENGTH + 1);
+
+    expect(cmsRevalidateRequestSchema.safeParse({ tags: [tooLong] }).success).toBe(false);
   });
 });
 
