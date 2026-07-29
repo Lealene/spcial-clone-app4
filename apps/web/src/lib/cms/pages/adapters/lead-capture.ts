@@ -20,7 +20,8 @@ export function normalizeLeadCaptureBlock(raw: Record<string, unknown>): LeadCap
       afterLinkText: text(helperNote.afterLinkText),
     },
     fields: {
-      name: normalizeFormField(fields.name, true),
+      firstName: normalizeFormField(fields.firstName, true),
+      lastName: normalizeFormField(fields.lastName, true),
       email: normalizeFormField(fields.email, true),
       phone: normalizeFormField(fields.phone, false),
     },

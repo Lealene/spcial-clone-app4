@@ -117,6 +117,7 @@ export default async function PropertyPage({ params }: { params: Promise<Params>
           <PropertyBody view={view} />
           <PropertyAside
             propertyName={view.listing.name}
+            listingSlug={view.listing.slug}
             communityName={view.listing.communityName}
             broker={detail.broker}
             soldCount={areaMeta?.soldCount}

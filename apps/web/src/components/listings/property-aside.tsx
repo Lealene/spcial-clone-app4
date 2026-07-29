@@ -6,17 +6,19 @@ import { BrokerAvatar } from '../broker-avatar';
 import { PropertyTourForm } from './property-tour-form';
 
 /**
- * Sticky PDP aside: navy agent card + the stubbed "Tour this home" form + a
+ * Sticky PDP aside: navy agent card + the "Tour this home" lead form + a
  * "prefer to call" link. Server component; the form inside is the only
  * client leaf. The agent card and call link only render when a broker resolves.
  */
 export function PropertyAside({
   propertyName,
+  listingSlug,
   communityName,
   broker,
   soldCount,
 }: {
   propertyName: string;
+  listingSlug?: string;
   communityName: string;
   broker: Broker | null;
   soldCount?: number;
@@ -93,7 +95,7 @@ export function PropertyAside({
         </div>
       ) : null}
 
-      <PropertyTourForm propertyName={propertyName} brokerFirstName={broker?.firstName} />
+      <PropertyTourForm propertyName={propertyName} listingSlug={listingSlug} broker={broker} />
 
       {broker?.phone && broker.phoneHref ? (
         <a

@@ -1,33 +1,27 @@
-'use client';
-
-import { useState } from 'react';
-import { ArrowRight, Check, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 
 import type { Broker } from '@mvp-realty/api-contracts';
 
 import { BrokerAvatar } from '@/components/broker-avatar';
-import { Button } from '@/components/ui/button';
-
-const INPUT =
-  'bg-surface-soft border-line text-ink focus:border-accent-deep focus:bg-surface w-full rounded-md border px-3.5 py-[13px] font-sans text-[15px] font-medium outline-none transition-[border-color,background-color] placeholder:text-muted';
+import { LeadForm } from '@/components/lead-form';
 
 /**
- * Sticky agent sidebar — navy concierge card (when a broker resolves) and a
- * stubbed "Ask about {community}" form (fakes success), plus a "prefer to
- * call" card. TODO: wire backend (lead capture) when Payload is ready.
+ * Sticky agent sidebar — navy concierge card (when a broker resolves), the
+ * "Ask about {community}" lead form, and a "prefer to call" card.
  */
 export function AgentAside({
   communityName,
+  communitySlug,
   broker,
   phone,
   phoneHref,
 }: {
   communityName: string;
+  communitySlug?: string;
   broker: Broker | null;
   phone?: string;
   phoneHref?: string;
 }) {
-  const [sent, setSent] = useState(false);
   const resolvedPhone = broker?.phone ?? phone;
   const resolvedPhoneHref = broker?.phoneHref ?? phoneHref;
   const firstName = broker?.firstName ?? 'your concierge';
@@ -55,76 +49,34 @@ export function AgentAside({
         ) : null}
 
         <div className="px-[26px] pt-6 pb-[26px]">
-          {sent ? (
-            <div className="flex flex-col items-center py-4 text-center">
-              <span className="bg-cta text-on-cta grid size-12 place-items-center rounded-full">
-                <Check className="size-6" strokeWidth={2.5} />
-              </span>
-              <p className="text-primary mt-4 font-serif text-[20px] font-semibold">
-                Your request is in.
-              </p>
-              <p className="text-muted mt-2 font-sans text-[14px]">
-                {firstName} will reach out within one business day about {communityName}.
-              </p>
-            </div>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSent(true);
-              }}
-            >
+          <LeadForm
+            variant="tour"
+            surface="community-agent-aside"
+            tone="light"
+            areaSlug={communitySlug}
+            heading={
               <p className="text-primary mb-4 font-serif text-[20px] leading-[1.2] font-semibold">
                 Ask about {communityName}
               </p>
-              <div className="mb-2.5 grid grid-cols-2 gap-2.5">
-                <input
-                  type="text"
-                  required
-                  placeholder="First name"
-                  autoComplete="given-name"
-                  aria-label="First name"
-                  className={INPUT}
-                />
-                <input
-                  type="text"
-                  required
-                  placeholder="Last name"
-                  autoComplete="family-name"
-                  aria-label="Last name"
-                  className={INPUT}
-                />
-              </div>
-              <input
-                type="email"
-                required
-                placeholder="Email address"
-                autoComplete="email"
-                aria-label="Email address"
-                className={`${INPUT} mt-2.5`}
-              />
-              <input
-                type="tel"
-                placeholder="Phone number"
-                autoComplete="tel"
-                aria-label="Phone number"
-                className={`${INPUT} mt-2.5`}
-              />
-              <textarea
-                placeholder="How can we help? I'm interested in a 3-bed near the marina…"
-                aria-label="Message"
-                className={`${INPUT} mt-2.5 min-h-[76px] resize-y leading-[1.5]`}
-              />
-              <Button type="submit" variant="cta" size="full" className="mt-3.5">
-                Request Community Info
-                <ArrowRight />
-              </Button>
-              <p className="text-muted mt-[13px] font-sans text-[12px] leading-[1.5]">
-                A private introduction — no sales floor, no obligation. You&rsquo;ll only ever hear
-                from {firstName}.
-              </p>
-            </form>
-          )}
+            }
+            copy={{
+              submitLabel: 'Request Community Info',
+              successHeading: 'Your request is in.',
+              successBody: `${firstName} will reach out within one business day about ${communityName}.`,
+              privacyText: (
+                <>
+                  A private introduction — no sales floor, no obligation. You&rsquo;ll only ever
+                  hear from {firstName}.
+                </>
+              ),
+            }}
+            fields={{
+              message: {
+                label: 'How can we help?',
+                placeholder: "I'm interested in a 3-bed near the marina…",
+              },
+            }}
+          />
         </div>
       </div>
 
