@@ -41,8 +41,8 @@ export function ConciergeCta() {
             Let us hand-pick your <em className="text-accent-soft italic">shortlist.</em>
           </h2>
           <p className="mt-5 max-w-[46ch] font-sans text-[clamp(17px,1.3vw,19px)] leading-[1.65] text-white/85">
-            Tell us the life you want and Eleanor will send a curated set of residences with current
-            pricing, incentives, and the quiet listings that never hit the search.
+            Tell us the life you want and our concierge will send a curated set of residences with
+            current pricing, incentives, and the quiet listings that never hit the search.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export function ConciergeCta() {
                 Your request is in.
               </p>
               <p className="mt-2 font-sans text-[14.5px] text-white/75">
-                Eleanor will reach out within one business day with your shortlist.
+                Our concierge will reach out within one business day with your shortlist.
               </p>
             </div>
           ) : (
@@ -69,7 +69,7 @@ export function ConciergeCta() {
               {[
                 { id: 'cc-name', label: 'Full name', type: 'text', placeholder: 'Your name' },
                 { id: 'cc-email', label: 'Email', type: 'email', placeholder: 'you@email.com' },
-                { id: 'cc-phone', label: 'Phone', type: 'tel', placeholder: '(239) 555-0100' },
+                { id: 'cc-phone', label: 'Phone', type: 'tel', placeholder: '(239) 555-0148' },
               ].map((field) => (
                 <label key={field.id} htmlFor={field.id} className="mt-4 block first:mt-0">
                   <span className="mb-2 block font-sans text-[13px] font-bold text-white/90">

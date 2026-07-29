@@ -11,6 +11,10 @@ export type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'beds-desc' | 's
 /** Facets whose value is a list of selected options (OR within, except features = AND). */
 export type ArrayFacet = 'type' | 'community' | 'status' | 'features';
 
+export const PAGE_SIZE_OPTIONS = [15, 20, 25, 30, 50, 100] as const;
+export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
+export const DEFAULT_PAGE_SIZE: PageSize = 20;
+
 export type FilterState = {
   q: string;
   /** Minimum price; 0 = no min. */
@@ -26,6 +30,10 @@ export type FilterState = {
   status: string[];
   features: string[];
   sort: SortKey;
+  /** 1-based page index for the results grid. */
+  page: number;
+  /** Residences per page. */
+  pageSize: PageSize;
 };
 
 export const EMPTY_FILTERS: FilterState = {
@@ -39,6 +47,8 @@ export const EMPTY_FILTERS: FilterState = {
   status: [],
   features: [],
   sort: 'featured',
+  page: 1,
+  pageSize: DEFAULT_PAGE_SIZE,
 };
 
 type Option = { value: string; label: string };
@@ -48,21 +58,26 @@ export const TYPE_OPTIONS: Option[] = [
   { value: 'single-family', label: 'Single-Family' },
   { value: 'villa', label: 'Villa' },
   { value: 'condo', label: 'Condominium' },
+  { value: 'townhouse', label: 'Townhouse' },
+  { value: 'multi-family', label: 'Multi-Family' },
+  { value: 'land', label: 'Land' },
+  { value: 'other', label: 'Other' },
 ];
 
 export const COMMUNITY_OPTIONS: Option[] = [
   { value: 'bonita-bay', label: 'Bonita Bay' },
   { value: 'valencia-bonita', label: 'Valencia Bonita' },
   { value: 'valencia-trails', label: 'Valencia Trails' },
-  { value: 'seaside-cove', label: 'Seaside Cove' },
-  { value: 'coral-lagoon', label: 'Coral Lagoon' },
-  { value: 'mangrove-bay', label: 'Mangrove Bay' },
+  { value: 'bonita-springs', label: 'Bonita Springs' },
+  { value: 'fort-myers-beach', label: 'Fort Myers Beach' },
 ];
 
 export const STATUS_OPTIONS: Option[] = [
-  { value: 'now-selling', label: 'Now Selling' },
-  { value: 'move-in', label: 'Move-In Ready' },
-  { value: 'new-model', label: 'New Model Open' },
+  { value: 'active', label: 'Active' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'under-contract', label: 'Under Contract' },
+  { value: 'sold', label: 'Sold' },
+  { value: 'coming-soon', label: 'Coming Soon' },
 ];
 
 export const FEATURE_OPTIONS: Option[] = [
@@ -124,6 +139,11 @@ function readNum(sp: URLSearchParams, key: string): number {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
+function readPageSize(sp: URLSearchParams): PageSize {
+  const n = Number.parseInt(sp.get('pageSize') ?? '', 10);
+  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(n) ? (n as PageSize) : DEFAULT_PAGE_SIZE;
+}
+
 /** Parse a `FilterState` out of URL search params, ignoring junk values. */
 export function parseFilters(sp: URLSearchParams): FilterState {
   const sortRaw = sp.get('sort') ?? '';
@@ -138,6 +158,8 @@ export function parseFilters(sp: URLSearchParams): FilterState {
     status: readList(sp, 'status'),
     features: readList(sp, 'features'),
     sort: SORT_KEYS.has(sortRaw) ? (sortRaw as SortKey) : 'featured',
+    page: Math.max(1, readNum(sp, 'page') || 1),
+    pageSize: readPageSize(sp),
   };
 }
 
@@ -151,6 +173,8 @@ export function serializeFilters(f: FilterState): string {
   if (f.baths) sp.set('baths', String(f.baths));
   for (const k of ARRAY_FACETS) if (f[k].length) sp.set(k, f[k].join(','));
   if (f.sort !== 'featured') sp.set('sort', f.sort);
+  if (f.page > 1) sp.set('page', String(f.page));
+  if (f.pageSize !== DEFAULT_PAGE_SIZE) sp.set('pageSize', String(f.pageSize));
   return sp.toString();
 }
 
@@ -194,9 +218,65 @@ export function sortListings(items: Listing[], sort: SortKey): Listing[] {
   }
 }
 
-/** Filter then sort — the value the results grid renders. */
+/** Filter then sort — the full match set before pagination. */
 export function filterAndSort(items: Listing[], f: FilterState): Listing[] {
   return sortListings(applyFilters(items, f), f.sort);
+}
+
+export type PageSlice<T> = {
+  items: T[];
+  page: number;
+  pageCount: number;
+  total: number;
+  pageSize: number;
+  from: number;
+  to: number;
+};
+
+/** Slice a filtered list for the current page (clamps out-of-range pages). */
+export function paginateItems<T>(items: T[], page: number, pageSize: number): PageSlice<T> {
+  const total = items.length;
+  const pageCount = Math.max(1, Math.ceil(total / pageSize) || 1);
+  const safePage = Math.min(Math.max(1, page), pageCount);
+  const start = total === 0 ? 0 : (safePage - 1) * pageSize;
+  const sliced = items.slice(start, start + pageSize);
+  return {
+    items: sliced,
+    page: safePage,
+    pageCount,
+    total,
+    pageSize,
+    from: total === 0 ? 0 : start + 1,
+    to: start + sliced.length,
+  };
+}
+
+/** Compact page list with ellipses for the pagination control. */
+export function paginationWindow(current: number, pageCount: number): Array<number | 'ellipsis'> {
+  if (pageCount <= 7) {
+    return Array.from({ length: pageCount }, (_, i) => i + 1);
+  }
+
+  const pages = new Set<number>([1, pageCount, current, current - 1, current + 1]);
+  if (current <= 3) {
+    pages.add(2);
+    pages.add(3);
+    pages.add(4);
+  }
+  if (current >= pageCount - 2) {
+    pages.add(pageCount - 1);
+    pages.add(pageCount - 2);
+    pages.add(pageCount - 3);
+  }
+
+  const sorted = [...pages].filter((p) => p >= 1 && p <= pageCount).sort((a, b) => a - b);
+  const out: Array<number | 'ellipsis'> = [];
+  for (const p of sorted) {
+    const prev = out[out.length - 1];
+    if (typeof prev === 'number' && p - prev > 1) out.push('ellipsis');
+    out.push(p);
+  }
+  return out;
 }
 
 // --------------------------------------------------------------------------
@@ -275,24 +355,32 @@ export function countActive(f: FilterState): number {
 /** Toggle a single value within an array facet. */
 export function toggleFacet(f: FilterState, facet: ArrayFacet, value: string): FilterState {
   const has = f[facet].includes(value);
-  return { ...f, [facet]: has ? f[facet].filter((v) => v !== value) : [...f[facet], value] };
+  return {
+    ...f,
+    page: 1,
+    [facet]: has ? f[facet].filter((v) => v !== value) : [...f[facet], value],
+  };
 }
 
 /** Remove the constraint a chip represents. */
 export function removeChip(f: FilterState, chip: Chip): FilterState {
   switch (chip.kind) {
     case 'q':
-      return { ...f, q: '' };
+      return { ...f, q: '', page: 1 };
     case 'min':
-      return { ...f, min: 0 };
+      return { ...f, min: 0, page: 1 };
     case 'max':
-      return { ...f, max: 0 };
+      return { ...f, max: 0, page: 1 };
     case 'beds':
-      return { ...f, beds: 0 };
+      return { ...f, beds: 0, page: 1 };
     case 'baths':
-      return { ...f, baths: 0 };
+      return { ...f, baths: 0, page: 1 };
     default:
-      return { ...f, [chip.kind]: f[chip.kind].filter((v) => v !== chip.value) };
+      return {
+        ...f,
+        page: 1,
+        [chip.kind]: f[chip.kind].filter((v) => v !== chip.value),
+      };
   }
 }
 

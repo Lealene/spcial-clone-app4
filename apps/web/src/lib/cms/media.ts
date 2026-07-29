@@ -24,6 +24,14 @@ function text(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
 }
 
+function allowedMediaOrigins(): string[] {
+  const origins = [new URL(env.NEXT_PUBLIC_BACKEND_URL).origin];
+  if (env.NEXT_PUBLIC_MEDIA_URL) {
+    origins.push(new URL(env.NEXT_PUBLIC_MEDIA_URL).origin);
+  }
+  return origins;
+}
+
 function toAbsoluteMediaUrl(url: string): string | null {
   if (url.startsWith('//')) return null;
   if (url.startsWith('/images/')) return url;
@@ -31,10 +39,9 @@ function toAbsoluteMediaUrl(url: string): string | null {
 
   try {
     const parsed = new URL(url);
-    const backend = new URL(env.NEXT_PUBLIC_BACKEND_URL);
     if (
       (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
-      parsed.origin === backend.origin
+      allowedMediaOrigins().includes(parsed.origin)
     ) {
       return parsed.toString();
     }

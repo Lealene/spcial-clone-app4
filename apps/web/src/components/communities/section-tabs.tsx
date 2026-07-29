@@ -5,33 +5,25 @@ import { useEffect, useRef, useState } from 'react';
 import { Container } from '@/components/container';
 import { cn } from '@mvp-realty/ui/lib/utils';
 
-type Tab = { id: string; label: string };
-
-const TABS: Tab[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'homes', label: 'Homes for Sale' },
-  { id: 'models', label: 'Models' },
-  { id: 'amenities', label: 'Amenities' },
-  { id: 'lifestyle', label: 'Lifestyle' },
-  { id: 'reviews', label: 'Reviews' },
-  { id: 'faqs', label: 'FAQs' },
-];
+export type Tab = { id: string; label: string };
 
 /**
  * Sticky section tabs with scrollspy. Anchor links jump to each `#section`;
  * an IntersectionObserver highlights the section currently in the viewport
  * band. Smooth scroll honors reduced-motion. Mirrors the source design's
- * `c-tabs` strip — sits just under the global nav (top-[74px]).
+ * `c-tabs` strip — sits just under the global nav (top-[74px]). `sections`
+ * is caller-supplied so it reflects only the blocks a given community
+ * actually renders.
  */
-export function SectionTabs() {
-  const [active, setActive] = useState('overview');
+export function SectionTabs({ sections }: { sections: Tab[] }) {
+  const [active, setActive] = useState(sections[0]?.id ?? '');
   const railRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const sections = TABS.map((t) => document.getElementById(t.id)).filter(
-      (el): el is HTMLElement => el !== null,
-    );
-    if (sections.length === 0 || !('IntersectionObserver' in window)) return;
+    const observedSections = sections
+      .map((t) => document.getElementById(t.id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (observedSections.length === 0 || !('IntersectionObserver' in window)) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -41,9 +33,9 @@ export function SectionTabs() {
       },
       { rootMargin: '-45% 0px -50% 0px', threshold: 0 },
     );
-    for (const s of sections) observer.observe(s);
+    for (const s of observedSections) observer.observe(s);
     return () => observer.disconnect();
-  }, []);
+  }, [sections]);
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     const target = document.getElementById(id);
@@ -54,6 +46,8 @@ export function SectionTabs() {
     setActive(id);
   }
 
+  if (sections.length === 0) return null;
+
   return (
     <div className="border-line-soft bg-surface/90 sticky top-[74px] z-50 mt-[clamp(26px,3vw,38px)] border-t border-b backdrop-blur-[14px] backdrop-saturate-150">
       <Container>
@@ -62,7 +56,7 @@ export function SectionTabs() {
           aria-label="Community sections"
           className="flex [scrollbar-width:none] gap-1.5 overflow-x-auto [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
-          {TABS.map((tab) => {
+          {sections.map((tab) => {
             const isActive = active === tab.id;
             return (
               <a

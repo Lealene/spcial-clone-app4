@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import {
   Banknote,
   CalendarDays,
@@ -11,8 +10,8 @@ import {
 } from 'lucide-react';
 
 import { Container } from '@/components/container';
+import { SaveShareActions } from '@/components/save-share-actions';
 import type { KeyFact, PropertyView } from '@/data/property';
-import { PropertyActions } from './property-actions';
 
 const FACT_ICON: Record<KeyFact['icon'], LucideIcon> = {
   home: Home,
@@ -28,7 +27,7 @@ export function PropertyHeader({ view }: { view: PropertyView }) {
   const { listing } = view;
   return (
     <Container as="section">
-      <div className="flex flex-wrap items-end justify-between gap-7 pt-[clamp(26px,3vw,38px)]">
+      <div className="flex flex-wrap items-end justify-between gap-7 pt-[clamp(18px,2.2vw,28px)]">
         <div className="min-w-0">
           <span className="text-accent-deep inline-flex items-center gap-[9px] font-sans text-[12.5px] font-bold tracking-[0.16em] uppercase">
             <span
@@ -57,7 +56,7 @@ export function PropertyHeader({ view }: { view: PropertyView }) {
             </a>
           </p>
         </div>
-        <PropertyActions title={`${listing.name} — MVP Realty`} />
+        <SaveShareActions kind="listing" name={listing.name} slug={listing.slug} />
       </div>
 
       {/* Key-facts ribbon */}
@@ -83,32 +82,5 @@ export function PropertyHeader({ view }: { view: PropertyView }) {
         })}
       </div>
     </Container>
-  );
-}
-
-/** Breadcrumb strip: Home / Residences / {community} / {name}. */
-export function PropertyBreadcrumb({ view }: { view: PropertyView }) {
-  const { listing } = view;
-  return (
-    <nav aria-label="Breadcrumb" className="bg-surface-soft border-line-soft border-b">
-      <Container className="text-muted flex flex-wrap items-center gap-[9px] py-[14px] font-sans text-[13.5px] font-semibold">
-        <Link href="/" className="text-ink-soft hover:text-accent-deep transition-colors">
-          Home
-        </Link>
-        <span className="text-line">/</span>
-        <Link href="/listings" className="text-ink-soft hover:text-accent-deep transition-colors">
-          Residences
-        </Link>
-        <span className="text-line">/</span>
-        <Link
-          href={`/communities/${listing.community}`}
-          className="text-ink-soft hover:text-accent-deep transition-colors"
-        >
-          {listing.communityName}
-        </Link>
-        <span className="text-line">/</span>
-        <span className="text-primary">{listing.name}</span>
-      </Container>
-    </nav>
   );
 }

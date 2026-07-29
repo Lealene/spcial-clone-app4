@@ -1,26 +1,30 @@
 import type { Residence } from './types';
-import { unsplash } from './images';
 
+/**
+ * CMS seed / fixture cards for the featuredResidences block schema.
+ * The live homepage rail ignores these and renders Payload listings with
+ * `isFeatured: true` instead.
+ */
 export const featuredResidences: Residence[] = [
   {
-    slug: 'the-anchorage',
-    name: 'The Anchorage',
-    locality: 'Seaside Cove · Naples',
+    slug: 'bonita-bay-featured',
+    name: 'Gulf-front coach home',
+    locality: 'Bonita Bay · Bonita Springs',
     price: 1450000,
     priceLabel: 'From $1,450,000',
     beds: 3,
     baths: 3.5,
     sqft: 2940,
-    badge: 'Now Selling',
+    badge: 'Featured',
     image: {
-      src: unsplash('1613977257363-707ba9348227', 1100),
-      alt: 'Seaside Cove residence framed by royal palms',
+      src: '/images/community-bonita-bay.jpg',
+      alt: 'Bonita Bay residence framed by oaks and flowering beds',
     },
   },
   {
-    slug: 'lakeside-villa',
-    name: 'Lakeside Villa',
-    locality: 'Mangrove Bay · Bonita Springs',
+    slug: 'valencia-bonita-featured',
+    name: 'Resort villa',
+    locality: 'Valencia Bonita · Bonita Springs',
     price: 865000,
     priceLabel: 'From $865,000',
     beds: 2,
@@ -28,23 +32,23 @@ export const featuredResidences: Residence[] = [
     sqft: 2210,
     badge: '55+ Living',
     image: {
-      src: unsplash('1600585154340-be6161a56a0c', 1100),
-      alt: 'Mangrove Bay lakefront villa at dusk',
+      src: '/images/community-valencia-bonita.jpg',
+      alt: 'Valencia Bonita villa near the resort clubhouse',
     },
   },
   {
-    slug: 'the-lagoon-model',
-    name: 'The Lagoon Model',
-    locality: 'Coral Lagoon · Estero',
+    slug: 'valencia-trails-featured',
+    name: 'Pool home',
+    locality: 'Valencia Trails · Naples',
     price: 920000,
     priceLabel: 'From $920,000',
     beds: 3,
     baths: 3,
     sqft: 2560,
-    badge: 'New Model Open',
+    badge: 'New Listing',
     image: {
-      src: unsplash('1600566753086-00f18fb6b3ea', 1100),
-      alt: 'Coral Lagoon decorated model interior',
+      src: '/images/community-valencia-trails.jpg',
+      alt: 'Valencia Trails home near the resort-style pool',
     },
   },
 ];

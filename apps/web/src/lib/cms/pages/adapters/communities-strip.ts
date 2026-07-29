@@ -6,10 +6,12 @@ import { mapValidRows, text } from '../primitives';
 export function normalizeCommunitiesStripBlock(
   raw: Record<string, unknown>,
 ): CommunitiesStripBlock {
+  const sourceMode = text(raw.sourceMode) === 'manual' ? 'manual' : 'areas';
+
   return {
     blockType: 'communitiesStrip',
     anchorId: text(raw.anchorId) || undefined,
-    sourceMode: 'manual',
+    sourceMode,
     maxItems:
       raw.maxItems === undefined ? 3 : typeof raw.maxItems === 'number' ? raw.maxItems : Number.NaN,
     items: mapValidRows(raw.items, (row) => {

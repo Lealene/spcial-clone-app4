@@ -18,7 +18,7 @@ export function HeroSearch() {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    commit({ ...filters, q: q.trim(), beds });
+    commit({ ...filters, q: q.trim(), beds, page: 1 });
     document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 

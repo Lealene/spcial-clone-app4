@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const backendUrl = new URL(process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:3002');
+const mediaUrl = process.env.NEXT_PUBLIC_MEDIA_URL
+  ? new URL(process.env.NEXT_PUBLIC_MEDIA_URL)
+  : null;
 const backendHostAllowsLocalOptimization = ['localhost', '127.0.0.1', '::1'].includes(
   backendUrl.hostname,
 );
@@ -19,12 +22,24 @@ const nextConfig: NextConfig = {
     dangerouslyAllowLocalIP: backendHostAllowsLocalOptimization,
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Bridge MLS photo CDN (gallery hotlinks)
+      { protocol: 'https', hostname: 'dvvjkgh94f2v6.cloudfront.net', pathname: '/**' },
       {
         protocol: backendUrl.protocol.replace(':', '') as 'http' | 'https',
         hostname: backendUrl.hostname,
         port: backendUrl.port,
         pathname: '/api/media/file/**',
       },
+      // R2 / S3 public origin for mirrored heroes + CMS media
+      ...(mediaUrl
+        ? [
+            {
+              protocol: mediaUrl.protocol.replace(':', '') as 'http' | 'https',
+              hostname: mediaUrl.hostname,
+              pathname: '/**',
+            },
+          ]
+        : []),
     ],
   },
   // Next.js 16.2 — forward browser console to the dev terminal so AI agents

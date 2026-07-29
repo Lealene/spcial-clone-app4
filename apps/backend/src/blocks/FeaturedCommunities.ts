@@ -23,20 +23,26 @@ export const FeaturedCommunitiesBlock: Block = {
     {
       name: 'sourceMode',
       type: 'select',
-      defaultValue: 'manual',
-      options: [{ label: 'Manual', value: 'manual' }],
+      defaultValue: 'areas',
+      options: [
+        { label: 'Areas collection', value: 'areas' },
+        { label: 'Manual (legacy)', value: 'manual' },
+      ],
       admin: {
-        hidden: true,
-        description: 'Reserved for selected/query modes after communities exist.',
+        description:
+          'Areas mode loads community cards from Areas (kind=community). Edit blurbs, gallery, ratings, and tags there — not here.',
       },
     },
     {
       name: 'manualCommunities',
       type: 'array',
-      required: true,
+      required: false,
       minRows: CMS_PAGE_BLOCK_LIMITS.featuredCommunities.min,
       maxRows: CMS_PAGE_BLOCK_LIMITS.featuredCommunities.max,
-      admin: { description: 'Community cards. Images should be 16:11.' },
+      admin: {
+        condition: (_, siblingData) => siblingData?.sourceMode === 'manual',
+        description: 'Legacy manual cards. Prefer Areas collection.',
+      },
       fields: [
         { name: 'slug', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.slug },
         { name: 'name', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },

@@ -187,30 +187,38 @@ export function PropertyBody({ view }: { view: PropertyView }) {
             </p>
           ))}
         </div>
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          {view.highlights.map((h) => (
-            <span
-              key={h}
-              className="text-ink-soft bg-surface-muted border-line inline-flex items-center gap-[9px] rounded-full border px-[15px] py-[9px] font-sans text-[13.5px] font-bold"
-            >
-              <Check className="text-accent-deep size-[15px]" strokeWidth={2} />
-              {h}
-            </span>
-          ))}
-        </div>
+        {view.highlights.length > 0 && (
+          <div className="mt-6 flex flex-wrap gap-2.5">
+            {view.highlights.map((h) => (
+              <span
+                key={h}
+                className="text-ink-soft bg-surface-muted border-line inline-flex items-center gap-[9px] rounded-full border px-[15px] py-[9px] font-sans text-[13.5px] font-bold"
+              >
+                <Check className="text-accent-deep size-[15px]" strokeWidth={2} />
+                {h}
+              </span>
+            ))}
+          </div>
+        )}
       </Section>
 
-      <Section kicker="Interior" heading="Inside the home.">
-        <SpecGroups groups={view.interior} />
-      </Section>
+      {view.interior.length > 0 && (
+        <Section kicker="Interior" heading="Inside the home.">
+          <SpecGroups groups={view.interior} />
+        </Section>
+      )}
 
-      <Section kicker="Floor Plan" heading="How it lives.">
-        <FloorPlan rooms={view.floorPlan} />
-      </Section>
+      {view.floorPlan.length > 0 && (
+        <Section kicker="Floor Plan" heading="How it lives.">
+          <FloorPlan rooms={view.floorPlan} />
+        </Section>
+      )}
 
-      <Section kicker="Exterior & Construction" heading="The lot and the build.">
-        <SpecGroups groups={view.exterior} />
-      </Section>
+      {view.exterior.length > 0 && (
+        <Section kicker="Exterior & Construction" heading="The lot and the build.">
+          <SpecGroups groups={view.exterior} />
+        </Section>
+      )}
 
       <Section kicker="Location" heading={`${view.listing.communityName}, ${view.listing.city}.`}>
         <p className="text-ink-soft mt-5 font-sans text-[17px] leading-[1.75]">
@@ -226,9 +234,8 @@ export function PropertyBody({ view }: { view: PropertyView }) {
             {view.courtesyBrokerage} · <b className="text-primary font-bold">MLS ID</b> {view.mlsId}
           </div>
           <p className="text-muted mt-2.5 font-sans text-[12.5px] leading-[1.6]">
-            Listing data is provided for design-preview purposes. All figures, dimensions, and
-            availability are illustrative and should be independently reviewed and verified for
-            accuracy. Information is deemed reliable but not guaranteed.
+            Listing information is supplied by the MLS and is deemed reliable but not guaranteed.
+            Buyers should independently verify all figures, dimensions, and availability.
           </p>
         </div>
       </section>

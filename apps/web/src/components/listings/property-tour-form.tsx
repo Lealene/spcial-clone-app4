@@ -10,8 +10,15 @@ import { Button } from '@/components/ui/button';
  * confirmation state, mirroring ConciergeCta. No backend.
  * TODO: wire backend (lead capture) when Payload is ready.
  */
-export function PropertyTourForm({ propertyName }: { propertyName: string }) {
+export function PropertyTourForm({
+  propertyName,
+  brokerFirstName,
+}: {
+  propertyName: string;
+  brokerFirstName?: string;
+}) {
   const [sent, setSent] = useState(false);
+  const firstName = brokerFirstName ?? 'Your concierge';
 
   const fieldClass =
     'bg-surface-soft text-ink border-line focus:border-accent-deep focus:bg-surface w-full rounded-md border px-[15px] py-[13px] font-sans text-[15px] font-medium transition-[border-color,background-color] outline-none placeholder:text-muted';
@@ -32,7 +39,7 @@ export function PropertyTourForm({ propertyName }: { propertyName: string }) {
             Your request is in.
           </p>
           <p className="text-muted mt-2 font-sans text-[14px]">
-            Eleanor will reach out shortly about {propertyName}.
+            {firstName} will reach out shortly about {propertyName}.
           </p>
         </div>
       ) : (

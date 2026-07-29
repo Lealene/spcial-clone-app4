@@ -1,7 +1,6 @@
 import type { CmsPage } from '@mvp-realty/api-contracts';
 
 import { amenities } from './amenities';
-import { featuredCommunities, heroCommunities } from './communities';
 import { unsplash } from './images';
 import { lifestyleTiles } from './lifestyle';
 import { featuredResidences } from './residences';
@@ -42,13 +41,9 @@ export const homepageFixture: CmsPage = {
     },
     {
       blockType: 'communitiesStrip',
-      sourceMode: 'manual',
+      sourceMode: 'areas',
       maxItems: 3,
-      items: heroCommunities.map((community) => ({
-        ...community,
-        link: link(community.name, `/communities/${community.slug}`),
-        icon: 'mapPin',
-      })),
+      items: [],
     },
     {
       blockType: 'featuredCommunities',
@@ -58,14 +53,8 @@ export const homepageFixture: CmsPage = {
         heading: 'Three favorites to start your search.',
         lede: 'A short, hand-picked set of the Southwest Florida communities our clients keep coming back to.',
       },
-      sourceMode: 'manual',
-      manualCommunities: featuredCommunities.map((community) => ({
-        ...community,
-        reviewsLabel: 'reviews',
-        residencesLabel: 'residences',
-        nowSellingLabel: 'now selling',
-        link: link(community.name, `/communities/${community.slug}`),
-      })),
+      sourceMode: 'areas',
+      manualCommunities: [],
       moreLink: link('Explore all communities', '/listings'),
     },
     {

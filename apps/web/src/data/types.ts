@@ -1,8 +1,13 @@
 /**
- * Hand-authored content types, shaped to mirror a future Payload schema so the
- * page components can later swap to backend fetches behind the same shapes.
- * No backend wiring yet — see docs/design-port/README.md.
+ * Shared front-end content types. Listing card shape comes from
+ * `@mvp-realty/api-contracts` (Payload MLS adapter).
  */
+import type {
+  ListingCard,
+  ListingMlsStatus,
+  ListingTypeFacet,
+  ListingUiFeature,
+} from '@mvp-realty/api-contracts';
 
 export type Image = {
   src: string;
@@ -26,7 +31,7 @@ export type Community = {
 export type Residence = {
   slug: string;
   name: string;
-  /** Community + city, e.g. "Seaside Cove · Naples". */
+  /** Community + city, e.g. "Bonita Bay · Bonita Springs". */
   locality: string;
   /** Numeric starting price for future sorting/filtering. */
   price: number;
@@ -66,33 +71,9 @@ export type HeroCommunity = {
 };
 
 /** Facet vocabularies — kept as literal unions so filter logic stays exhaustive. */
-export type ListingType = 'estate' | 'single-family' | 'villa' | 'condo';
-export type ListingStatus = 'now-selling' | 'move-in' | 'new-model';
-export type ListingFeature = 'waterfront' | 'pool' | 'golf' | 'gated' | '55plus';
+export type ListingType = ListingTypeFacet;
+export type ListingStatus = ListingMlsStatus;
+export type ListingFeature = ListingUiFeature;
 
-/**
- * A single residence in the PLP catalog. Carries the card + filter fields the
- * `/listings` page needs today; PDP-specific fields (gallery, body copy, agent)
- * get added when that page is built. Shaped to mirror a future Payload
- * `Listings` collection — `[slug]` pages look these up by slug.
- */
-export type Listing = {
-  slug: string;
-  name: string;
-  /** Community slug — matches a `Community.slug`; drives the community facet. */
-  community: string;
-  /** Display community name, e.g. "Bonita Bay". */
-  communityName: string;
-  /** City, e.g. "Naples". */
-  city: string;
-  /** Numeric starting price — the value filtered/sorted on. */
-  price: number;
-  beds: number;
-  /** May be a half-bath, e.g. 3.5. */
-  baths: number;
-  sqft: number;
-  type: ListingType;
-  status: ListingStatus;
-  features: ListingFeature[];
-  image: Image;
-};
+/** PLP / card listing — shared with `@mvp-realty/api-contracts` listingCardSchema. */
+export type Listing = ListingCard;

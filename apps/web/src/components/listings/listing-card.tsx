@@ -16,7 +16,7 @@ const TAG_LABEL: Record<string, string> = {
 };
 
 /** Statuses that get the filled-gold badge (vs. the quiet cream one). */
-const GOLD_STATUS = new Set(['now-selling', 'new-model']);
+const GOLD_STATUS = new Set(['active', 'coming-soon']);
 
 /**
  * Listing card — the PLP grid tile, also reused by PDP "Similar Homes" and the
@@ -31,10 +31,11 @@ export function ListingCard({
   className?: string;
   sizes?: string;
 }) {
+  const formatStat = (value: number) => (value > 0 ? value.toLocaleString() : '—');
   const stats = [
-    { value: listing.beds, label: 'Beds' },
-    { value: listing.baths, label: 'Baths' },
-    { value: listing.sqft.toLocaleString(), label: 'Sq Ft' },
+    { value: formatStat(listing.beds), label: 'Beds' },
+    { value: formatStat(listing.baths), label: 'Baths' },
+    { value: formatStat(listing.sqft), label: 'Sq Ft' },
   ];
 
   return (

@@ -100,7 +100,7 @@ function Segmented({
           aria-pressed={value === s.value}
           onClick={() => onChange(s.value)}
           className={cn(
-            'flex-1 py-[11px] font-sans text-[13.5px] font-bold transition-colors',
+            'flex-1 cursor-pointer py-[11px] font-sans text-[13.5px] font-bold transition-colors',
             i > 0 && 'border-line border-l',
             value === s.value ? 'bg-primary text-on-primary' : 'text-ink-soft hover:bg-surface',
           )}
@@ -196,8 +196,8 @@ export function FilterPanel({
   onClear,
 }: { filters: FilterState; counts: FacetCounts; activeCount: number } & Handlers) {
   return (
-    <div className="border-line bg-surface shadow-card overflow-hidden rounded-xl border">
-      <div className="bg-primary flex items-center justify-between gap-3 px-6 py-5">
+    <div className="border-line bg-surface shadow-card rounded-xl border">
+      <div className="bg-primary sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-xl px-6 py-5">
         <b className="text-on-primary font-serif text-[21px] font-semibold">Refine</b>
         <span className="text-accent font-sans text-[12px] font-bold tracking-[0.1em] uppercase">
           {activeCount} active
@@ -279,7 +279,7 @@ export function FilterPanel({
       <button
         type="button"
         onClick={onClear}
-        className="border-line-soft bg-surface-muted text-primary hover:bg-surface hover:text-accent-deep flex w-full items-center justify-center gap-[9px] border-t py-4 font-sans text-[14px] font-bold transition-colors"
+        className="border-line-soft bg-surface-muted text-primary hover:bg-surface hover:text-accent-deep flex w-full cursor-pointer items-center justify-center gap-[9px] rounded-b-xl border-t py-4 font-sans text-[14px] font-bold transition-colors"
       >
         <Trash2 className="size-[15px]" strokeWidth={2} />
         Clear all filters

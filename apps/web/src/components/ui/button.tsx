@@ -11,7 +11,7 @@ import { cn } from '@mvp-realty/ui/lib/utils';
  * signature motion across the design.
  */
 const buttonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center gap-2.5 rounded-md font-sans font-bold whitespace-nowrap tracking-[0.02em] outline-none transition-[transform,background-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:translate-x-1',
+  'inline-flex shrink-0 cursor-pointer items-center justify-center gap-2.5 rounded-md font-sans font-bold whitespace-nowrap tracking-[0.02em] outline-none transition-[transform,background-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg]:translate-x-1',
   {
     variants: {
       variant: {

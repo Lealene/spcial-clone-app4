@@ -10,6 +10,8 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().url(),
     NEXT_PUBLIC_BACKEND_URL: z.string().url(),
+    // Public origin for Payload Media when served from R2/S3 (matches backend S3_PUBLIC_URL).
+    NEXT_PUBLIC_MEDIA_URL: z.string().url().optional(),
     NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
   },
   // Next.js < 13.4.4 only inlines NEXT_PUBLIC_ at build time; explicit map keeps
@@ -20,6 +22,7 @@ export const env = createEnv({
     AXIOM_DATASET: process.env.AXIOM_DATASET,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+    NEXT_PUBLIC_MEDIA_URL: process.env.NEXT_PUBLIC_MEDIA_URL,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   emptyStringAsUndefined: true,

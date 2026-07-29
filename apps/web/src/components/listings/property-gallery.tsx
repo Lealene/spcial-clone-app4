@@ -23,16 +23,19 @@ export function PropertyGallery({
   // and render the remaining four in source order around it.
   const [heroIdx, setHeroIdx] = useState(0);
   const hero = gallery[heroIdx] ?? gallery[0];
-  const tiles = gallery.map((shot, i) => ({ shot, i })).filter(({ i }) => i !== heroIdx);
+  const tiles = gallery
+    .map((shot, i) => ({ shot, i }))
+    .filter(({ i }) => i !== heroIdx)
+    .slice(0, 4);
 
   if (!hero) return null;
 
   return (
     <section className="pt-[clamp(22px,3vw,34px)]">
       <Container>
-        <div className="grid h-[clamp(440px,48vw,640px)] grid-cols-1 grid-rows-[1.4fr_1fr] gap-3.5 overflow-hidden rounded-xl md:grid-cols-[1.6fr_1fr_1fr] md:grid-rows-2">
-          {/* Hero tile */}
-          <figure className="group relative col-span-1 row-span-1 m-0 cursor-pointer overflow-hidden md:row-span-2">
+        <div className="grid grid-cols-1 gap-3.5 overflow-hidden rounded-xl md:h-[clamp(420px,42vw,560px)] md:grid-cols-[1.6fr_1fr_1fr] md:grid-rows-2">
+          {/* Hero tile — aspect-ratio on mobile so no empty second row; fills mosaic on md+ */}
+          <figure className="group relative col-span-1 m-0 aspect-[16/10] cursor-pointer overflow-hidden md:row-span-2 md:aspect-auto md:h-full md:min-h-0">
             <div className="absolute top-4 left-4 z-[3] flex flex-wrap gap-[9px]">
               <span className="bg-cta text-on-cta shadow-card inline-flex items-center gap-[7px] rounded-md px-[13px] py-[7px] font-sans text-[11.5px] font-extrabold tracking-[0.1em] uppercase">
                 <span
@@ -58,14 +61,14 @@ export function PropertyGallery({
             <span className="pointer-events-none absolute inset-0 shadow-[inset_0_0_0_0_var(--accent)] transition-shadow duration-200 group-hover:shadow-[inset_0_0_0_3px_var(--accent)]" />
           </figure>
 
-          {/* Four thumbnail tiles */}
+          {/* Four thumbnail tiles — desktop mosaic only */}
           {tiles.map(({ shot, i }, tileIdx) => (
             <button
               type="button"
               key={shot.src}
               onClick={() => setHeroIdx(i)}
               aria-label={`Show photo: ${shot.alt}`}
-              className="group focus-visible:ring-ring relative m-0 hidden cursor-pointer overflow-hidden rounded-none outline-none focus-visible:ring-2 md:block"
+              className="group focus-visible:ring-ring relative m-0 hidden min-h-0 cursor-pointer overflow-hidden rounded-none outline-none focus-visible:ring-2 md:block md:h-full"
             >
               <Image
                 src={shot.src}
