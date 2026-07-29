@@ -1,6 +1,11 @@
+import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
+import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate';
+
+// Brokers reach the web app only through populated area and listing relationships.
+const CACHE_TAGS = [CMS_CACHE_TAGS.areas, CMS_CACHE_TAGS.listings];
 
 export const Brokers: CollectionConfig = {
   slug: 'brokers',
@@ -14,6 +19,10 @@ export const Brokers: CollectionConfig = {
     create: authenticated,
     update: authenticated,
     delete: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange(CACHE_TAGS)],
+    afterDelete: [revalidateAfterDelete(CACHE_TAGS)],
   },
   defaultPopulate: {
     name: true,

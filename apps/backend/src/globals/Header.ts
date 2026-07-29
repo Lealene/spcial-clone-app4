@@ -1,8 +1,10 @@
+import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { GlobalConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
 import { ctaField } from '../fields/cta';
 import { linkField } from '../fields/link';
+import { revalidateGlobalAfterChange } from '../hooks/revalidate';
 
 export const Header: GlobalConfig = {
   slug: 'header',
@@ -10,6 +12,9 @@ export const Header: GlobalConfig = {
   access: {
     read: () => true,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateGlobalAfterChange([CMS_CACHE_TAGS.header])],
   },
   fields: [
     linkField({ name: 'brandHomeLink', label: 'Brand home link', required: true }),
