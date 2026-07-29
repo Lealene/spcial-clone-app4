@@ -679,6 +679,9 @@ export const listingDetailSchema = listingCardSchema.extend({
   streetAddress: z.string().optional(),
   state: z.string().default('FL'),
   zip: z.string().optional(),
+  /** RESO coordinates — present together or not at all; drive the PDP location map. */
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
   pricePerSqft: z.number().finite().positive().optional(),
   yearBuilt: z.number().int().optional(),
   lotSqft: z.number().finite().positive().optional(),
