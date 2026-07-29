@@ -21,6 +21,29 @@ export const env = createEnv({
     // Required once the manual sync endpoint ships (Phase 4).
     BRIDGE_SYNC_SECRET: z.string().min(16).optional(),
 
+    // Shared secret the web app presents to POST /api/leads/submit. Without it
+    // the ingest endpoint rejects every unauthenticated request.
+    LEADS_INGEST_SECRET: z.string().min(16).optional(),
+
+    // Outbound SMTP, used for admin password resets and Wise Agent lead parsing.
+    // SMTP rather than a provider SDK so switching providers is an env change.
+    // Resend: host smtp.resend.com, port 465, user "resend", password = API key.
+    SMTP_HOST: z.string().min(1).optional(),
+    SMTP_PORT: z.coerce.number().int().positive().default(465),
+    SMTP_USER: z.string().min(1).optional(),
+    SMTP_PASSWORD: z.string().min(1).optional(),
+    // Implicit TLS. Defaults from the port (465 is SMTPS, 587/25 use STARTTLS).
+    SMTP_SECURE: z.enum(['true', 'false']).optional(),
+    // Must be on a domain verified with the provider or mail is rejected.
+    EMAIL_FROM_ADDRESS: z.string().email().optional(),
+    EMAIL_FROM_NAME: z.string().min(1).default('MVP Realty'),
+
+    // Wise Agent CRM lead-capture (email parsing) address from
+    // Integrations → Settings → API Keys and Lead Email. Wise Agent's
+    // webconnect API only authenticates via OAuth, so leads are delivered as
+    // parseable email instead. Optional — leads then sync as 'skipped'.
+    WISE_AGENT_LEAD_EMAIL: z.string().email().optional(),
+
     // R2 via S3-compatible API. All-or-nothing — plugin enables only when complete.
     S3_BUCKET: z.string().min(1).optional(),
     S3_ACCESS_KEY_ID: z.string().min(1).optional(),
@@ -36,6 +59,22 @@ export const env = createEnv({
 
 export function hasBridgeConfig(): boolean {
   return Boolean(env.BRIDGE_API_TOKEN && env.BRIDGE_DATASET_ID);
+}
+
+/** Every field the nodemailer adapter needs before Payload can send anything. */
+export function hasEmailConfig(): boolean {
+  return Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASSWORD && env.EMAIL_FROM_ADDRESS);
+}
+
+/** Port 465 is implicit TLS; 587 and 25 upgrade via STARTTLS. */
+export function isSmtpSecure(): boolean {
+  if (env.SMTP_SECURE) return env.SMTP_SECURE === 'true';
+  return env.SMTP_PORT === 465;
+}
+
+/** Lead sync needs both a destination address and a working mail transport. */
+export function hasWiseAgentConfig(): boolean {
+  return Boolean(env.WISE_AGENT_LEAD_EMAIL) && hasEmailConfig();
 }
 
 export function hasS3StorageConfig(): boolean {

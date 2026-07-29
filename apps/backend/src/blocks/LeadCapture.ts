@@ -61,7 +61,9 @@ export const LeadCaptureBlock: Block = {
       label: 'Form fields',
       admin: { description: 'Field set is code-defined; labels and placeholders are editable.' },
       fields: [
-        formFieldGroup('name', 'Name', true),
+        // Split because Wise Agent's webcontact requires CFirst and CLast.
+        formFieldGroup('firstName', 'First name', true),
+        formFieldGroup('lastName', 'Last name', true),
         formFieldGroup('email', 'Email', true),
         formFieldGroup('phone', 'Phone', false),
       ],

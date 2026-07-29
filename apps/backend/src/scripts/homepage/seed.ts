@@ -380,7 +380,8 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
           afterLinkText: '.',
         },
         fields: {
-          name: { label: 'Your name', placeholder: 'Jane & Robert Ellison', required: true },
+          firstName: { label: 'First name', placeholder: 'Jane', required: true },
+          lastName: { label: 'Last name', placeholder: 'Ellison', required: true },
           email: { label: 'Email address', placeholder: 'you@example.com', required: true },
           phone: { label: 'Phone (optional)', placeholder: '(239) 555-0148', required: false },
         },

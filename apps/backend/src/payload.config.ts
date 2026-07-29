@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres';
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { s3Storage } from '@payloadcms/storage-s3';
 import { networkInterfaces } from 'os';
@@ -10,17 +11,19 @@ import sharp from 'sharp';
 
 import { Areas } from './collections/Areas';
 import { Brokers } from './collections/Brokers';
+import { Leads } from './collections/Leads';
 import { Listings } from './collections/Listings';
 import { Media } from './collections/Media';
 import { Pages } from './collections/Pages';
 import { SyncLogs } from './collections/SyncLogs';
 import { Users } from './collections/Users';
 import { bridgeSyncEndpoint } from './endpoints/bridge-sync';
-import { env, getS3Endpoint, hasS3StorageConfig } from './env';
+import { env, getS3Endpoint, hasEmailConfig, hasS3StorageConfig, isSmtpSecure } from './env';
 import { Footer } from './globals/Footer';
 import { Header } from './globals/Header';
 import { mirrorListingHeroTask } from './jobs/mirror-listing-hero';
 import { syncBridgeListingsTask } from './jobs/sync-bridge-listings';
+import { syncLeadToWiseAgentTask } from './jobs/sync-lead-to-wise-agent';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -50,7 +53,7 @@ export default buildConfig({
       beforeDashboard: ['/components/admin/SyncAllAreasButton'],
     },
   },
-  collections: [Users, Media, Pages, Brokers, Areas, Listings, SyncLogs],
+  collections: [Users, Media, Pages, Brokers, Areas, Listings, Leads, SyncLogs],
   globals: [Header, Footer],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
@@ -66,6 +69,25 @@ export default buildConfig({
     },
   }),
   sharp,
+  // Omitted when SMTP is unset so Payload keeps its console-logging adapter and
+  // local development boots without mail credentials.
+  ...(hasEmailConfig()
+    ? {
+        email: nodemailerAdapter({
+          defaultFromAddress: env.EMAIL_FROM_ADDRESS!,
+          defaultFromName: env.EMAIL_FROM_NAME,
+          transportOptions: {
+            host: env.SMTP_HOST,
+            port: env.SMTP_PORT,
+            secure: isSmtpSecure(),
+            auth: {
+              user: env.SMTP_USER,
+              pass: env.SMTP_PASSWORD,
+            },
+          },
+        }),
+      }
+    : {}),
   endpoints: [bridgeSyncEndpoint],
   jobs: {
     // Autorun has no user session; queueing from sync also needs open access.
@@ -75,7 +97,7 @@ export default buildConfig({
       run: () => true,
       cancel: ({ req }) => Boolean(req.user),
     },
-    tasks: [syncBridgeListingsTask, mirrorListingHeroTask],
+    tasks: [syncBridgeListingsTask, mirrorListingHeroTask, syncLeadToWiseAgentTask],
     // autoRun drains queues; task.schedule queues the nightly sync onto `bridge`.
     autoRun: [
       { cron: '* * * * *', queue: 'bridge', limit: 5 },
