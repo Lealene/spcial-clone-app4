@@ -6,6 +6,9 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: z.string().optional(),
     AXIOM_TOKEN: z.string().optional(),
     AXIOM_DATASET: z.string().optional(),
+    // Bearer secret for the Payload lead ingest endpoint. Server-only — the
+    // /api/leads route handler is the only thing that may read it.
+    LEADS_INGEST_SECRET: z.string().min(16).optional(),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().url(),
@@ -20,6 +23,7 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     AXIOM_TOKEN: process.env.AXIOM_TOKEN,
     AXIOM_DATASET: process.env.AXIOM_DATASET,
+    LEADS_INGEST_SECRET: process.env.LEADS_INGEST_SECRET,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
     NEXT_PUBLIC_MEDIA_URL: process.env.NEXT_PUBLIC_MEDIA_URL,
