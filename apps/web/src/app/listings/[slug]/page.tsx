@@ -38,6 +38,16 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   };
 }
 
+/**
+ * MLS cities arrive upper-cased ("FORT MYERS BEACH"). Title-case them for
+ * headline copy; `communityName` is already presentable and needs no pass.
+ */
+function toTitleCase(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/(^|[\s-])([a-z])/g, (_, sep: string, char: string) => sep + char.toUpperCase());
+}
+
 function communityFactsFromMeta(
   areaMeta: AreaPdpMeta | null,
   communityName: string,
@@ -82,10 +92,25 @@ export default async function PropertyPage({ params }: { params: Promise<Params>
 
   const areaMeta = await getAreaPdpMeta(detail.community).catch((): null => null);
 
-  const similar = active
-    .filter((l) => l.slug !== detail.slug)
-    .filter((l) => l.community === detail.community || l.type === detail.type)
-    .slice(0, 3);
+  // Location first: same community, then same city, and only then the same
+  // property type elsewhere. The previous single `community || type` filter let
+  // a Bonita Springs condo qualify for a Fort Myers Beach listing purely by
+  // being a condo, which contradicted the "More residences in <place>" heading.
+  const pool = active.filter((l) => l.slug !== detail.slug);
+  const sameCommunity = pool.filter((l) => l.community === detail.community);
+  const sameCity = pool.filter((l) => l.city === detail.city && l.community !== detail.community);
+  const sameTypeElsewhere = pool.filter((l) => l.type === detail.type && l.city !== detail.city);
+  const similar = [...sameCommunity, ...sameCity, ...sameTypeElsewhere].slice(0, 3);
+
+  // Only promise a place in the heading when every card actually shares it.
+  const similarScope =
+    similar.length === 0
+      ? null
+      : similar.every((l) => l.community === detail.community)
+        ? detail.communityName
+        : similar.every((l) => l.city === detail.city)
+          ? toTitleCase(detail.city)
+          : null;
 
   const view = buildPropertyView(
     detail,
@@ -113,7 +138,7 @@ export default async function PropertyPage({ params }: { params: Promise<Params>
       <PropertyHeader view={view} />
 
       <Container>
-        <div className="grid items-start gap-[clamp(34px,4vw,72px)] py-[clamp(48px,6vw,90px)] lg:grid-cols-[1fr_384px]">
+        <div className="grid items-start gap-[clamp(34px,4vw,72px)] py-[clamp(48px,6vw,90px)] lg:grid-cols-[minmax(0,1fr)_384px]">
           <PropertyBody view={view} />
           <PropertyAside
             propertyName={view.listing.name}
@@ -132,7 +157,7 @@ export default async function PropertyPage({ params }: { params: Promise<Params>
         facts={view.community.facts}
         hasDetailPage={hasDetailPage}
       />
-      <PropertySimilar listings={view.similar} communityName={view.listing.communityName} />
+      <PropertySimilar listings={view.similar} scopeLabel={similarScope} />
     </>
   );
 }
