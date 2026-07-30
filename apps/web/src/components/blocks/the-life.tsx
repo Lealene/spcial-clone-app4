@@ -17,7 +17,7 @@ export function TheLife({ block }: { block: LifestyleBlock }) {
   return (
     <section
       id={block.anchorId}
-      className="relative flex min-h-[600px] items-center overflow-hidden text-white"
+      className="relative flex min-h-[clamp(420px,70dvh,600px)] items-center overflow-hidden text-white"
     >
       <div className="absolute inset-0 z-0">
         <Image
@@ -33,7 +33,7 @@ export function TheLife({ block }: { block: LifestyleBlock }) {
       <Container className="relative z-20 w-full py-[clamp(64px,7vw,112px)]">
         <Reveal className="max-w-[62ch]">
           <Kicker tone="dark">{block.kicker}</Kicker>
-          <h2 className="mt-5 max-w-[18ch] font-serif text-[clamp(34px,4.6vw,60px)] font-semibold leading-[1.06] tracking-[-0.01em]">
+          <h2 className="mt-5 max-w-[18ch] font-serif text-[clamp(34px,4.6vw,60px)] leading-[1.06] font-semibold tracking-[-0.01em]">
             {block.heading}{' '}
             {block.headingAccent && (
               <em className="text-accent-soft italic">{block.headingAccent}</em>
@@ -58,7 +58,7 @@ export function TheLife({ block }: { block: LifestyleBlock }) {
                   sizes="(max-width: 640px) 100vw, 33vw"
                   className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.06]"
                 />
-                <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-[linear-gradient(to_top,rgba(8,26,48,.9),transparent)] px-[22px] pb-5 pt-12 font-sans text-[16px] font-semibold text-white">
+                <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-[linear-gradient(to_top,rgba(8,26,48,.9),transparent)] px-[22px] pt-12 pb-5 font-sans text-[16px] font-semibold text-white">
                   {tile.caption}
                 </figcaption>
               </figure>
