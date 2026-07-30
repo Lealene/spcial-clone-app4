@@ -188,16 +188,30 @@ export function FilterPanel({
   filters,
   counts,
   activeCount,
+  className,
+  headerClassName,
   onPriceMin,
   onPriceMax,
   onBeds,
   onBaths,
   onToggleFacet,
   onClear,
-}: { filters: FilterState; counts: FacetCounts; activeCount: number } & Handlers) {
+}: {
+  filters: FilterState;
+  counts: FacetCounts;
+  activeCount: number;
+  /** Lets the mobile Sheet drop the card chrome and sit flush against the edges. */
+  className?: string;
+  headerClassName?: string;
+} & Handlers) {
   return (
-    <div className="border-line bg-surface shadow-card rounded-xl border">
-      <div className="bg-primary sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-xl px-6 py-5">
+    <div className={cn('border-line bg-surface shadow-card rounded-xl border', className)}>
+      <div
+        className={cn(
+          'bg-primary sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-xl px-6 py-5',
+          headerClassName,
+        )}
+      >
         <b className="text-on-primary font-serif text-[21px] font-semibold">Refine</b>
         <span className="text-accent font-sans text-[12px] font-bold tracking-[0.1em] uppercase">
           {activeCount} active

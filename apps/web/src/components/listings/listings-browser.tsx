@@ -156,9 +156,17 @@ export function ListingsBrowser({ listings }: { listings: Listing[] }) {
               <SheetHeader className="sr-only">
                 <SheetTitle>Filter residences</SheetTitle>
               </SheetHeader>
-              {/* pb clears the sticky footer so the last facet row isn't half-hidden. */}
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-8">
-                <FilterPanel {...panelProps} />
+              {/*
+                Flush, not inset: with side/top padding the scrolling facets show
+                through the gutters around the sticky "Refine" header. pb clears
+                the sticky footer so the last facet row isn't half-hidden.
+              */}
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-8">
+                <FilterPanel
+                  {...panelProps}
+                  className="rounded-none border-x-0 border-t-0 shadow-none"
+                  headerClassName="rounded-t-none"
+                />
               </div>
               <div className="border-line bg-surface shrink-0 border-t p-4">
                 <SheetClose asChild>
