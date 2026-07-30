@@ -73,7 +73,8 @@ export function HeroSearch() {
         </div>
       </div>
 
-      <Button type="submit" variant="cta" className="self-stretch">
+      {/* Full width once the fields have wrapped onto their own rows. */}
+      <Button type="submit" variant="cta" className="w-full self-stretch sm:w-auto">
         Search
         <ArrowRight />
       </Button>
