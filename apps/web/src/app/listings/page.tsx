@@ -6,6 +6,12 @@ import { ListingsBrowser } from '@/components/listings/listings-browser';
 import { ConciergeCta } from '@/components/listings/concierge-cta';
 import { getActiveListings } from '@/lib/cms/listings';
 
+/**
+ * Backstop only — the Bridge sync purges the `listings` tag when it finishes, so
+ * edits land immediately. This bounds staleness if that request never arrives.
+ */
+export const revalidate = 900;
+
 export const metadata: Metadata = {
   title: 'Browse Residences — MVP Realty',
   description:

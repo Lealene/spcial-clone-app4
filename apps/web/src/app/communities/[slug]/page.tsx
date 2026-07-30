@@ -17,6 +17,12 @@ import { getListingsForArea } from '@/lib/cms/listings';
 
 type Params = { slug: string };
 
+/**
+ * Editorial content, purged on the `areas` tag when an Area is saved. Longer
+ * backstop than listings because nothing here moves on its own.
+ */
+export const revalidate = 3600;
+
 export async function generateStaticParams(): Promise<Params[]> {
   try {
     const slugs = await getCommunityDetailSlugs();

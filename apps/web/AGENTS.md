@@ -47,6 +47,8 @@ When viewing the dev server over LAN IP or tunnels, ensure the origin is covered
 
 ## Gotchas
 
-- Server Component data fetching uses Next cache semantics. Use `cache: 'no-store'` for personalized data; default caching is fine for static content.
+- **Routes own their freshness; the data layer owns tags.** `fetchJson` caches until a tag purge (`revalidate: false`) — Payload `afterChange` hooks call `/api/revalidate`, so tags are the real invalidation. Each route declares its own missed-webhook backstop with `export const revalidate = N`. Do not put a number in `fetchJson` or export `revalidate` from `layout.tsx`: the lowest value across a route's layout and pages wins, and the root layout fetches the header/footer on every route, so either one silently caps the whole app.
+- A route's tags must cover **everything it renders**, not just its own collection. `getFooterContent()` renders community links, so it tags `areas` alongside `footer`. Audit tag coverage when a block reads across collections — with long backstops, a gap means stale for a day.
+- Use `cache: 'no-store'` for personalized data.
 - Prefer Suspense/streaming for content-heavy flows instead of blocking an entire route.
 - Listings and community detail pages are Payload-backed via `src/lib/cms/`. Homepage page blocks still mix CMS fetches with fixture fallbacks where noted.

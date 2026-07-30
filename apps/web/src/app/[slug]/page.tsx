@@ -7,6 +7,12 @@ import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
 
 const RESERVED_PAGE_SLUGS = new Set(['admin', 'api', 'listings', 'communities', 'ui']);
 
+/**
+ * Pure editorial — `Pages` purges its own `cms-page:<slug>` tag on save, so this
+ * only bounds staleness if that request never arrives.
+ */
+export const revalidate = 86400;
+
 type Params = { slug: string };
 
 function isReservedSlug(slug: string): boolean {
