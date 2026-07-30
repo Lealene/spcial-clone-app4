@@ -2660,6 +2660,10 @@ export interface Footer {
   columns?:
     | {
         title: string;
+        /**
+         * Auto columns list community Areas, so a new community appears here without editing the footer.
+         */
+        source: 'manual' | 'communities';
         links?:
           | {
               label: string;
@@ -2684,6 +2688,14 @@ export interface Footer {
               id?: string | null;
             }[]
           | null;
+        /**
+         * How many communities to list, ordered by name.
+         */
+        communityLimit?: number | null;
+        /**
+         * Leave empty to auto-list by name. Set to pin an exact subset and order (ignores the limit above).
+         */
+        communityOverrides?: (number | Area)[] | null;
         id?: string | null;
       }[]
     | null;
@@ -2809,6 +2821,7 @@ export interface FooterSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        source?: T;
         links?:
           | T
           | {
@@ -2829,6 +2842,8 @@ export interface FooterSelect<T extends boolean = true> {
               ariaLabel?: T;
               id?: T;
             };
+        communityLimit?: T;
+        communityOverrides?: T;
         id?: T;
       };
   bottomLeftText?: T;

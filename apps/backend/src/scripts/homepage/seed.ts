@@ -72,6 +72,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
     columns: [
       {
         title: 'Residences',
+        source: 'manual',
         links: [
           { label: 'The Anchorage', link: customLink('The Anchorage', '/listings') },
           { label: 'Lakeside Villa', link: customLink('Lakeside Villa', '/listings') },
@@ -81,6 +82,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
       },
       {
         title: 'Explore',
+        source: 'manual',
         links: [
           { label: 'Amenities', link: customLink('Amenities', '/#amenities') },
           { label: 'Communities', link: customLink('Communities', '/#communities') },
@@ -90,6 +92,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
       },
       {
         title: 'Concierge',
+        source: 'manual',
         links: [
           { label: 'Speak With Us', link: customLink('Speak With Us', '/#lead') },
           { label: '(239) 555-0148', link: customLink('(239) 555-0148', 'tel:+12395550148') },

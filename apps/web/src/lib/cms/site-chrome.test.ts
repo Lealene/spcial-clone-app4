@@ -66,6 +66,61 @@ describe('site chrome CMS normalization', () => {
     expect(footer.bottomRightLinks[0]).toMatchObject({ href: 'mailto:hello@example.com' });
   });
 
+  it('auto-fills a community-sourced footer column from Areas, honoring the limit', async () => {
+    const { normalizeFooter } = await import('./site-chrome');
+
+    const footer = normalizeFooter(
+      {
+        brandName: 'MVP',
+        brandBlurb: 'Concierge real estate.',
+        columns: [{ title: 'Communities', source: 'communities', communityLimit: 2 }],
+        bottomLeftText: '© MVP Realty',
+        bottomRightLinks: [],
+      },
+      [
+        { slug: 'bonita-bay', name: 'Bonita Bay' },
+        { slug: 'pelican-bay', name: 'Pelican Bay' },
+        { slug: 'talis-park', name: 'Talis Park' },
+      ],
+    );
+
+    expect(footer.columns[0]?.links).toEqual([
+      { label: 'Bonita Bay', link: { label: 'Bonita Bay', href: '/communities/bonita-bay' } },
+      { label: 'Pelican Bay', link: { label: 'Pelican Bay', href: '/communities/pelican-bay' } },
+    ]);
+  });
+
+  it('prefers pinned community overrides over the auto list and their order', async () => {
+    const { normalizeFooter } = await import('./site-chrome');
+
+    const footer = normalizeFooter(
+      {
+        brandName: 'MVP',
+        brandBlurb: 'Concierge real estate.',
+        columns: [
+          {
+            title: 'Communities',
+            source: 'communities',
+            communityLimit: 6,
+            communityOverrides: [
+              { slug: 'talis-park', name: 'Talis Park' },
+              { slug: 'not a slug', name: 'Broken' },
+              { slug: 'bonita-bay', name: 'Bonita Bay' },
+            ],
+          },
+        ],
+        bottomLeftText: '© MVP Realty',
+        bottomRightLinks: [],
+      },
+      [{ slug: 'pelican-bay', name: 'Pelican Bay' }],
+    );
+
+    expect(footer.columns[0]?.links.map((item) => item.link.href)).toEqual([
+      '/communities/talis-park',
+      '/communities/bonita-bay',
+    ]);
+  });
+
   it('rejects missing CMS-owned header and footer copy', async () => {
     const { normalizeFooter, normalizeHeader } = await import('./site-chrome');
 
