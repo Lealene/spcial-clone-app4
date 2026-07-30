@@ -35,6 +35,17 @@ function finiteNumber(value: unknown): number | undefined {
 }
 
 /**
+ * Measurements the schema requires to be positive. The MLS reports `0` for
+ * things a property simply doesn't have — condos always carry
+ * `LotSizeSquareFeet: 0` — so treat non-positive as absent instead of letting
+ * `listingDetailSchema` reject the doc and 404 the PDP.
+ */
+function positiveNumber(value: unknown): number | undefined {
+  const parsed = finiteNumber(value);
+  return parsed !== undefined && parsed > 0 ? parsed : undefined;
+}
+
+/**
  * Map coordinates, both axes or neither. Bad values are dropped here rather than
  * failing `listingDetailSchema` — a nonsense latitude must not 404 the whole PDP.
  */
@@ -299,9 +310,9 @@ export function normalizeListingDetail(raw: unknown): ListingDetail | null {
     state: text(raw.state) ?? 'FL',
     zip: text(raw.zip),
     ...coordinates(raw.latitude, raw.longitude),
-    pricePerSqft: finiteNumber(raw.pricePerSqft),
+    pricePerSqft: positiveNumber(raw.pricePerSqft),
     yearBuilt: finiteNumber(raw.yearBuilt),
-    lotSqft: finiteNumber(raw.lotSqft),
+    lotSqft: positiveNumber(raw.lotSqft),
     taxesYearly: finiteNumber(raw.taxesYearly),
     hoaMonthly: finiteNumber(raw.hoaMonthly),
     publicRemarks: text(raw.publicRemarks),
