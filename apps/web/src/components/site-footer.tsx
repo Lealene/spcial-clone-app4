@@ -1,12 +1,13 @@
 import type { FooterGlobal } from '@mvp-realty/api-contracts';
 import Link from 'next/link';
 
+import { Container } from '@/components/container';
 import { getLinkRenderProps } from '@/lib/cms/links';
 
 export function SiteFooter({ footer }: { footer: FooterGlobal }) {
   return (
     <footer className="bg-primary-deep text-white/65">
-      <div className="mx-auto max-w-[1440px] px-[clamp(22px,4vw,64px)]">
+      <Container>
         <div className="grid gap-12 py-[78px] pb-[50px] md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr]">
           <div>
             <b className="font-serif text-2xl font-bold text-white">
@@ -57,7 +58,7 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
             )}
           </div>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

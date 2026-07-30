@@ -82,14 +82,20 @@ export function ListingCard({
         </h3>
         <div className="text-muted mt-1.5 flex items-center gap-[7px] font-sans text-[14px] font-medium">
           <MapPin className="text-accent-deep size-[14px] shrink-0" strokeWidth={1.8} />
-          {listing.communityName} · {listing.city}
+          {/* truncate keeps card heights in step across the results grid. */}
+          <span className="min-w-0 truncate">
+            {listing.communityName} · {listing.city}
+          </span>
         </div>
 
         <div className="border-line-soft mt-4 flex border-t pt-4">
           {stats.map((s, i) => (
             <div
               key={s.label}
-              className={cn('flex-1 text-left', i > 0 && 'border-line-soft border-l pl-[13px]')}
+              className={cn(
+                'min-w-0 flex-1 text-left',
+                i > 0 && 'border-line-soft border-l pl-[13px]',
+              )}
             >
               <b className="text-primary block font-sans text-[17px] leading-none font-extrabold">
                 {s.value}

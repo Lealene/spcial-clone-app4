@@ -47,8 +47,10 @@ function SpecGroups({ groups }: { groups: SpecGroup[] }) {
                   key={i}
                   className="flex items-start justify-between gap-[18px] font-sans text-[15px]"
                 >
-                  <span className="text-muted">{item.label}</span>
-                  <span className="text-primary text-right font-bold">{item.value}</span>
+                  <span className="text-muted min-w-0">{item.label}</span>
+                  <span className="text-primary min-w-0 text-right font-bold break-words">
+                    {item.value}
+                  </span>
                 </li>
               ) : (
                 <li
@@ -69,11 +71,13 @@ function SpecGroups({ groups }: { groups: SpecGroup[] }) {
 
 /** Stylized, schematic floor plan grid — tasteful, not to scale. */
 function FloorPlan({ rooms }: { rooms: FloorRoom[] }) {
+  // Spans are md-gated: at the 1- and 2-column tiers a `col-span-2` would
+  // exceed the track count and blow the schematic out.
   const areaClass: Record<string, string> = {
-    great: 'col-span-2 row-span-2',
+    great: 'md:col-span-2 md:row-span-2',
     kit: '',
     nook: '',
-    primary: 'row-span-2',
+    primary: 'md:row-span-2',
     office: '',
     bed2: '',
     lanai: '',
@@ -87,7 +91,7 @@ function FloorPlan({ rooms }: { rooms: FloorRoom[] }) {
   return (
     <div className="bg-surface-soft border-line mt-7 rounded-xl border p-[clamp(22px,2.6vw,32px)]">
       <div
-        className="grid grid-cols-3 gap-[9px]"
+        className="grid grid-cols-1 gap-[9px] sm:grid-cols-2 md:grid-cols-3"
         style={{ gridAutoRows: 'minmax(56px, auto)' }}
         role="img"
         aria-label="Single-level floor plan schematic showing the great room, kitchen, owner's suite, secondary bedrooms, den, and lanai."
@@ -105,7 +109,7 @@ function FloorPlan({ rooms }: { rooms: FloorRoom[] }) {
                 areaClass[area],
               )}
             >
-              <b className="text-primary font-sans text-[13px] leading-[1.15] font-bold">
+              <b className="text-primary font-sans text-[13px] leading-[1.15] font-bold break-words hyphens-auto">
                 {room.name}
               </b>
               {room.note && <span className="text-muted font-sans text-[11px]">{room.note}</span>}
@@ -141,7 +145,7 @@ function LocationCard({ view, className }: { view: PropertyView; className?: str
   return (
     <div
       className={cn(
-        'bg-primary shadow-card pointer-events-none absolute top-[18px] left-[18px] z-[3] max-w-[62%] rounded-md px-3.5 py-[9px] font-sans text-[13px] font-semibold text-white',
+        'bg-primary shadow-card pointer-events-none absolute top-[18px] left-[18px] z-[3] max-w-[calc(100%-36px)] rounded-md px-3.5 py-[9px] font-sans text-[13px] font-semibold text-white sm:max-w-[62%]',
         className,
       )}
     >
@@ -174,7 +178,7 @@ function LocationMap({
   coordinates: { lat: number; lon: number };
 }) {
   return (
-    <div className="border-line shadow-card relative mt-7 h-[340px] overflow-hidden rounded-xl border">
+    <div className="border-line shadow-card relative mt-7 h-[clamp(260px,38vw,420px)] overflow-hidden rounded-xl border">
       <ListingMap lat={coordinates.lat} lon={coordinates.lon} label={view.addressLine} />
       {/* Leaflet's panes and controls climb to z-index 800+, so overlays must sit above that. */}
       <LocationCard view={view} className="z-[1000]" />

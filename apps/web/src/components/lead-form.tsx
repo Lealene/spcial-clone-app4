@@ -227,7 +227,9 @@ export function LeadForm({
     <form onSubmit={handleSubmit} noValidate className={className}>
       {heading}
 
-      <div className="grid grid-cols-2 gap-3">
+      {/* Stacks below sm — side-by-side leaves ~100px per field inside the
+          dark card surfaces, which truncates both placeholder and value. */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label htmlFor={`${formId}-firstName`}>
           <span className={labelClass}>{firstName.label}</span>
           <input

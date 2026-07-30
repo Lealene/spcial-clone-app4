@@ -29,7 +29,7 @@ function BlockHead({ title, more }: { title: string; more?: { label: string; hre
 }
 
 const BLOCK =
-  'border-line-soft border-b pb-[clamp(44px,5vw,64px)] mb-[clamp(44px,5vw,64px)] last:border-b-0 last:mb-0 last:pb-0 scroll-mt-[150px]';
+  'border-line-soft border-b pb-[clamp(44px,5vw,64px)] mb-[clamp(44px,5vw,64px)] last:border-b-0 last:mb-0 last:pb-0 scroll-mt-[var(--chrome-h,154px)]';
 
 /** Renders `**bold**` spans inside a prose paragraph. */
 function Prose({ text }: { text: string }) {
@@ -75,13 +75,13 @@ export function MainContent({
       {hasOverview ? (
         <section id="overview" className={BLOCK}>
           {hasFacts ? (
-            <div className="border-line mb-[clamp(38px,4vw,52px)] grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-[var(--line)] md:grid-cols-3">
+            <div className="border-line mb-[clamp(38px,4vw,52px)] grid grid-cols-1 gap-px overflow-hidden rounded-xl border bg-[var(--line)] sm:grid-cols-2 md:grid-cols-3">
               {community.facts.map((fact) => (
-                <div key={fact.label} className="bg-surface-soft px-6 py-[22px]">
+                <div key={fact.label} className="bg-surface-soft min-w-0 px-4 py-[22px] sm:px-6">
                   <span className="text-muted block font-sans text-[12px] font-bold tracking-[0.08em] uppercase">
                     {fact.label}
                   </span>
-                  <b className="text-primary mt-[7px] block font-sans text-[18px] leading-[1.3] font-extrabold">
+                  <b className="text-primary mt-[7px] block font-sans text-[18px] leading-[1.3] font-extrabold break-words">
                     {fact.value}
                   </b>
                 </div>
@@ -170,7 +170,7 @@ export function MainContent({
           <BlockHead title="Resident Reviews" more={{ label: 'See all reviews', href: '#tour' }} />
           <div className="mb-[clamp(28px,3vw,40px)] grid grid-cols-1 items-center gap-[clamp(28px,4vw,56px)] sm:grid-cols-[auto_1fr]">
             <div className="text-center">
-              <div className="text-primary font-serif text-[64px] leading-none font-semibold">
+              <div className="text-primary font-serif text-[clamp(46px,7vw,64px)] leading-none font-semibold">
                 {community.rating?.toFixed(1)}
               </div>
               <Stars className="mt-2.5 [&_svg]:size-[18px]" />

@@ -131,10 +131,10 @@ export function ListingsBrowser({ listings }: { listings: Listing[] }) {
 
       <Container
         id="results"
-        className="grid scroll-mt-[148px] items-start gap-[clamp(28px,3vw,48px)] py-[clamp(36px,4vw,56px)] lg:grid-cols-[312px_1fr]"
+        className="grid scroll-mt-[var(--chrome-h,154px)] items-start gap-[clamp(28px,3vw,48px)] py-[clamp(36px,4vw,56px)] lg:grid-cols-[312px_minmax(0,1fr)]"
       >
         {/* Desktop sidebar — sticky under nav + quick filters; inner scroll, Refine header pins */}
-        <aside className="hidden [scrollbar-width:none] self-start [-ms-overflow-style:none] lg:sticky lg:top-[148px] lg:block lg:max-h-[calc(100dvh-160px)] lg:overflow-y-auto lg:overscroll-contain [&::-webkit-scrollbar]:hidden">
+        <aside className="hidden [scrollbar-width:none] self-start [-ms-overflow-style:none] lg:sticky lg:top-[var(--chrome-h,154px)] lg:block lg:max-h-[calc(100dvh-var(--chrome-h,154px)-12px)] lg:overflow-y-auto lg:overscroll-contain [&::-webkit-scrollbar]:hidden">
           <FilterPanel {...panelProps} />
           <ConciergeHelpCard />
         </aside>
@@ -156,7 +156,8 @@ export function ListingsBrowser({ listings }: { listings: Listing[] }) {
               <SheetHeader className="sr-only">
                 <SheetTitle>Filter residences</SheetTitle>
               </SheetHeader>
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
+              {/* pb clears the sticky footer so the last facet row isn't half-hidden. */}
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-8">
                 <FilterPanel {...panelProps} />
               </div>
               <div className="border-line bg-surface shrink-0 border-t p-4">
@@ -192,7 +193,7 @@ export function ListingsBrowser({ listings }: { listings: Listing[] }) {
               >
                 Sort
               </label>
-              <div className="relative min-w-[200px]">
+              <div className="relative max-w-full min-w-[160px] sm:min-w-[200px]">
                 <select
                   id="sortBy"
                   value={filters.sort}

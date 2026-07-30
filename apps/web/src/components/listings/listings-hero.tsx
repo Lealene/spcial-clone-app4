@@ -39,7 +39,9 @@ export function ListingsHero({ total, communities }: { total: number; communitie
 
         <Suspense
           fallback={
-            <div className="bg-surface-soft/40 mt-[clamp(28px,3.4vw,40px)] h-[78px] max-w-[780px] rounded-xl" />
+            /* Matches the real search's wrapped height on narrow screens so
+               hydration doesn't jump the page. */
+            <div className="bg-surface-soft/40 mt-[clamp(28px,3.4vw,40px)] h-[186px] max-w-[780px] rounded-xl sm:h-[78px]" />
           }
         >
           <HeroSearch />

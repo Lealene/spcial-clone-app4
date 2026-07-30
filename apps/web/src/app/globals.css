@@ -10,6 +10,35 @@
  */
 @source '../../../../packages/ui/src';
 
+/* ---------------------------------------------------------------------------
+ * Layout chrome metrics. The sticky nav's height is content-derived, and the
+ * sub-navs (listings quick filters, community section tabs) plus anchor
+ * scroll-margins all need to agree with it. Single source of truth so those
+ * offsets cannot drift apart.
+ * ------------------------------------------------------------------------- */
+:root {
+  /* Measured from the rendered header (py-4 + brand mark). The previous
+     hard-coded 73px/74px literals scattered through components were both
+     slightly short, which left a sliver of content scrolling between the
+     nav and the sub-navs pinned beneath it. */
+  --nav-h: 77px;
+  --subnav-h: 77px;
+  --chrome-h: calc(var(--nav-h) + var(--subnav-h));
+}
+
+/*
+ * Radix overlays must clear the sticky site nav, which sits at z-60. Written
+ * here rather than in `packages/ui` so a future `shadcn add` cannot revert it,
+ * and left unlayered so it beats Tailwind's `@layer utilities` z-50 without
+ * needing !important.
+ */
+[data-slot='sheet-overlay'],
+[data-slot='sheet-content'],
+[data-slot='dialog-overlay'],
+[data-slot='dialog-content'] {
+  z-index: 70;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

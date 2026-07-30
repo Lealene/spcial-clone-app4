@@ -9,10 +9,11 @@ import { ListingCard } from './listing-card';
 /** "Similar Homes" — up to 3 cards reusing the shared ListingCard. */
 export function PropertySimilar({
   listings,
-  communityName,
+  scopeLabel,
 }: {
   listings: Listing[];
-  communityName: string;
+  /** Place every card shares, or `null` when the set spans locations. */
+  scopeLabel: string | null;
 }) {
   if (listings.length === 0) return null;
   return (
@@ -22,7 +23,7 @@ export function PropertySimilar({
           <div className="max-w-[46ch]">
             <Kicker>Similar Homes</Kicker>
             <h2 className="text-ink mt-4 max-w-[20ch] font-serif text-[clamp(30px,3.8vw,48px)] leading-[1.06] font-semibold tracking-[-0.01em]">
-              More residences in {communityName}.
+              {scopeLabel ? `More residences in ${scopeLabel}.` : 'Residences you may also like.'}
             </h2>
           </div>
           <Link

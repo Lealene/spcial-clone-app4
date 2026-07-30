@@ -37,8 +37,11 @@ export function QuickFilterBar({
   hasAnyActive: boolean;
 }) {
   return (
-    <div className="border-line-soft bg-surface-muted sticky top-[73px] z-40 border-b">
-      <Container className="flex items-center gap-2.5 overflow-x-auto py-4">
+    <div className="border-line-soft bg-surface-muted sticky top-[var(--nav-h,77px)] z-40 border-b">
+      {/* Right-edge fade so it reads as scrollable; the trailing spacer below
+          restores the inline padding the scroll container loses at scroll end. */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-10 bg-gradient-to-l from-[var(--surface-muted)] to-transparent sm:hidden" />
+      <Container className="flex [scrollbar-width:none] items-center gap-2.5 overflow-x-auto py-4 [-ms-overflow-style:none] after:block after:w-[clamp(2px,1vw,8px)] after:shrink-0 after:content-[''] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
           onClick={onClear}

@@ -43,11 +43,18 @@ export function ListingMap({
 
       const L = leaflet.default ?? leaflet;
 
+      // On touch devices a one-finger drag inside a full-width map block
+      // hijacks page scroll, trapping the reader mid-page. Panning is disabled
+      // there and zooming stays available through the on-map control below.
+      const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
       const instance = L.map(container, {
         center: [lat, lon],
         zoom,
         // Ctrl/⌘ + scroll to zoom, so the page keeps scrolling normally.
         scrollWheelZoom: false,
+        dragging: !isTouch,
+        touchZoom: !isTouch,
         zoomControl: false,
         attributionControl: true,
       });
