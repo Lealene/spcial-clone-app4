@@ -4,7 +4,7 @@ import { cn } from '@mvp-realty/ui/lib/utils';
 import {
   COMMUNITY_OPTIONS,
   FEATURE_OPTIONS,
-  STATUS_OPTIONS,
+  // STATUS_OPTIONS — re-import with the Availability group below.
   TYPE_OPTIONS,
   type ArrayFacet,
   type FilterState,
@@ -254,7 +254,12 @@ export function FilterPanel({
         />
       </Group>
 
-      <Group>
+      {/*
+       * Availability hidden for now: the feed only carries active listings, so
+       * every option except "Active" renders 0 and the whole group is dead
+       * weight. Restore this once Pending/Sold/Coming Soon actually sync.
+       */}
+      {/* <Group>
         <GroupHeading>Availability</GroupHeading>
         <CheckList
           facet="status"
@@ -263,7 +268,7 @@ export function FilterPanel({
           counts={counts.status}
           onToggle={onToggleFacet}
         />
-      </Group>
+      </Group> */}
 
       <Group>
         <GroupHeading>Features</GroupHeading>
