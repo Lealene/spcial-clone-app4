@@ -49,12 +49,14 @@ export function SectionTabs({ sections }: { sections: Tab[] }) {
   if (sections.length === 0) return null;
 
   return (
-    <div className="border-line-soft bg-surface/90 sticky top-[74px] z-50 mt-[clamp(26px,3vw,38px)] border-t border-b backdrop-blur-[14px] backdrop-saturate-150">
+    <div className="border-line-soft bg-surface/90 sticky top-[var(--nav-h,77px)] z-50 mt-[clamp(26px,3vw,38px)] border-t border-b backdrop-blur-[14px] backdrop-saturate-150">
+      {/* Only ~2 of 6 tabs fit at 360px; the fade signals the rest exist. */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-10 bg-gradient-to-l from-[var(--surface)] to-transparent lg:hidden" />
       <Container>
         <nav
           ref={railRef}
           aria-label="Community sections"
-          className="flex [scrollbar-width:none] gap-1.5 overflow-x-auto [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex [scrollbar-width:none] gap-1.5 overflow-x-auto [-ms-overflow-style:none] after:block after:w-[clamp(2px,1vw,8px)] after:shrink-0 after:content-[''] [&::-webkit-scrollbar]:hidden"
         >
           {sections.map((tab) => {
             const isActive = active === tab.id;
