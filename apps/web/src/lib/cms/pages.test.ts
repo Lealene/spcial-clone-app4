@@ -191,7 +191,7 @@ describe('CMS page adapters', () => {
       'http://localhost:3002/api/pages?where[slug][equals]=about%20us&depth=2&limit=1',
     );
     expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({
-      next: { revalidate: 300, tags: ['cms', 'cms-page:about us'] },
+      next: { revalidate: false, tags: ['cms', 'cms-page:about us'] },
     });
   });
 

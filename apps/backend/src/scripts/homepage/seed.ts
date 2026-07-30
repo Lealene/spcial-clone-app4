@@ -231,6 +231,10 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
         headingAccent: 'the people.',
         body: 'For our residents, the deciding factor is rarely the floorplan. It is the standing dinner on Thursdays, the doubles partner two doors down, and the sense that there is always a reason to step outside. You arrive with an address; within a week you have a ready-made circle.',
         maxTiles: 3,
+        // No `link` on these tiles. They previously pointed at '#lifestyle' — the
+        // anchor of the block they live in — so clicking went nowhere while the
+        // anchor still showed a pointer cursor, advertising a destination that did
+        // not exist. `TheLife` renders a plain `div` when a tile has no link.
         tiles: [
           {
             caption: 'Doubles at nine, coffee after',
@@ -238,7 +242,6 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
               mediaDocs.valenciaTrails,
               'Four neighbors mid-rally in a friendly doubles pickleball match',
             ),
-            link: customLink('Doubles at nine, coffee after', '#lifestyle'),
           },
           {
             caption: 'Thursday wine on the terrace',
@@ -246,7 +249,6 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
               mediaDocs.valenciaBonita,
               'Residents raising their glasses together at a clubhouse wine evening',
             ),
-            link: customLink('Thursday wine on the terrace', '#lifestyle'),
           },
           {
             caption: 'Live music on the lawn',
@@ -254,7 +256,6 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
               mediaDocs.bonitaBay,
               'Couples dancing on the lawn at an outdoor live-music night',
             ),
-            link: customLink('Live music on the lawn', '#lifestyle'),
           },
         ],
       },

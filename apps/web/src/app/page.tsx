@@ -6,6 +6,12 @@ import { CmsDataError } from '@/lib/cms/errors';
 import { getPageContent } from '@/lib/cms/pages';
 import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
 
+/**
+ * Mixes CMS page blocks with featured listings, so it is purged by both the
+ * per-page tag and `listings-featured`. This is the missed-webhook backstop.
+ */
+export const revalidate = 3600;
+
 const getHomePageContent = cache(async () => {
   const result = await getPageContent('home');
   if (result.status === 'missing') {

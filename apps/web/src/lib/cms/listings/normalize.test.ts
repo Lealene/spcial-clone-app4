@@ -161,6 +161,42 @@ describe('normalizeListingCard / Detail', () => {
     }
   });
 
+  it('drops non-positive lot size and price per sq ft without failing the detail', async () => {
+    vi.resetModules();
+    const { normalizeListingDetail } = await import('./normalize');
+
+    const base = {
+      slug: '4931-bonita-bay-blvd-2301-bonita-springs-fl-226004428',
+      mlsId: '226004428',
+      fullAddress: '4931 Bonita Bay BLVD 2301',
+      streetAddress: '4931 Bonita Bay BLVD 2301',
+      city: 'BONITA SPRINGS',
+      price: 2950000,
+      beds: 3,
+      baths: 3.5,
+      sqft: 4240,
+      mlsStatus: 'active',
+      isActive: true,
+      area: { slug: 'bonita-bay', name: 'Bonita Bay' },
+      heroImage: { url: 'https://pub-example.r2.dev/hero.jpg', alt: 'Primary photo' },
+      gallery: [],
+      interiorSpecs: {},
+      exteriorSpecs: {},
+      highlights: [],
+      floorPlan: [],
+    };
+
+    const kept = normalizeListingDetail({ ...base, lotSqft: 16792, pricePerSqft: 696 });
+    expect(kept?.lotSqft).toBe(16792);
+    expect(kept?.pricePerSqft).toBe(696);
+
+    // Condos report a zero lot size; that must not null out the whole PDP.
+    const condo = normalizeListingDetail({ ...base, lotSqft: 0, pricePerSqft: 0 });
+    expect(condo).not.toBeNull();
+    expect(condo?.lotSqft).toBeUndefined();
+    expect(condo?.pricePerSqft).toBeUndefined();
+  });
+
   it('uses estate type facet when isEstate is true', async () => {
     vi.resetModules();
     const { normalizeListingCard } = await import('./normalize');

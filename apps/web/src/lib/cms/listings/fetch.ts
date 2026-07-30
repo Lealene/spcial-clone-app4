@@ -5,6 +5,31 @@ import { CMS_CACHE_TAGS, type ListingCard, type ListingDetail } from '@mvp-realt
 const LISTINGS_TAG = CMS_CACHE_TAGS.listings;
 const PAGE_LIMIT = 100;
 
+/**
+ * Detail-only fields dropped from *list* queries. `rawData` alone is ~22KB of the
+ * ~38KB document — the untransformed MLS blob, which `normalizeListingCard` never
+ * reads — and at 100 docs per page that pushed responses to 4.6MB, past the 2MB
+ * ceiling on a Next Data Cache entry. Payload logged `items over 2MB can not be
+ * cached` and skipped the write, so every render refetched the full set.
+ *
+ * Exclude mode, not include: a card field added later keeps working instead of
+ * silently vanishing from the grid. Only ever applied to list queries —
+ * `getListingBySlug` needs the whole document for `normalizeListingDetail`.
+ */
+const LIST_EXCLUDED_FIELDS = [
+  'rawData',
+  'publicRemarks',
+  'interiorSpecs',
+  'exteriorSpecs',
+  'floorPlan',
+] as const;
+
+function applyListSelect(params: URLSearchParams): void {
+  for (const field of LIST_EXCLUDED_FIELDS) {
+    params.set(`select[${field}]`, 'false');
+  }
+}
+
 type PayloadListResponse = {
   docs?: unknown[];
   hasNextPage?: boolean;
@@ -26,6 +51,7 @@ async function fetchListingPages(baseParams: URLSearchParams): Promise<unknown[]
     params.set('limit', String(PAGE_LIMIT));
     params.set('page', String(page));
     params.set('depth', '1');
+    applyListSelect(params);
 
     const raw = (await fetchJson(listingsPath(params.toString()), {
       tags: [LISTINGS_TAG],
@@ -60,6 +86,7 @@ export async function getFeaturedListings(limit = 12): Promise<ListingCard[]> {
     limit: String(limit),
     depth: '1',
   });
+  applyListSelect(params);
   const raw = (await fetchJson(listingsPath(params.toString()), {
     tags: [LISTINGS_TAG, CMS_CACHE_TAGS.listingsFeatured],
   })) as PayloadListResponse;

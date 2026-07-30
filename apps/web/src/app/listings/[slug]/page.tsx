@@ -18,6 +18,9 @@ import { fmtPrice } from '@/lib/listing-filters';
 
 type Params = { slug: string };
 
+/** Backstop only; the `listings` tag purge is what makes edits appear. */
+export const revalidate = 900;
+
 export async function generateStaticParams(): Promise<Params[]> {
   try {
     const slugs = await getActiveListingSlugs();

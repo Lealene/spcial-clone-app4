@@ -43,6 +43,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Anchor navigation (header "The Life", "#amenities", in-page jumps) eases
+   * instead of teleporting. Overridden to `auto` under prefers-reduced-motion
+   * below. JS calls that pass an explicit `behavior` still win over this. */
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-surface text-ink font-sans antialiased;
     line-height: 1.6;
@@ -78,6 +84,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {

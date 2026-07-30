@@ -48,6 +48,7 @@ export function GalleryLightbox({
   const count = images.length;
   const [index, setIndex] = useState(startIndex);
   const pointerStartX = useRef<number | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
 
   // Re-seat the viewer whenever it is opened from a different tile. Clamped so
   // a stale index can never point past a shorter gallery.
@@ -62,6 +63,22 @@ export function GalleryLightbox({
     },
     [count],
   );
+
+  /**
+   * Keep the active thumbnail centred. With the scrollbar hidden there is no
+   * other cue to where you are in a 50-photo rail, and arrowing past the visible
+   * window would leave the highlight off screen.
+   *
+   * No `behavior` here on purpose: the rail carries `motion-safe:scroll-smooth`,
+   * so this eases normally and jumps for anyone who asked for reduced motion.
+   */
+  useEffect(() => {
+    if (!open) return;
+    const rail = railRef.current;
+    const active = rail?.children[index];
+    if (!rail || !(active instanceof HTMLElement)) return;
+    rail.scrollTo({ left: active.offsetLeft - rail.clientWidth / 2 + active.offsetWidth / 2 });
+  }, [open, index]);
 
   // Arrow keys step through photos. Radix already handles Escape.
   useEffect(() => {
@@ -160,7 +177,14 @@ export function GalleryLightbox({
         </div>
 
         {count > 1 && (
-          <div className="flex shrink-0 gap-2 overflow-x-auto border-t border-white/10 px-4 py-3 sm:px-8">
+          // Native scrollbar hidden — the same treatment as the listings sidebar.
+          // A 50-photo rail otherwise puts a full-width system scrollbar across the
+          // bottom of the viewer. The effect above keeps the active thumbnail
+          // centred, which is the affordance the bar was providing.
+          <div
+            ref={railRef}
+            className="flex shrink-0 [scrollbar-width:none] gap-2 overflow-x-auto border-t border-white/10 px-4 py-3 [-ms-overflow-style:none] motion-safe:scroll-smooth sm:px-8 [&::-webkit-scrollbar]:hidden"
+          >
             {images.map((image, i) => (
               <button
                 type="button"
