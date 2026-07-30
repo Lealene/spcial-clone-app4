@@ -36,7 +36,9 @@ export function PropertyHeader({ view }: { view: PropertyView }) {
             />
             {view.statusLabel} · {listing.communityName}
           </span>
-          <div className="text-primary mt-3 font-serif text-[clamp(40px,5.2vw,62px)] leading-none font-semibold tracking-[-0.01em]">
+          {/* leading-[1.05] rather than leading-none: at 320px the price wraps
+              and the per-sqft span has no line box to sit in. */}
+          <div className="text-primary mt-3 font-serif text-[clamp(34px,5.2vw,62px)] leading-[1.05] font-semibold tracking-[-0.01em]">
             {view.priceLabel}
             <span className="text-muted ml-3.5 font-sans text-[16px] font-semibold">
               {view.pricePerSqftLabel}
@@ -60,18 +62,20 @@ export function PropertyHeader({ view }: { view: PropertyView }) {
       </div>
 
       {/* Key-facts ribbon */}
-      <div className="border-line bg-line mt-[clamp(24px,3vw,34px)] grid grid-cols-2 gap-px overflow-hidden rounded-xl border sm:grid-cols-3 lg:grid-cols-6">
+      {/* Six across only at xl — at lg it leaves ~116px per cell, which clips
+          prices. Cells are min-w-0 so long values wrap instead of overflowing. */}
+      <div className="border-line bg-line mt-[clamp(24px,3vw,34px)] grid grid-cols-2 gap-px overflow-hidden rounded-xl border sm:grid-cols-3 xl:grid-cols-6">
         {view.keyFacts.map((fact) => {
           const Icon = FACT_ICON[fact.icon];
           return (
             <div
               key={fact.label}
-              className="bg-surface hover:bg-surface-soft flex flex-col gap-2 px-[22px] py-5 transition-colors"
+              className="bg-surface hover:bg-surface-soft flex min-w-0 flex-col gap-2 px-4 py-5 transition-colors sm:px-[22px]"
             >
-              <span className="bg-surface-muted border-line grid size-9 place-items-center rounded-md shadow-[inset_0_0_0_1px_var(--line)]">
+              <span className="bg-surface-muted border-line grid size-9 shrink-0 place-items-center rounded-md shadow-[inset_0_0_0_1px_var(--line)]">
                 <Icon className="text-primary size-[19px]" strokeWidth={1.7} />
               </span>
-              <b className="text-primary mt-1 font-sans text-[18px] leading-none font-extrabold">
+              <b className="text-primary mt-1 font-sans text-[18px] leading-[1.1] font-extrabold break-words">
                 {fact.value}
               </b>
               <span className="text-muted font-sans text-[11.5px] font-bold tracking-[0.06em] uppercase">
