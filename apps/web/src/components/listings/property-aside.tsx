@@ -39,7 +39,7 @@ export function PropertyAside({
   return (
     <aside
       id="tour"
-      className="grid gap-[18px] self-start sm:grid-cols-2 lg:sticky lg:top-24 lg:grid-cols-1"
+      className="grid gap-[18px] self-start sm:grid-cols-2 lg:sticky lg:top-[var(--nav-h,77px)] lg:max-h-[calc(100dvh-var(--nav-h,77px)-12px)] lg:grid-cols-1 lg:overflow-y-auto lg:overscroll-contain"
     >
       {broker ? (
         <div className="bg-primary shadow-lift overflow-hidden rounded-xl border border-[rgba(255,183,3,0.18)] text-white">

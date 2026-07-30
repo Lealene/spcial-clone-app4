@@ -67,7 +67,7 @@ export function SiteNavInteractive({ header }: { header: HeaderGlobal }) {
       </div>
 
       {menuOpen && (
-        <div className="border-line-soft bg-surface-soft border-t lg:hidden">
+        <div className="border-line-soft bg-surface-soft max-h-[calc(100dvh-var(--nav-h,77px))] overflow-y-auto overscroll-contain border-t lg:hidden">
           <nav className="mx-auto flex max-w-[1440px] flex-col px-[clamp(22px,4vw,64px)] py-2">
             {header.navItems.map((item) => (
               <Link

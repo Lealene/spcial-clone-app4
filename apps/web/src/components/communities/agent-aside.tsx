@@ -27,7 +27,7 @@ export function AgentAside({
   const firstName = broker?.firstName ?? 'your concierge';
 
   return (
-    <aside className="grid gap-[18px] lg:sticky lg:top-[150px]">
+    <aside className="grid gap-[18px] lg:sticky lg:top-[var(--chrome-h,154px)] lg:max-h-[calc(100dvh-var(--chrome-h,154px)-12px)] lg:overflow-y-auto lg:overscroll-contain">
       <div className="border-line bg-surface shadow-card overflow-hidden rounded-xl border">
         {broker ? (
           <div className="bg-primary text-on-primary flex items-center gap-4 px-[26px] py-6">
