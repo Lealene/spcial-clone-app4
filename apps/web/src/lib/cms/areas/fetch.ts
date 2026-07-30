@@ -93,6 +93,40 @@ export async function getCommunityDetailSlugs(): Promise<string[]> {
     .filter((slug): slug is string => Boolean(slug));
 }
 
+/** Minimal community identity used to build nav/footer links. */
+export type CommunityNavItem = {
+  slug: string;
+  name: string;
+};
+
+function toCommunityNavItem(doc: unknown): CommunityNavItem | null {
+  if (typeof doc !== 'object' || doc === null) return null;
+  const { slug, name } = doc as { slug?: unknown; name?: unknown };
+  if (typeof slug !== 'string' || typeof name !== 'string') return null;
+  const trimmedSlug = slug.trim();
+  const trimmedName = name.trim();
+  if (!trimmedSlug || !trimmedName) return null;
+  return { slug: trimmedSlug, name: trimmedName };
+}
+
+/** Slug + name only, for auto-generated community link lists (footer columns). */
+export async function getCommunityNavItems(limit = 12): Promise<CommunityNavItem[]> {
+  const params = new URLSearchParams({
+    'where[kind][equals]': 'community',
+    sort: 'name',
+    limit: String(Math.max(1, limit)),
+    depth: '0',
+  });
+
+  const raw = (await fetchJson(areasPath(params.toString()), {
+    tags: [AREAS_TAG],
+  })) as PayloadListResponse;
+
+  return (raw.docs ?? [])
+    .map(toCommunityNavItem)
+    .filter((item): item is CommunityNavItem => item !== null);
+}
+
 /** Lean meta for listing PDP community facts + soldCount. */
 export async function getAreaPdpMeta(slug: string): Promise<AreaPdpMeta | null> {
   const params = new URLSearchParams({

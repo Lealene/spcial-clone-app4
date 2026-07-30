@@ -4,6 +4,8 @@ export {
   getCommunityAreaStripItems,
   getCommunityDetailBySlug,
   getCommunityDetailSlugs,
+  getCommunityNavItems,
+  type CommunityNavItem,
 } from './fetch';
 export {
   areaLocality,
