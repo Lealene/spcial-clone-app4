@@ -19,6 +19,12 @@ export const env = createEnv({
     // Public origin for Payload Media when served from R2/S3 (matches backend S3_PUBLIC_URL).
     NEXT_PUBLIC_MEDIA_URL: z.string().url().optional(),
     NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
+    // Google Tag Manager container. Optional: leave unset and no tag loads, which
+    // keeps dev and preview traffic out of the production container.
+    NEXT_PUBLIC_GTM_ID: z
+      .string()
+      .regex(/^GTM-[A-Z0-9]+$/, 'Must be a GTM container ID, e.g. GTM-ABC1234')
+      .optional(),
   },
   // Next.js < 13.4.4 only inlines NEXT_PUBLIC_ at build time; explicit map keeps
   // client-side access reliable.
@@ -32,6 +38,7 @@ export const env = createEnv({
     NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
     NEXT_PUBLIC_MEDIA_URL: process.env.NEXT_PUBLIC_MEDIA_URL,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
   },
   emptyStringAsUndefined: true,
 });

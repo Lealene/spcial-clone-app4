@@ -17,6 +17,7 @@
     "@mvp-realty/api-contracts": "workspace:*",
     "@mvp-realty/tailwind-config": "workspace:*",
     "@mvp-realty/ui": "workspace:*",
+    "@next/third-parties": "16.2.6",
     "@t3-oss/env-nextjs": "^0.11.1",
     "class-variance-authority": "^0.7.1",
     "leaflet": "^1.9.4",
