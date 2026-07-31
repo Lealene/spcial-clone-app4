@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
-import { BrandMark, BrandWordmark } from '@/components/brand-mark';
+import { BrandMark, BrandWordmark } from '@/components/layout/brand-mark';
 import { Button } from '@/components/ui/button';
 import { getLinkRenderProps } from '@/lib/cms/links';
 

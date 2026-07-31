@@ -9,8 +9,8 @@ import {
   Tag,
 } from 'lucide-react';
 
-import { Container } from '@/components/container';
-import { SaveShareActions } from '@/components/save-share-actions';
+import { Container } from '@/components/layout/container';
+import { SaveShareActions } from '@/components/shared/save-share-actions';
 import type { KeyFact, PropertyView } from '@/data/property';
 
 const FACT_ICON: Record<KeyFact['icon'], LucideIcon> = {

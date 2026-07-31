@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowRight, BedDouble, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { useListingFilters } from '@/lib/use-listing-filters';
+import { useListingFilters } from '@/lib/listings/use-filters';
 
 /**
  * Above-the-fold search inside the hero — keyword + minimum beds. Submit-based

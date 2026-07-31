@@ -1,8 +1,8 @@
 import Image from 'next/image';
 
-import { Container } from '@/components/container';
-import { LeadForm } from '@/components/lead-form';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { LeadForm } from '@/components/leads/lead-form';
+import { Kicker } from '@/components/layout/section-header';
 import { unsplash } from '@/data/images';
 
 /** Bottom concierge band — shortlist request over the navy hero treatment. */

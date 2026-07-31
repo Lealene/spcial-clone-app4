@@ -2,7 +2,7 @@ import { MapPin } from 'lucide-react';
 
 import type { CommunityDetail } from '@mvp-realty/api-contracts';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 import { HeaderActions } from './header-actions';
 import { Stars } from './stars';
 

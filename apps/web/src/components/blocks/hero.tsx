@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 import { Button } from '@/components/ui/button';
 import { getLinkRenderProps } from '@/lib/cms/links';
 

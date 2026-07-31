@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { ArrowRight, Building2, Landmark, type LucideIcon, ShieldCheck, Users } from 'lucide-react';
 
-import { Container } from '@/components/container';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Kicker } from '@/components/layout/section-header';
 import { Button } from '@/components/ui/button';
 import type { CommunityFact } from '@/data/property';
 

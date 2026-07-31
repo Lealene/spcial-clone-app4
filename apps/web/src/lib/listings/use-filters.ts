@@ -3,14 +3,14 @@
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { parseFilters, serializeFilters, type FilterState } from './listing-filters';
+import { parseFilters, serializeFilters, type FilterState } from './filters';
 
 /**
  * Bridges the URL search params (the single source of truth for `/listings`
  * filters) to a typed `FilterState`. `commit` writes a new state back to the
  * URL via `router.replace(..., { scroll: false })` — shareable, back-button
  * friendly, refresh-safe. Consumers derive results with `useMemo` over the
- * pure helpers in `listing-filters.ts`.
+ * pure helpers in `filters.ts`.
  *
  * Must be rendered under a <Suspense> boundary (useSearchParams requirement).
  */

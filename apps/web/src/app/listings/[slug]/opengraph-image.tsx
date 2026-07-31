@@ -1,6 +1,6 @@
 import { getListingBySlug } from '@/lib/cms/listings';
 import { getSiteSettings } from '@/lib/cms/site-settings';
-import { fmtPrice } from '@/lib/listing-filters';
+import { fmtPrice } from '@/lib/listings/filters';
 import { listingPlaceLabel } from '@/lib/seo/listing';
 import { OG_IMAGE_CONTENT_TYPE, OG_IMAGE_SIZE, renderOgCard } from '@/lib/seo/og-card';
 

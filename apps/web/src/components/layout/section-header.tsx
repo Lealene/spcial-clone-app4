@@ -16,7 +16,7 @@ export function Kicker({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-3 font-sans text-[13px] font-bold uppercase tracking-[0.28em]',
+        'inline-flex items-center gap-3 font-sans text-[13px] font-bold tracking-[0.28em] uppercase',
         tone === 'dark' ? 'text-accent' : 'text-accent-deep',
         className,
       )}
@@ -69,7 +69,7 @@ export function SectionHeader({
       </Kicker>
       <h2
         className={cn(
-          'mt-[18px] font-serif text-[clamp(34px,4.4vw,58px)] font-semibold leading-[1.05] tracking-[-0.01em]',
+          'mt-[18px] font-serif text-[clamp(34px,4.4vw,58px)] leading-[1.05] font-semibold tracking-[-0.01em]',
           tone === 'dark' ? 'text-white' : 'text-ink',
           centered ? 'mx-auto max-w-[20ch]' : 'max-w-[18ch]',
         )}

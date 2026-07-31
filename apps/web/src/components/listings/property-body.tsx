@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react';
 
 import { ListingMap } from '@/components/listings/listing-map';
-import { Kicker } from '@/components/section-header';
+import { Kicker } from '@/components/layout/section-header';
 // Restore alongside AskAboutAreaButton below when the map CTA comes back.
 // import { Button } from '@/components/ui/button';
 import { cn } from '@mvp-realty/ui/lib/utils';

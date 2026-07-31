@@ -2,9 +2,9 @@ import type { FeaturedCommunitiesBlock } from '@mvp-realty/api-contracts';
 
 import { CommunitySlider } from '@/components/communities/community-slider';
 import type { CommunityCardData } from '@/components/communities/community-card';
-import { Container } from '@/components/container';
-import { Reveal } from '@/components/reveal';
-import { SectionHeader } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Reveal } from '@/components/shared/reveal';
+import { SectionHeader } from '@/components/layout/section-header';
 import { getCommunityAreaCards } from '@/lib/cms/areas';
 import { getActiveListingCountsByCommunity } from '@/lib/cms/listings';
 

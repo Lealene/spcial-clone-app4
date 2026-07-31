@@ -1,6 +1,6 @@
-import { Container } from '@/components/container';
-import { LeadForm } from '@/components/lead-form';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { LeadForm } from '@/components/leads/lead-form';
+import { Kicker } from '@/components/layout/section-header';
 
 /** Bottom navy "Request a Tour" band — split copy plus the tour lead form. */
 export function TourBand({

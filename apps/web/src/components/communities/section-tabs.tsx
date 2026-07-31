@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 import { cn } from '@mvp-realty/ui/lib/utils';
 
 export type Tab = { id: string; label: string };

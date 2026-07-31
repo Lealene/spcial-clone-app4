@@ -8,7 +8,7 @@ import {
   paginationWindow,
   type PageSize,
   type PageSlice,
-} from '@/lib/listing-filters';
+} from '@/lib/listings/filters';
 
 const selectClass =
   'border-line bg-surface-muted text-ink focus:border-accent-deep focus:bg-surface min-w-[4.5rem] cursor-pointer appearance-none rounded-md border py-2.5 pr-9 pl-[13px] font-sans text-[14px] font-semibold transition-[border-color,background-color] outline-none';

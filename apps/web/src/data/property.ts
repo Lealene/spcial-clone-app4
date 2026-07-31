@@ -4,7 +4,7 @@
 import type { ListingDetail } from '@mvp-realty/api-contracts';
 
 import type { Listing } from './types';
-import { LABELS, fmtPrice } from '@/lib/listing-filters';
+import { LABELS, fmtPrice } from '@/lib/listings/filters';
 
 export type GalleryShot = {
   src: string;

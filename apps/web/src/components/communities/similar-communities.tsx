@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
 
 import type { SimilarCommunity } from '@mvp-realty/api-contracts';
-import { Container } from '@/components/container';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Kicker } from '@/components/layout/section-header';
 
 /** "Similar communities" rail — up to four nearby-community cards, mirroring the
  * home's featured-community card (`l-cfeat`). Links to each detail page. */

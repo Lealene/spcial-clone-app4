@@ -1,6 +1,6 @@
 'use client';
 
-import { SaveShareActions } from '@/components/save-share-actions';
+import { SaveShareActions } from '@/components/shared/save-share-actions';
 
 /** Community detail Save / Share — shared control with listing PDP. */
 export function HeaderActions({ name, slug }: { name: string; slug: string }) {

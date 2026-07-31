@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 import type { CommunityDetail } from '@mvp-realty/api-contracts';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 import { DetailHeader } from '@/components/communities/detail-header';
 import { Gallery } from '@/components/communities/gallery';
 import { SectionTabs, type Tab } from '@/components/communities/section-tabs';
@@ -11,7 +11,7 @@ import { MainContent } from '@/components/communities/main-content';
 import { AgentAside } from '@/components/communities/agent-aside';
 import { SimilarCommunities } from '@/components/communities/similar-communities';
 import { TourBand } from '@/components/communities/tour-band';
-import { PageBreadcrumb } from '@/components/page-breadcrumb';
+import { PageBreadcrumb } from '@/components/shared/page-breadcrumb';
 import { getCommunityDetailBySlug, getCommunityDetailSlugs } from '@/lib/cms/areas';
 import { getListingsForArea } from '@/lib/cms/listings';
 import { buildCommunityGraph, communityDescription, communityPath } from '@/lib/seo/community';

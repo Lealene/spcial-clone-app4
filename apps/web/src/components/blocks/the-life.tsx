@@ -2,9 +2,9 @@ import type { LifestyleBlock } from '@mvp-realty/api-contracts';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Container } from '@/components/container';
-import { Reveal } from '@/components/reveal';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Reveal } from '@/components/shared/reveal';
+import { Kicker } from '@/components/layout/section-header';
 import { getLinkRenderProps } from '@/lib/cms/links';
 
 // Theme-aware veil (see Hero) so the band re-skins with the active palette.

@@ -6,9 +6,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
-import { Container } from '@/components/container';
-import { Reveal } from '@/components/reveal';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Reveal } from '@/components/shared/reveal';
+import { Kicker } from '@/components/layout/section-header';
 
 const pad = (n: number) => (n < 10 ? '0' : '') + n;
 
@@ -93,7 +93,7 @@ export function Testimonials({ block }: { block: TestimonialsBlock }) {
       <Container className="relative z-10">
         <Reveal>
           <Kicker tone="dark">{block.kicker}</Kicker>
-          <h2 className="mt-[18px] max-w-[20ch] font-serif text-[clamp(34px,4.4vw,58px)] font-semibold leading-[1.05] tracking-[-0.01em] text-white">
+          <h2 className="mt-[18px] max-w-[20ch] font-serif text-[clamp(34px,4.4vw,58px)] leading-[1.05] font-semibold tracking-[-0.01em] text-white">
             {block.heading}{' '}
             {block.headingAccent && (
               <em className="text-accent-soft italic">{block.headingAccent}</em>
@@ -114,8 +114,8 @@ export function Testimonials({ block }: { block: TestimonialsBlock }) {
                 className={cn(
                   'absolute inset-0 m-0 transition-[opacity,transform] duration-[1000ms] ease-out',
                   i === index
-                    ? 'opacity-100 [transform:scale(1)]'
-                    : 'opacity-0 [transform:scale(1.06)]',
+                    ? '[transform:scale(1)] opacity-100'
+                    : '[transform:scale(1.06)] opacity-0',
                 )}
               >
                 <Image
@@ -127,9 +127,9 @@ export function Testimonials({ block }: { block: TestimonialsBlock }) {
                 />
               </figure>
             ))}
-            <div className="bg-primary-deep/50 absolute bottom-[18px] left-[18px] z-40 flex items-center gap-[9px] rounded-full py-[9px] pl-2.5 pr-3.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.16)] backdrop-blur-[10px]">
+            <div className="bg-primary-deep/50 absolute bottom-[18px] left-[18px] z-40 flex items-center gap-[9px] rounded-full py-[9px] pr-3.5 pl-2.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,.16)] backdrop-blur-[10px]">
               <span className="bg-accent size-[7px] shrink-0 rounded-full shadow-[0_0_0_4px_rgba(255,183,3,.2)]" />
-              <span className="whitespace-nowrap font-sans text-[13px] font-semibold tracking-[0.04em] text-white">
+              <span className="font-sans text-[13px] font-semibold tracking-[0.04em] whitespace-nowrap text-white">
                 {block.stories[index]?.name}
               </span>
             </div>
@@ -138,7 +138,7 @@ export function Testimonials({ block }: { block: TestimonialsBlock }) {
           <div className="relative">
             <span
               aria-hidden
-              className="text-accent pointer-events-none absolute -left-1 -top-[0.28em] z-0 font-serif text-[clamp(120px,13vw,190px)] font-bold leading-[0.7] opacity-[0.16]"
+              className="text-accent pointer-events-none absolute -top-[0.28em] -left-1 z-0 font-serif text-[clamp(120px,13vw,190px)] leading-[0.7] font-bold opacity-[0.16]"
             >
               &ldquo;
             </span>
@@ -150,12 +150,12 @@ export function Testimonials({ block }: { block: TestimonialsBlock }) {
                   className={cn(
                     'transition-[opacity,transform] duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)]',
                     i === index
-                      ? 'relative opacity-100 [transform:none]'
+                      ? 'relative [transform:none] opacity-100'
                       : 'pointer-events-none absolute inset-0 translate-y-3.5 opacity-0',
                   )}
                   aria-hidden={i !== index}
                 >
-                  <blockquote className="m-0 font-serif text-[clamp(23px,2.35vw,33px)] font-medium italic leading-[1.42] tracking-[-0.005em] text-white">
+                  <blockquote className="m-0 font-serif text-[clamp(23px,2.35vw,33px)] leading-[1.42] font-medium tracking-[-0.005em] text-white italic">
                     {t.quote}
                   </blockquote>
                   <div className="mt-[clamp(24px,2.4vw,34px)] flex items-center gap-3.5">
@@ -206,7 +206,7 @@ export function Testimonials({ block }: { block: TestimonialsBlock }) {
               </div>
 
               <div className="flex shrink-0 items-center gap-4">
-                <span className="whitespace-nowrap font-sans text-[14px] tracking-[0.12em] text-white/55">
+                <span className="font-sans text-[14px] tracking-[0.12em] whitespace-nowrap text-white/55">
                   <b className="font-bold text-white">{pad(index + 1)}</b> {block.counterSeparator}{' '}
                   {pad(total)}
                 </span>

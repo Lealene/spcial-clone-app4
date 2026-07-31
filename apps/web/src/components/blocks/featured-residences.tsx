@@ -1,8 +1,8 @@
 import type { FeaturedResidencesBlock } from '@mvp-realty/api-contracts';
 
-import { FeaturedResidencesSlider } from '@/components/blocks/featured-residences-slider';
-import { Container } from '@/components/container';
-import { SectionHeader } from '@/components/section-header';
+import { FeaturedResidencesSlider } from '@/components/listings/featured-residences-slider';
+import { Container } from '@/components/layout/container';
+import { SectionHeader } from '@/components/layout/section-header';
 import { getFeaturedListings } from '@/lib/cms/listings';
 
 const FEATURED_SLIDER_LIMIT = 12;

@@ -10,9 +10,9 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-import { Container } from '@/components/container';
-import { Reveal } from '@/components/reveal';
-import { SectionHeader } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Reveal } from '@/components/shared/reveal';
+import { SectionHeader } from '@/components/layout/section-header';
 
 const ICONS: Record<AmenityIcon, LucideIcon> = {
   pool: Waves,

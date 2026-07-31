@@ -8,7 +8,7 @@ import {
   TYPE_OPTIONS,
   type ArrayFacet,
   type FilterState,
-} from '@/lib/listing-filters';
+} from '@/lib/listings/filters';
 
 const PRICE_MIN = [
   { value: 0, label: 'No min' },
