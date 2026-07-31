@@ -2,6 +2,7 @@ import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
+import { seoField } from '../fields/seo';
 import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate';
 
 // Listings carry the area name and community facet, so both caches go stale.
@@ -367,6 +368,15 @@ export const Areas: CollectionConfig = {
                 { name: 'meta', type: 'text' },
               ],
             },
+          ],
+        },
+        {
+          label: 'SEO',
+          fields: [
+            seoField({
+              description:
+                'Overrides only, and only meaningful for community Areas (cities have no detail page). Blank fields are generated from the name, city and blurb.',
+            }),
           ],
         },
         {
