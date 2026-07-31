@@ -1,4 +1,8 @@
-import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
+import {
+  CMS_CACHE_TAGS,
+  COMMUNITY_AMENITY_ICON_LABELS,
+  COMMUNITY_AMENITY_ICONS,
+} from '@mvp-realty/api-contracts';
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
@@ -23,20 +27,12 @@ const communityOnlyNotice = {
   },
 };
 
-const amenityIconOptions = [
-  'golf',
-  'marina',
-  'beach',
-  'racquet',
-  'fitness',
-  'dining',
-  'trails',
-  'pool',
-  'club',
-  'spa',
-  'gate',
-  'dog',
-] as const;
+// Derived, not duplicated: the contract is the single source for this vocabulary,
+// and the web icon map is keyed off the same union.
+const amenityIconOptions = COMMUNITY_AMENITY_ICONS.map((value) => ({
+  label: COMMUNITY_AMENITY_ICON_LABELS[value],
+  value,
+}));
 
 export const Areas: CollectionConfig = {
   slug: 'areas',
@@ -260,7 +256,7 @@ export const Areas: CollectionConfig = {
                   name: 'icon',
                   type: 'select',
                   required: true,
-                  options: amenityIconOptions.map((value) => ({ label: value, value })),
+                  options: amenityIconOptions,
                 },
                 {
                   name: 'title',
@@ -323,22 +319,6 @@ export const Areas: CollectionConfig = {
               name: 'communityOnlyNoticeReviews',
             },
             {
-              name: 'rating',
-              type: 'number',
-              min: 0,
-              max: 5,
-              admin: {
-                condition: isCommunity,
-                step: 0.1,
-              },
-            },
-            {
-              name: 'reviewCount',
-              type: 'number',
-              min: 0,
-              admin: { condition: isCommunity },
-            },
-            {
               name: 'soldCount',
               type: 'number',
               min: 0,
@@ -347,26 +327,6 @@ export const Areas: CollectionConfig = {
                 description:
                   'Homes this brokerage has sold in this community. Manually maintained — not derived from MLS data. Leave empty to hide the tile.',
               },
-            },
-            {
-              name: 'reviewBars',
-              type: 'array',
-              admin: { condition: isCommunity },
-              fields: [
-                { name: 'label', type: 'text', required: true },
-                { name: 'pct', type: 'number', required: true, min: 0, max: 100 },
-                { name: 'score', type: 'text', required: true },
-              ],
-            },
-            {
-              name: 'reviews',
-              type: 'array',
-              admin: { condition: isCommunity },
-              fields: [
-                { name: 'quote', type: 'textarea', required: true },
-                { name: 'who', type: 'text', required: true },
-                { name: 'meta', type: 'text' },
-              ],
             },
           ],
         },

@@ -19,7 +19,7 @@ describe('formatAreaPriceRange', () => {
 });
 
 describe('normalizeCommunityDetail', () => {
-  it('maps detail fields, renames reviews→reviewCards, and derives tel href', async () => {
+  it('maps detail fields and derives tel href', async () => {
     const { normalizeCommunityDetail } = await import('./normalize');
     const detail = normalizeCommunityDetail({
       kind: 'community',
@@ -27,8 +27,6 @@ describe('normalizeCommunityDetail', () => {
       name: 'Bonita Bay',
       city: 'Bonita Springs',
       detailBlurb: 'A gated enclave on the Gulf Coast.',
-      reviewCount: 57,
-      rating: 4.8,
       photoCount: 58,
       phone: '(239) 555-0148',
       soldCount: 90,
@@ -49,11 +47,11 @@ describe('normalizeCommunityDetail', () => {
       amenities: [
         { icon: 'golf', title: 'Golf' },
         { icon: 'nope', title: 'Fallback icon' },
+        { icon: 'pickleball', title: 'Pickleball' },
+        { icon: 'business-center', title: 'Business Center' },
       ],
       clubs: [{ item: 'Yacht Club' }],
       faqs: [{ question: 'Gated?', answer: 'Yes.' }],
-      reviews: [{ quote: 'Great.', who: 'Pat', meta: '2022' }],
-      reviewBars: [{ label: 'Amenities', pct: 97, score: '4.9' }],
       gallery: [],
       similar: [],
       broker: {
@@ -67,9 +65,11 @@ describe('normalizeCommunityDetail', () => {
     expect(detail?.blurb).toBe('A gated enclave on the Gulf Coast.');
     expect(detail?.phoneHref).toBe('tel:+12395550148');
     expect(detail?.about).toEqual(['Welcome to **Bonita Bay**']);
-    expect(detail?.reviewCards[0]?.who).toBe('Pat');
     expect(detail?.faqs[0]).toEqual({ q: 'Gated?', a: 'Yes.' });
     expect(detail?.amenities[1]?.icon).toBe('club');
+    // Values added to COMMUNITY_AMENITY_ICONS survive rather than coercing to 'club'.
+    expect(detail?.amenities[2]?.icon).toBe('pickleball');
+    expect(detail?.amenities[3]?.icon).toBe('business-center');
     expect(detail?.gallery.length).toBeGreaterThanOrEqual(1);
     expect(detail?.photoCount).toBeGreaterThanOrEqual(detail!.gallery.length);
     expect(detail?.broker?.firstName).toBe('Eleanor');
@@ -88,8 +88,6 @@ describe('normalizeCommunityAreaCard', () => {
       blurb: 'Bonita Springs · golf, marina & a private Gulf beach park',
       locality: 'Bonita Springs · private Gulf beach park',
       priceRange: 'From the $400s – $5M+',
-      rating: 4.8,
-      reviewCount: 57,
       totalResidences: 320,
       activeCount: 108,
       isGated: true,
@@ -114,11 +112,8 @@ describe('normalizeCommunityAreaCard', () => {
       slug: 'bonita-bay',
       name: 'Bonita Bay',
       locality: 'Bonita Springs · private Gulf beach park',
-      rating: 4.8,
-      reviews: 57,
       priceRange: 'From the $400s – $5M+',
       tags: ['Golf & Marina', 'Gated'],
-      residences: 320,
       nowSelling: 108,
       href: '/communities/bonita-bay',
       image: {
@@ -152,8 +147,6 @@ describe('normalizeCommunityAreaCard', () => {
     expect(card).toMatchObject({
       locality: 'Naples',
       tags: ['55+', 'Gated'],
-      residences: null,
-      rating: null,
       nowSelling: 23,
     });
   });

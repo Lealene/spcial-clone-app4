@@ -34,13 +34,8 @@ export type CommunityAreaCard = {
   slug: string;
   name: string;
   locality: string;
-  rating: number | null;
-  reviews: number;
-  reviewsLabel: string;
   priceRange: string;
   tags: string[];
-  residences: number | null;
-  residencesLabel: string;
   nowSelling: number;
   nowSellingLabel: string;
   image: CmsImage;
@@ -142,26 +137,18 @@ export function normalizeCommunityAreaCard(raw: unknown): CommunityAreaCard | nu
   if (!slug || !name || !city) return null;
 
   const locality = areaLocality(raw, city);
-  const rating = finiteNumber(raw.rating) ?? null;
-  const reviews = Math.max(0, Math.round(finiteNumber(raw.reviewCount) ?? 0));
-  const residences = finiteNumber(raw.totalResidences);
   const nowSelling = Math.max(0, Math.round(finiteNumber(raw.activeCount) ?? 0));
 
   return {
     slug,
     name,
     locality,
-    rating,
-    reviews,
-    reviewsLabel: 'reviews',
     priceRange: formatAreaPriceRange(
       text(raw.priceRange),
       finiteNumber(raw.priceMin),
       finiteNumber(raw.priceMax),
     ),
     tags: tagsFromArea(raw),
-    residences: residences != null ? Math.max(0, Math.round(residences)) : null,
-    residencesLabel: 'residences',
     nowSelling,
     nowSellingLabel: 'now selling',
     image: resolveGalleryImage(raw, name),
@@ -209,20 +196,15 @@ export function normalizeSimilarCommunity(raw: unknown): SimilarCommunity | null
   const city = text(raw.city);
   if (!slug || !name || !city) return null;
 
-  const residences = finiteNumber(raw.totalResidences);
-
   return {
     slug,
     name,
     locality: areaLocality(raw, city),
-    rating: finiteNumber(raw.rating) ?? null,
-    reviews: Math.max(0, Math.round(finiteNumber(raw.reviewCount) ?? 0)),
     priceRange: formatAreaPriceRange(
       text(raw.priceRange),
       finiteNumber(raw.priceMin),
       finiteNumber(raw.priceMax),
     ),
-    residences: residences != null ? Math.max(0, Math.round(residences)) : null,
     image: resolveGalleryImage(raw, name),
   };
 }
@@ -236,14 +218,12 @@ export function normalizeAreaPdpMeta(raw: unknown): AreaPdpMeta | null {
   const city = text(raw.city);
   if (!slug || !name || !city) return null;
 
-  const totalResidences = finiteNumber(raw.totalResidences);
   const soldCount = finiteNumber(raw.soldCount);
 
   const candidate = {
     slug,
     name,
     city,
-    totalResidences: totalResidences != null ? Math.max(0, Math.round(totalResidences)) : null,
     isGated: typeof raw.isGated === 'boolean' ? raw.isGated : null,
     is55Plus: typeof raw.is55Plus === 'boolean' ? raw.is55Plus : null,
     ...(soldCount != null ? { soldCount: Math.max(0, Math.round(soldCount)) } : {}),
@@ -312,27 +292,6 @@ export function normalizeCommunityDetail(raw: unknown): CommunityDetail | null {
       })
     : [];
 
-  const reviewBars = Array.isArray(raw.reviewBars)
-    ? raw.reviewBars.flatMap((row) => {
-        if (!isRecord(row)) return [];
-        const label = text(row.label);
-        const score = text(row.score);
-        const pct = finiteNumber(row.pct);
-        if (!label || !score || pct === undefined) return [];
-        return [{ label, pct, score }];
-      })
-    : [];
-
-  const reviewCards = Array.isArray(raw.reviews)
-    ? raw.reviews.flatMap((row) => {
-        if (!isRecord(row)) return [];
-        const quote = text(row.quote);
-        const who = text(row.who);
-        if (!quote || !who) return [];
-        return [{ quote, who, meta: text(row.meta) }];
-      })
-    : [];
-
   const faqs = Array.isArray(raw.faqs)
     ? raw.faqs.flatMap((row) => {
         if (!isRecord(row)) return [];
@@ -357,16 +316,12 @@ export function normalizeCommunityDetail(raw: unknown): CommunityDetail | null {
     name,
     city,
     blurb: text(raw.detailBlurb) ?? text(raw.blurb) ?? `${city}, Florida`,
-    rating: finiteNumber(raw.rating) ?? null,
-    reviews: Math.max(0, Math.round(finiteNumber(raw.reviewCount) ?? 0)),
     photoCount,
     gallery,
     facts,
     about: lexicalToParagraphs(raw.about),
     amenities,
     clubs,
-    reviewBars,
-    reviewCards,
     faqs,
     phone,
     phoneHref: toTelHref(phone),

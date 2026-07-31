@@ -11,16 +11,12 @@ function makeCommunity(overrides: Record<string, unknown> = {}): CommunityDetail
     name: 'Bonita Bay',
     city: 'Bonita Springs',
     blurb: 'A gated Gulf-Coast community.',
-    rating: 4.8,
-    reviews: 120,
     photoCount: 12,
     gallery: [{ src: 'https://cdn.test/a.jpg', alt: 'Aerial' }],
     facts: [],
     about: [],
     amenities: [{ icon: 'golf', title: 'Golf' }],
     clubs: [],
-    reviewBars: [],
-    reviewCards: [{ quote: 'Lovely', who: 'A resident' }],
     faqs: [{ q: 'Is it gated?', a: 'Yes.' }],
     similar: [],
     broker: null,
@@ -51,7 +47,7 @@ describe('buildCommunityGraph', () => {
     ]);
   });
 
-  it('never emits review or rating markup, even though the CMS carries both', async () => {
+  it('never emits review or rating markup', async () => {
     const { buildCommunityGraph } = await import('./community');
     const serialized = JSON.stringify(buildCommunityGraph(makeCommunity(), []));
 

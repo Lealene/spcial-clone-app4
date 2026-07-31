@@ -55,11 +55,8 @@ describe('Payload page block catalog', () => {
         fieldName: 'manualCommunities',
         limits: CMS_PAGE_BLOCK_LIMITS.featuredCommunities,
       },
-      {
-        blockType: 'featuredResidences',
-        fieldName: 'manualListings',
-        limits: CMS_PAGE_BLOCK_LIMITS.featuredResidences,
-      },
+      // featuredResidences.manualListings is intentionally absent: it is deprecated
+      // and optional, asserted separately below.
       {
         blockType: 'lifestyle',
         fieldName: 'tiles',
@@ -90,6 +87,21 @@ describe('Payload page block catalog', () => {
         maxRows: limits.max,
       });
     });
+  });
+
+  /**
+   * The rail renders listings flagged `isFeatured`, so forcing editors to fill rows
+   * that are never displayed was a trap. Guards against it being made required again
+   * before the drop migration removes the field.
+   */
+  it('leaves the deprecated featuredResidences manual rows optional and hidden', () => {
+    expect(namedField(pageBlocksByType.featuredResidences.fields, 'manualListings')).toMatchObject({
+      type: 'array',
+      admin: { hidden: true },
+    });
+    expect(
+      namedField(pageBlocksByType.featuredResidences.fields, 'manualListings'),
+    ).not.toHaveProperty('required', true);
   });
 
   it('requires whole-number visible item limits', () => {

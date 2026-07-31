@@ -31,8 +31,6 @@ type AreaSeed = {
   locality?: string;
   priceRange?: string;
   totalResidences?: number;
-  rating?: number;
-  reviewCount?: number;
   amenities?: AmenitySeed[];
 };
 
@@ -50,8 +48,6 @@ export const AREA_SEEDS: AreaSeed[] = [
     locality: 'Bonita Springs · private Gulf beach park',
     priceRange: 'From the $400s – $5M+',
     totalResidences: 320,
-    rating: 4.8,
-    reviewCount: 57,
     amenities: [
       { icon: 'golf', title: 'Golf & Marina' },
       { icon: 'gate', title: 'Gated' },
@@ -70,8 +66,6 @@ export const AREA_SEEDS: AreaSeed[] = [
     locality: 'Bonita Springs · 55+ gated',
     priceRange: 'From the $500s – $1M',
     totalResidences: 410,
-    rating: 4.9,
-    reviewCount: 83,
     amenities: [
       { icon: 'gate', title: '55+ Gated' },
       { icon: 'club', title: 'Resort Clubhouse' },
@@ -90,8 +84,6 @@ export const AREA_SEEDS: AreaSeed[] = [
     locality: 'Naples · 55+ gated',
     priceRange: 'From the $600s – $1.3M',
     totalResidences: 275,
-    rating: 4.7,
-    reviewCount: 41,
     amenities: [
       { icon: 'club', title: 'New & Resale' },
       { icon: 'gate', title: '55+ Gated' },
@@ -126,8 +118,6 @@ function editorialData(seed: AreaSeed): Record<string, unknown> {
     locality: seed.locality,
     priceRange: seed.priceRange,
     totalResidences: seed.totalResidences,
-    rating: seed.rating,
-    reviewCount: seed.reviewCount,
     amenities: seed.amenities,
   };
 }

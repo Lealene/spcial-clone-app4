@@ -35,8 +35,6 @@ type CommunityContentSeed = {
   about: string[];
   amenities: Array<{ icon: AmenityIcon; title: string }>;
   clubs: string[];
-  reviewBars: Array<{ label: string; pct: number; score: string }>;
-  reviews: Array<{ quote: string; who: string; meta?: string }>;
   faqs: Array<{ question: string; answer: string }>;
   galleryKeys: Array<{
     key: keyof CommunitySeedMediaDocs | 'homepage';
@@ -47,13 +45,6 @@ type CommunityContentSeed = {
 };
 
 const PHONE = '(239) 555-0148';
-
-const BARS_DEFAULT = [
-  { label: 'Amenities', pct: 97, score: '4.9' },
-  { label: 'Location', pct: 96, score: '4.8' },
-  { label: 'Community', pct: 94, score: '4.7' },
-  { label: 'Value', pct: 90, score: '4.5' },
-];
 
 const COMMUNITY_CONTENT_SEEDS: CommunityContentSeed[] = [
   {
@@ -99,21 +90,6 @@ const COMMUNITY_CONTENT_SEEDS: CommunityContentSeed[] = [
       'Book & Lecture Series',
       'Cycling & Trails Group',
       'Charitable Foundation',
-    ],
-    reviewBars: BARS_DEFAULT,
-    reviews: [
-      {
-        quote:
-          "The marina and the beach shuttle made the decision for us. We're on the water by nine and back for dinner at the club. It feels like a permanent vacation.",
-        who: 'Margaret & Tom W.',
-        meta: 'Residents since 2021',
-      },
-      {
-        quote:
-          'Five golf courses and a calendar I can’t keep up with. Eleanor walked every clubhouse with us before we ever wrote an offer — no pressure, just the right fit.',
-        who: 'Charles B.',
-        meta: 'Resident since 2022',
-      },
     ],
     faqs: [
       {
@@ -193,26 +169,6 @@ const COMMUNITY_CONTENT_SEEDS: CommunityContentSeed[] = [
       'Theatre & Show Series',
       'Book Club',
       'Charitable Giving Circle',
-    ],
-    reviewBars: [
-      { label: 'Amenities', pct: 99, score: '5.0' },
-      { label: 'Community', pct: 97, score: '4.9' },
-      { label: 'Location', pct: 95, score: '4.7' },
-      { label: 'Value', pct: 92, score: '4.6' },
-    ],
-    reviews: [
-      {
-        quote:
-          "We came for the clubhouse and stayed for the people. There's something on the calendar every single day, and the pickleball crowd adopted us in a week.",
-        who: 'Linda & Ray P.',
-        meta: 'Residents since 2020',
-      },
-      {
-        quote:
-          'Single-story, low-maintenance, and a five-star pool — exactly the second chapter we wanted. Eleanor found us a lake-view lot that never even hit the market.',
-        who: 'Susan D.',
-        meta: 'Resident since 2023',
-      },
     ],
     faqs: [
       {
@@ -295,26 +251,6 @@ const COMMUNITY_CONTENT_SEEDS: CommunityContentSeed[] = [
       'Live Music Nights',
       'Book Club',
       'Volunteer Network',
-    ],
-    reviewBars: [
-      { label: 'Amenities', pct: 96, score: '4.8' },
-      { label: 'Location', pct: 94, score: '4.7' },
-      { label: 'Community', pct: 93, score: '4.6' },
-      { label: 'Value', pct: 91, score: '4.5' },
-    ],
-    reviews: [
-      {
-        quote:
-          'A brand-new house but a community that already feels like home. The clubhouse opened the month we moved in and the pool has been our backyard ever since.',
-        who: 'Gary & Anne M.',
-        meta: 'Residents since 2022',
-      },
-      {
-        quote:
-          'Close enough to the Naples beaches, far enough to feel like our own world. Eleanor knew exactly which lakefront lots to chase — we got the one we wanted.',
-        who: 'Patricia L.',
-        meta: 'Resident since 2023',
-      },
     ],
     faqs: [
       {
@@ -418,8 +354,6 @@ export async function seedCommunityContent(
         about: paragraphsToLexical(seed.about),
         amenities: seed.amenities,
         clubs: seed.clubs.map((item) => ({ item })),
-        reviewBars: seed.reviewBars,
-        reviews: seed.reviews,
         faqs: seed.faqs,
         gallery: resolveGallery(seed, options.communityMedia, options.homepageMedia),
       },

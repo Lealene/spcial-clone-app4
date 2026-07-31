@@ -6,19 +6,18 @@ import type { CommunityDetail } from '@mvp-realty/api-contracts';
 import { ListingSlider } from '@/components/listings/listing-slider';
 import type { Listing } from '@/data/types';
 import { AmenityIcon } from './amenity-icon';
-import { Stars } from './stars';
 
 /** Section heading + optional "more" link, shared by every body block. */
 function BlockHead({ title, more }: { title: string; more?: { label: string; href: string } }) {
   return (
     <div className="mb-[clamp(24px,3vw,34px)] flex flex-wrap items-end justify-between gap-6">
-      <h2 className="text-primary font-serif text-[clamp(28px,3.2vw,40px)] leading-[1.08] font-semibold tracking-[-0.01em]">
+      <h2 className="text-primary font-serif text-[clamp(28px,3.2vw,40px)] font-semibold leading-[1.08] tracking-[-0.01em]">
         {title}
       </h2>
       {more && (
         <Link
           href={more.href}
-          className="border-accent text-primary group inline-flex items-center gap-2.5 border-b-[1.5px] pb-[5px] font-sans text-[15px] font-bold whitespace-nowrap"
+          className="border-accent text-primary group inline-flex items-center gap-2.5 whitespace-nowrap border-b-[1.5px] pb-[5px] font-sans text-[15px] font-bold"
         >
           {more.label}
           <ArrowRight className="text-accent-deep size-[17px] transition-transform duration-300 group-hover:translate-x-1" />
@@ -64,9 +63,6 @@ export function MainContent({
   const hasOverview = hasFacts || hasAbout;
   const hasAmenities = community.amenities.length > 0;
   const hasClubs = community.clubs.length > 0;
-  const hasReviews =
-    community.rating != null &&
-    (community.reviewBars.length > 0 || community.reviewCards.length > 0);
   const hasFaqs = community.faqs.length > 0;
 
   return (
@@ -78,10 +74,10 @@ export function MainContent({
             <div className="border-line mb-[clamp(38px,4vw,52px)] grid grid-cols-1 gap-px overflow-hidden rounded-xl border bg-[var(--line)] sm:grid-cols-2 md:grid-cols-3">
               {community.facts.map((fact) => (
                 <div key={fact.label} className="bg-surface-soft min-w-0 px-4 py-[22px] sm:px-6">
-                  <span className="text-muted block font-sans text-[12px] font-bold tracking-[0.08em] uppercase">
+                  <span className="text-muted block font-sans text-[12px] font-bold uppercase tracking-[0.08em]">
                     {fact.label}
                   </span>
-                  <b className="text-primary mt-[7px] block font-sans text-[18px] leading-[1.3] font-extrabold break-words">
+                  <b className="text-primary mt-[7px] block break-words font-sans text-[18px] font-extrabold leading-[1.3]">
                     {fact.value}
                   </b>
                 </div>
@@ -147,7 +143,7 @@ export function MainContent({
       {hasClubs ? (
         <section id="lifestyle" className={BLOCK}>
           <BlockHead title="Lifestyle & Clubs" />
-          <ul className="m-0 list-none [column-gap:clamp(28px,3vw,48px)] p-0 sm:[columns:2]">
+          <ul className="m-0 list-none p-0 [column-gap:clamp(28px,3vw,48px)] sm:[columns:2]">
             {community.clubs.map((club) => (
               <li
                 key={club}
@@ -161,64 +157,6 @@ export function MainContent({
               </li>
             ))}
           </ul>
-        </section>
-      ) : null}
-
-      {/* Reviews */}
-      {hasReviews ? (
-        <section id="reviews" className={BLOCK}>
-          <BlockHead title="Resident Reviews" more={{ label: 'See all reviews', href: '#tour' }} />
-          <div className="mb-[clamp(28px,3vw,40px)] grid grid-cols-1 items-center gap-[clamp(28px,4vw,56px)] sm:grid-cols-[auto_1fr]">
-            <div className="text-center">
-              <div className="text-primary font-serif text-[clamp(46px,7vw,64px)] leading-none font-semibold">
-                {community.rating?.toFixed(1)}
-              </div>
-              <Stars className="mt-2.5 [&_svg]:size-[18px]" />
-              <div className="text-muted mt-[9px] font-sans text-[13.5px] font-semibold">
-                Based on {community.reviews} reviews
-              </div>
-            </div>
-            {community.reviewBars.length > 0 ? (
-              <div className="grid gap-[9px]">
-                {community.reviewBars.map((bar) => (
-                  <div
-                    key={bar.label}
-                    className="text-muted flex items-center gap-[13px] font-sans text-[13px] font-semibold"
-                  >
-                    <span className="w-16 shrink-0">{bar.label}</span>
-                    <span className="bg-line h-[7px] flex-1 overflow-hidden rounded-full">
-                      <span
-                        className="bg-accent block h-full rounded-full"
-                        style={{ width: `${bar.pct}%` }}
-                      />
-                    </span>
-                    <span>{bar.score}</span>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </div>
-          {community.reviewCards.length > 0 ? (
-            <div className="grid grid-cols-1 gap-[clamp(16px,2vw,22px)] sm:grid-cols-2">
-              {community.reviewCards.map((review) => (
-                <article
-                  key={review.who}
-                  className="border-line bg-surface-soft rounded-xl border px-[26px] py-6"
-                >
-                  <Stars className="[&_svg]:size-[15px]" />
-                  <p className="text-ink my-[14px] mb-[18px] font-serif text-[19px] leading-[1.5] font-medium italic">
-                    {review.quote}
-                  </p>
-                  <div className="text-primary font-sans text-[14.5px] font-bold">
-                    {review.who}
-                    <span className="text-muted mt-[3px] block text-[13px] font-medium">
-                      {review.meta}
-                    </span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : null}
         </section>
       ) : null}
 

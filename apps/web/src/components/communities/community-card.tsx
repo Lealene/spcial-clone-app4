@@ -2,7 +2,7 @@ import type { CmsImage, CmsLink } from '@mvp-realty/api-contracts';
 import { cn } from '@mvp-realty/ui/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Star } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 import { getLinkRenderProps } from '@/lib/cms/links';
 
@@ -10,13 +10,8 @@ export type CommunityCardData = {
   slug: string;
   name: string;
   locality: string;
-  rating: number | null;
-  reviews: number;
-  reviewsLabel: string;
   priceRange: string;
   tags: string[];
-  residences: number | null;
-  residencesLabel: string;
   nowSelling: number;
   nowSellingLabel: string;
   image: CmsImage;
@@ -44,15 +39,6 @@ export function CommunityCard({
       )}
     >
       <div className="relative aspect-[16/11] overflow-hidden">
-        {community.rating != null ? (
-          <span className="border-accent/40 bg-primary-deep/75 shadow-card absolute top-3.5 left-3.5 z-10 inline-flex items-center gap-[7px] rounded-md border px-3 py-[7px] font-sans text-[13px] font-extrabold text-white backdrop-blur-[7px]">
-            <Star className="fill-accent text-accent size-3.5" />
-            {community.rating.toFixed(1)}{' '}
-            <em className="font-semibold text-white/65 not-italic">
-              ({community.reviews} {community.reviewsLabel})
-            </em>
-          </span>
-        ) : null}
         <Image
           src={community.image.src}
           alt={community.image.alt}
@@ -61,8 +47,8 @@ export function CommunityCard({
           className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.06]"
         />
       </div>
-      <div className="flex flex-1 flex-col p-[24px] pt-6 pb-[26px]">
-        <h3 className="text-primary font-serif text-[25px] leading-[1.1] font-semibold">
+      <div className="flex flex-1 flex-col p-[24px] pb-[26px] pt-6">
+        <h3 className="text-primary font-serif text-[25px] font-semibold leading-[1.1]">
           {community.name}
         </h3>
         <div className="text-muted mt-1.5 flex items-center gap-[7px] font-sans text-[15px] font-medium">
@@ -84,16 +70,8 @@ export function CommunityCard({
             ))}
           </div>
         ) : null}
-        <div className="mt-auto flex items-center justify-between gap-3 pt-[18px]">
-          {community.residences != null ? (
-            <span className="text-muted font-sans text-[14px] font-semibold">
-              <b className="text-primary font-extrabold">{community.residences}</b>{' '}
-              {community.residencesLabel}
-            </span>
-          ) : (
-            <span />
-          )}
-          <span className="text-accent-deep inline-flex items-center gap-[7px] font-sans text-[13px] font-extrabold whitespace-nowrap">
+        <div className="mt-auto flex items-center justify-end gap-3 pt-[18px]">
+          <span className="text-accent-deep inline-flex items-center gap-[7px] whitespace-nowrap font-sans text-[13px] font-extrabold">
             <span className="bg-accent size-[7px] rounded-full shadow-[0_0_0_3px_rgba(255,183,3,0.22)]" />
             {community.nowSelling} {community.nowSellingLabel}
           </span>
