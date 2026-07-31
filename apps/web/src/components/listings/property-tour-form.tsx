@@ -1,6 +1,6 @@
 import type { Broker } from '@mvp-realty/api-contracts';
 
-import { LeadForm } from '@/components/lead-form';
+import { LeadForm } from '@/components/leads/lead-form';
 import { Button } from '@/components/ui/button';
 
 /**

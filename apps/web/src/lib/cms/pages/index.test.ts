@@ -33,21 +33,21 @@ describe('CMS page adapters', () => {
   it('covers every known CMS page block type', async () => {
     const [{ CMS_PAGE_BLOCK_TYPES }, { cmsPageBlockAdapters }] = await Promise.all([
       import('@mvp-realty/api-contracts'),
-      import('./pages'),
+      import('.'),
     ]);
 
     expect(Object.keys(cmsPageBlockAdapters)).toEqual([...CMS_PAGE_BLOCK_TYPES]);
   });
 
   it('drops unknown blocks safely', async () => {
-    const { normalizeCmsPageBlock } = await import('./pages');
+    const { normalizeCmsPageBlock } = await import('.');
 
     expect(normalizeCmsPageBlock({ blockType: 'unknown' })).toBeNull();
     expect(normalizeCmsPageBlock(null)).toBeNull();
   });
 
   it('normalizes representative hero payload input and preserves its ID', async () => {
-    const { normalizeCmsPageBlock } = await import('./pages');
+    const { normalizeCmsPageBlock } = await import('.');
 
     const normalized = normalizeCmsPageBlock(heroBlock);
 
@@ -64,7 +64,7 @@ describe('CMS page adapters', () => {
   });
 
   it('skips one malformed known block while preserving valid siblings in order', async () => {
-    const { normalizePage } = await import('./pages');
+    const { normalizePage } = await import('.');
     const result = normalizePage({
       title: 'Home',
       slug: 'home',
@@ -90,7 +90,7 @@ describe('CMS page adapters', () => {
   });
 
   it('drops malformed collection rows while preserving valid row order', async () => {
-    const { normalizeCmsPageBlock } = await import('./pages');
+    const { normalizeCmsPageBlock } = await import('.');
     const block = normalizeCmsPageBlock({
       blockType: 'featuredResidences',
       header: { kicker: 'Residences', heading: 'Selected homes' },
@@ -134,7 +134,7 @@ describe('CMS page adapters', () => {
   });
 
   it('skips disabled blocks silently and accepts legacy enabled values', async () => {
-    const { normalizeCmsPageBlocks } = await import('./pages');
+    const { normalizeCmsPageBlocks } = await import('.');
     const result = normalizeCmsPageBlocks(
       [
         { ...heroBlock, enabled: false },
@@ -154,7 +154,7 @@ describe('CMS page adapters', () => {
   });
 
   it('caps diagnostics without exposing raw editorial values', async () => {
-    const { normalizeCmsPageBlocks } = await import('./pages');
+    const { normalizeCmsPageBlocks } = await import('.');
     const result = normalizeCmsPageBlocks(
       Array.from({ length: 12 }, (_, index) => ({
         blockType: `future-${index}`,
@@ -168,7 +168,7 @@ describe('CMS page adapters', () => {
   });
 
   it('normalizes CMS pages and preserves explicit empty results for route policy', async () => {
-    const { normalizePage } = await import('./pages');
+    const { normalizePage } = await import('.');
 
     expect(normalizePage({ title: 'Home', slug: 'home', layout: [] }).page.layout).toEqual([]);
   });
@@ -180,7 +180,7 @@ describe('CMS page adapters', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
 
-    const { getPageContent } = await import('./pages');
+    const { getPageContent } = await import('.');
     const result = await getPageContent('about us');
 
     expect(result).toMatchObject({
@@ -196,7 +196,7 @@ describe('CMS page adapters', () => {
   });
 
   it('returns missing pages but rejects empty or unavailable CMS content', async () => {
-    const { getPageContent } = await import('./pages');
+    const { getPageContent } = await import('.');
 
     vi.stubGlobal(
       'fetch',

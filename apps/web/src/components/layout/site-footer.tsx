@@ -1,7 +1,7 @@
 import type { FooterGlobal } from '@mvp-realty/api-contracts';
 import Link from 'next/link';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 import { getLinkRenderProps } from '@/lib/cms/links';
 
 export function SiteFooter({ footer }: { footer: FooterGlobal }) {

@@ -32,7 +32,7 @@ export function BrandWordmark({
   return (
     <b
       className={cn(
-        'text-primary font-serif text-[23px] font-bold leading-none tracking-[0.005em]',
+        'text-primary font-serif text-[23px] leading-none font-bold tracking-[0.005em]',
         className,
       )}
     >

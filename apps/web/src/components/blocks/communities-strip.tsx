@@ -2,7 +2,7 @@ import type { CmsLink, CommunitiesStripBlock } from '@mvp-realty/api-contracts';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 import { getCommunityAreaStripItems } from '@/lib/cms/areas';
 import { getLinkRenderProps } from '@/lib/cms/links';
 

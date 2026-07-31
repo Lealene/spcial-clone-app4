@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import './globals.css';
-import { BrandMark, BrandWordmark } from '@/components/brand-mark';
+import { BrandMark, BrandWordmark } from '@/components/layout/brand-mark';
 
 export default function GlobalError({
   error,
@@ -25,7 +25,7 @@ export default function GlobalError({
               <BrandMark />
               <BrandWordmark />
             </div>
-            <p className="text-accent-deep mt-10 text-sm font-bold uppercase tracking-[0.18em]">
+            <p className="text-accent-deep mt-10 text-sm font-bold tracking-[0.18em] uppercase">
               Temporarily unavailable
             </p>
             <h1 className="text-primary mt-4 font-serif text-4xl font-bold sm:text-5xl">

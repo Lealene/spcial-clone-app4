@@ -1,10 +1,10 @@
 import type { LeadCaptureBlock } from '@mvp-realty/api-contracts';
 import { Waves } from 'lucide-react';
 
-import { Container } from '@/components/container';
-import { LeadForm } from '@/components/lead-form';
-import { Reveal } from '@/components/reveal';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { LeadForm } from '@/components/leads/lead-form';
+import { Reveal } from '@/components/shared/reveal';
+import { Kicker } from '@/components/layout/section-header';
 import { getLinkRenderProps } from '@/lib/cms/links';
 
 export function LeadCapture({ block }: { block: LeadCaptureBlock }) {

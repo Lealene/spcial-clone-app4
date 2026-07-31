@@ -1,8 +1,8 @@
 import { Sparkles, Sun, Trees, Waves, Wind } from 'lucide-react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
-import { Container } from '@/components/container';
-import type { ArrayFacet, FilterState } from '@/lib/listing-filters';
+import { Container } from '@/components/layout/container';
+import type { ArrayFacet, FilterState } from '@/lib/listings/filters';
 
 /** Each pill toggles a single feature/status param, mirroring the sidebar. */
 const QUICK: {

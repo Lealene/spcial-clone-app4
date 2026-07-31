@@ -2,7 +2,7 @@ import { Phone, Star } from 'lucide-react';
 
 import type { Broker } from '@mvp-realty/api-contracts';
 
-import { BrokerAvatar } from '../broker-avatar';
+import { BrokerAvatar } from '../shared/broker-avatar';
 import { PropertyTourForm } from './property-tour-form';
 
 /**

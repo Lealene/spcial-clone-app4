@@ -6,8 +6,8 @@ import { cn } from '@mvp-realty/ui/lib/utils';
 import Image from 'next/image';
 import { LayoutGrid } from 'lucide-react';
 
-import { Container } from '@/components/container';
-import { GalleryLightbox } from '@/components/gallery-lightbox';
+import { Container } from '@/components/layout/container';
+import { GalleryLightbox } from '@/components/shared/gallery-lightbox';
 
 /**
  * Grid templates keyed by tile count (0–4 after the lead).

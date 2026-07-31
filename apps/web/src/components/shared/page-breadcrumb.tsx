@@ -10,7 +10,7 @@ import {
 } from '@mvp-realty/ui/components/ui/breadcrumb';
 import { cn } from '@mvp-realty/ui/lib/utils';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 
 export type PageBreadcrumbItem = {
   label: string;

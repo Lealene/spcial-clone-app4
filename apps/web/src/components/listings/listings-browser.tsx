@@ -12,8 +12,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@mvp-realty/ui/components/ui/sheet';
-import { Container } from '@/components/container';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Kicker } from '@/components/layout/section-header';
 import { Button } from '@/components/ui/button';
 import type { Listing } from '@/data/types';
 import {
@@ -29,8 +29,8 @@ import {
   type Chip,
   type PageSize,
   type SortKey,
-} from '@/lib/listing-filters';
-import { useListingFilters } from '@/lib/use-listing-filters';
+} from '@/lib/listings/filters';
+import { useListingFilters } from '@/lib/listings/use-filters';
 import { ActiveFilterChips } from './active-filter-chips';
 import { FilterPanel, type FacetCounts } from './filter-panel';
 import { ListingCard } from './listing-card';

@@ -4,7 +4,7 @@ import { ArrowRight, MapPin } from 'lucide-react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
 import type { Listing } from '@/data/types';
-import { fmtPrice, LABELS } from '@/lib/listing-filters';
+import { fmtPrice, LABELS } from '@/lib/listings/filters';
 
 /** Compact tag labels for the card's feature pills (shorter than the facet labels). */
 const TAG_LABEL: Record<string, string> = {

@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-import { Container } from '@/components/container';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Kicker } from '@/components/layout/section-header';
 import type { Listing } from '@/data/types';
 import { ListingCard } from './listing-card';
 

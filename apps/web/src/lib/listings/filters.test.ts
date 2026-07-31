@@ -18,7 +18,7 @@ import {
   sortListings,
   toggleFacet,
   type FilterState,
-} from './listing-filters';
+} from './filters';
 
 function listing(over: Partial<Listing>): Listing {
   return {

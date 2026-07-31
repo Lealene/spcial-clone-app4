@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { Check, Images } from 'lucide-react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
-import { Container } from '@/components/container';
-import { GalleryLightbox } from '@/components/gallery-lightbox';
+import { Container } from '@/components/layout/container';
+import { GalleryLightbox } from '@/components/shared/gallery-lightbox';
 import type { GalleryShot } from '@/data/property';
 
 /** How many tiles follow the hero in the mosaic. */

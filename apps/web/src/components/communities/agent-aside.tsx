@@ -2,8 +2,8 @@ import { Phone } from 'lucide-react';
 
 import type { Broker } from '@mvp-realty/api-contracts';
 
-import { BrokerAvatar } from '@/components/broker-avatar';
-import { LeadForm } from '@/components/lead-form';
+import { BrokerAvatar } from '@/components/shared/broker-avatar';
+import { LeadForm } from '@/components/leads/lead-form';
 
 /**
  * Sticky agent sidebar — navy concierge card (when a broker resolves), the

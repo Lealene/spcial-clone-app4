@@ -3,18 +3,18 @@ import { notFound } from 'next/navigation';
 
 import type { AreaPdpMeta } from '@mvp-realty/api-contracts';
 
-import { Container } from '@/components/container';
+import { Container } from '@/components/layout/container';
 import { PropertyGallery } from '@/components/listings/property-gallery';
 import { PropertyHeader } from '@/components/listings/property-header';
 import { PropertyBody } from '@/components/listings/property-body';
 import { PropertyAside } from '@/components/listings/property-aside';
 import { PropertyCommunity } from '@/components/listings/property-community';
 import { PropertySimilar } from '@/components/listings/property-similar';
-import { PageBreadcrumb } from '@/components/page-breadcrumb';
+import { PageBreadcrumb } from '@/components/shared/page-breadcrumb';
 import { buildPropertyView, type CommunityFact } from '@/data/property';
 import { getAreaPdpMeta } from '@/lib/cms/areas';
 import { getActiveListingSlugs, getActiveListings, getListingBySlug } from '@/lib/cms/listings';
-import { fmtPrice } from '@/lib/listing-filters';
+import { fmtPrice } from '@/lib/listings/filters';
 import { JsonLd } from '@/lib/seo/json-ld';
 import {
   buildListingGraph,

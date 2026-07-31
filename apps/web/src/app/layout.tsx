@@ -3,8 +3,8 @@ import { Manrope } from 'next/font/google';
 import { GoogleTagManager } from '@next/third-parties/google';
 import './globals.css';
 
-import { SiteNav } from '@/components/site-nav';
-import { SiteFooter } from '@/components/site-footer';
+import { SiteNav } from '@/components/layout/site-nav';
+import { SiteFooter } from '@/components/layout/site-footer';
 import { env } from '@/env';
 import { getFooterContent, getHeaderContent } from '@/lib/cms/site-chrome';
 import { getSiteSettings } from '@/lib/cms/site-settings';

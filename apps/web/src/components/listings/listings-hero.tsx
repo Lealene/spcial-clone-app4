@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import Image from 'next/image';
 
-import { Container } from '@/components/container';
-import { Kicker } from '@/components/section-header';
+import { Container } from '@/components/layout/container';
+import { Kicker } from '@/components/layout/section-header';
 import { HeroSearch } from './hero-search';
 
 /** Compact PLP hero — navy photo header with the keyword/beds search inside. */

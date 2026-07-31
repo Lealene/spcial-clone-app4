@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 
-import type { Chip } from '@/lib/listing-filters';
+import type { Chip } from '@/lib/listings/filters';
 
 /** Removable pills mirroring every active filter; each removes only its own param. */
 export function ActiveFilterChips({
