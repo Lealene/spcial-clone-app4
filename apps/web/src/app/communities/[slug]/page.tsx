@@ -14,6 +14,9 @@ import { TourBand } from '@/components/communities/tour-band';
 import { PageBreadcrumb } from '@/components/page-breadcrumb';
 import { getCommunityDetailBySlug, getCommunityDetailSlugs } from '@/lib/cms/areas';
 import { getListingsForArea } from '@/lib/cms/listings';
+import { buildCommunityGraph, communityDescription, communityPath } from '@/lib/seo/community';
+import { JsonLd } from '@/lib/seo/json-ld';
+import { buildEntityMetadata } from '@/lib/seo/metadata';
 
 type Params = { slug: string };
 
@@ -34,16 +37,16 @@ export async function generateStaticParams(): Promise<Params[]> {
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const community = await getCommunityDetailBySlug(slug);
-    if (!community) return { title: 'Community Not Found — MVP Realty' };
-    return {
-      title: `${community.name} — ${community.city}, FL · MVP Realty`,
-      description: community.blurb,
-    };
-  } catch {
-    return { title: 'Community — MVP Realty' };
-  }
+  const community = await getCommunityDetailBySlug(slug).catch((): null => null);
+  if (!community) return { title: 'Community not found', robots: { index: false, follow: true } };
+
+  return buildEntityMetadata({
+    seo: community.seo,
+    path: communityPath(community.slug),
+    title: `${community.name} — Homes for Sale in ${community.city}, FL`,
+    description: communityDescription(community),
+    images: community.gallery.slice(0, 4),
+  });
 }
 
 /** Tabs mirror only the blocks `MainContent` actually renders for this community. */
@@ -75,6 +78,7 @@ export default async function CommunityPage({ params }: { params: Promise<Params
 
   return (
     <>
+      <JsonLd nodes={buildCommunityGraph(community, homes)} />
       <PageBreadcrumb
         flush
         items={[

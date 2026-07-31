@@ -15,6 +15,15 @@ import { buildPropertyView, type CommunityFact } from '@/data/property';
 import { getAreaPdpMeta } from '@/lib/cms/areas';
 import { getActiveListingSlugs, getActiveListings, getListingBySlug } from '@/lib/cms/listings';
 import { fmtPrice } from '@/lib/listing-filters';
+import { JsonLd } from '@/lib/seo/json-ld';
+import {
+  buildListingGraph,
+  listingDescription,
+  listingPath,
+  listingPlaceLabel,
+  toTitleCase,
+} from '@/lib/seo/listing';
+import { buildEntityMetadata } from '@/lib/seo/metadata';
 
 type Params = { slug: string };
 
@@ -32,23 +41,17 @@ export async function generateStaticParams(): Promise<Params[]> {
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  const detail = await getListingBySlug(slug);
-  if (!detail) return { title: 'Residence Not Found — MVP Realty' };
+  const detail = await getListingBySlug(slug).catch((): null => null);
+  if (!detail) return { title: 'Residence not found', robots: { index: false, follow: true } };
 
-  return {
-    title: `${detail.name} — ${detail.communityName} | MVP Realty`,
-    description: `${detail.name} in ${detail.communityName}, ${detail.city} — ${detail.beds} bed, ${detail.baths} bath${detail.sqft ? `, ${detail.sqft.toLocaleString()} sq ft` : ''}. Offered at ${fmtPrice(detail.price)}.`,
-  };
-}
-
-/**
- * MLS cities arrive upper-cased ("FORT MYERS BEACH"). Title-case them for
- * headline copy; `communityName` is already presentable and needs no pass.
- */
-function toTitleCase(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/(^|[\s-])([a-z])/g, (_, sep: string, char: string) => sep + char.toUpperCase());
+  return buildEntityMetadata({
+    seo: detail.seo,
+    path: listingPath(detail.slug),
+    title: `${detail.name} — ${listingPlaceLabel(detail)} | ${fmtPrice(detail.price)}`,
+    description: listingDescription(detail),
+    // Gallery order is the agent's; the hero shot is the intended social card.
+    images: detail.gallery.slice(0, 4).map((shot) => ({ src: shot.src, alt: shot.alt })),
+  });
 }
 
 function communityFactsFromMeta(
@@ -121,18 +124,20 @@ export default async function PropertyPage({ params }: { params: Promise<Params>
     communityFactsFromMeta(areaMeta, detail.communityName),
   );
   const hasDetailPage = Boolean(areaMeta);
+  const communityHref = hasDetailPage
+    ? `/communities/${view.listing.community}`
+    : `/listings?community=${view.listing.community}`;
 
   return (
     <>
+      <JsonLd nodes={buildListingGraph(detail, { communityHref })} />
       <PageBreadcrumb
         items={[
           { label: 'Home', href: '/' },
           { label: 'Residences', href: '/listings' },
           {
             label: view.listing.communityName,
-            href: hasDetailPage
-              ? `/communities/${view.listing.community}`
-              : `/listings?community=${view.listing.community}`,
+            href: communityHref,
           },
           { label: view.listing.name },
         ]}
