@@ -18,9 +18,18 @@ import { Pages } from './collections/Pages';
 import { SyncLogs } from './collections/SyncLogs';
 import { Users } from './collections/Users';
 import { bridgeSyncEndpoint } from './endpoints/bridge-sync';
-import { env, getS3Endpoint, hasEmailConfig, hasS3StorageConfig, isSmtpSecure } from './env';
+import { resendAdapter } from './email/resend-adapter';
+import {
+  env,
+  getS3Endpoint,
+  hasResendConfig,
+  hasS3StorageConfig,
+  hasSmtpConfig,
+  isSmtpSecure,
+} from './env';
 import { Footer } from './globals/Footer';
 import { Header } from './globals/Header';
+import { SiteSettings } from './globals/SiteSettings';
 import { mirrorListingHeroTask } from './jobs/mirror-listing-hero';
 import { syncBridgeListingsTask } from './jobs/sync-bridge-listings';
 import { syncLeadToWiseAgentTask } from './jobs/sync-lead-to-wise-agent';
@@ -33,6 +42,51 @@ function getLocalNetworkOrigins(port: number) {
     .flatMap((interfaces) => interfaces ?? [])
     .filter((address) => address.family === 'IPv4' && !address.internal)
     .map((address) => `http://${address.address}:${port}`);
+}
+
+/**
+ * Resend over HTTPS first, SMTP second, nothing third.
+ *
+ * Hosts commonly block outbound SMTP ports (Railway does), which surfaces as
+ * nodemailer's "Connection timeout" on every send. HTTPS on 443 always works,
+ * so it is the production transport; SMTP stays for local dev and other
+ * providers. Returning `{}` leaves Payload's console-logging adapter in place so
+ * a bare local boot needs no mail credentials.
+ */
+function resolveEmailAdapter() {
+  if (hasResendConfig()) {
+    return {
+      email: resendAdapter({
+        apiKey: env.RESEND_API_KEY!,
+        defaultFromAddress: env.EMAIL_FROM_ADDRESS!,
+        defaultFromName: env.EMAIL_FROM_NAME,
+      }),
+    };
+  }
+
+  if (hasSmtpConfig()) {
+    return {
+      email: nodemailerAdapter({
+        defaultFromAddress: env.EMAIL_FROM_ADDRESS!,
+        defaultFromName: env.EMAIL_FROM_NAME,
+        // The adapter awaits transport.verify() while the config is built, and
+        // a blocked SMTP host stalls Payload init for the full socket timeout —
+        // long enough for the first request after a cold start to 502.
+        skipVerify: true,
+        transportOptions: {
+          host: env.SMTP_HOST,
+          port: env.SMTP_PORT,
+          secure: isSmtpSecure(),
+          auth: {
+            user: env.SMTP_USER,
+            pass: env.SMTP_PASSWORD,
+          },
+        },
+      }),
+    };
+  }
+
+  return {};
 }
 
 const serverUrl = new URL(env.PAYLOAD_PUBLIC_SERVER_URL);
@@ -54,7 +108,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Pages, Brokers, Areas, Listings, Leads, SyncLogs],
-  globals: [Header, Footer],
+  globals: [SiteSettings, Header, Footer],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
   typescript: {
@@ -69,29 +123,7 @@ export default buildConfig({
     },
   }),
   sharp,
-  // Omitted when SMTP is unset so Payload keeps its console-logging adapter and
-  // local development boots without mail credentials.
-  ...(hasEmailConfig()
-    ? {
-        email: nodemailerAdapter({
-          defaultFromAddress: env.EMAIL_FROM_ADDRESS!,
-          defaultFromName: env.EMAIL_FROM_NAME,
-          // The adapter awaits transport.verify() while the config is built, and
-          // a blocked SMTP host stalls Payload init for the full socket timeout —
-          // long enough for the first request after a cold start to 502.
-          skipVerify: true,
-          transportOptions: {
-            host: env.SMTP_HOST,
-            port: env.SMTP_PORT,
-            secure: isSmtpSecure(),
-            auth: {
-              user: env.SMTP_USER,
-              pass: env.SMTP_PASSWORD,
-            },
-          },
-        }),
-      }
-    : {}),
+  ...resolveEmailAdapter(),
   endpoints: [bridgeSyncEndpoint],
   jobs: {
     // Autorun has no user session; queueing from sync also needs open access.
