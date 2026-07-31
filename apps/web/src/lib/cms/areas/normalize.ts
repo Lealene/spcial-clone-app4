@@ -13,6 +13,13 @@ import { normalizeBroker } from '../brokers';
 import { normalizeMediaField } from '../media';
 import { toTelHref } from '../phone';
 import { lexicalToParagraphs } from '../rich-text';
+import { normalizeSeo } from '../seo';
+
+function isoDate(value: unknown): string | undefined {
+  if (typeof value !== 'string' || value.trim().length === 0) return undefined;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+}
 
 const FALLBACK_IMAGE: CmsImage = {
   src: '/images/community-bonita-bay.jpg',
@@ -366,6 +373,8 @@ export function normalizeCommunityDetail(raw: unknown): CommunityDetail | null {
     ...(soldCount != null ? { soldCount: Math.max(0, Math.round(soldCount)) } : {}),
     similar,
     broker: normalizeBroker(raw.broker),
+    seo: normalizeSeo(raw.seo),
+    updatedAt: isoDate(raw.updatedAt),
   };
 
   const parsed = communityDetailSchema.safeParse(candidate);
