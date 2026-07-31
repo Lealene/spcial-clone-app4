@@ -97,10 +97,13 @@ MLS property type → schema type:
 
 These look like omissions. They are not.
 
-- **No `aggregateRating` or `Review` on communities.** The CMS carries a
-  neighbourhood rating, but review markup must describe first-party reviews of
-  the marked-up item. Self-published ratings of a place you sell homes in are
-  what manual actions are for.
+- **No `aggregateRating` or `Review` on communities.** Areas no longer carry a
+  rating at all — the fields were dropped by the `drop_area_reviews` migration. Even
+  while they existed this markup was deliberately omitted: review markup must
+  describe first-party reviews of the marked-up item, and self-published ratings of a
+  place you sell homes in are what manual actions are for. Do not add it if
+  neighbourhood ratings ever come back. Broker ratings are a separate field and are
+  also not marked up.
 - **`dateModified`, not `datePosted`, on listings.** The feed gives a
   last-changed timestamp. Using it as a publication date would make every price
   change look like a fresh listing.
@@ -127,12 +130,23 @@ These look like omissions. They are not.
 | Homepage | yes | yes | generated | yes | yes |
 | CMS `/[slug]` | yes | yes | from CMS | yes | yes |
 | Listings index | yes | yes | root fallback | yes | yes |
-| Listing detail | yes | yes | generated | yes, sharded | yes |
+| Listing detail | yes | yes | generated | yes | yes |
 | Community detail | yes | yes | generated | yes | yes |
+| `/privacy-policy` | yes | yes | root fallback | yes | no — legal page, no entity to mark up |
 | `/ui` | metadata only — internal design reference | — | — | — | — |
 
-`robots.ts` and `sitemap.ts` sit at `apps/web/src/app/`. Listing sitemaps are
-sharded via `lib/seo/sitemap-shards.ts`.
+`robots.ts` and `sitemap.ts` sit at `apps/web/src/app/`. **One sitemap holds every
+URL** — pages, communities and listings. Listings were previously sharded under
+`/listings/sitemap/<id>.xml` with an index; that was collapsed because nothing linked
+the shards to `/sitemap.xml`, so the canonical sitemap appeared to contain no
+properties. At ~220 URLs a single file is far inside the spec's 50,000 cap.
+
+Re-split if inventory ever approaches that. Note the binding limit today is lower:
+`fetchAllDocs` in `lib/cms/sitemap.ts` stops after `PAGE_LIMIT * MAX_PAGES` (20,000
+docs per collection) and warns rather than truncating silently.
+
+`/sitemap.xml` inherits the listings revalidate window (900s) because it is the
+shortest of the three; a tag purge is the real invalidation.
 
 Known gap: the listings index has no dedicated OG image and falls back to the
 root one. Listing and community detail pages both generate their own.

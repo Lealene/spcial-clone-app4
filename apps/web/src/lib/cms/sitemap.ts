@@ -14,7 +14,12 @@ export type SitemapEntry = {
 type PayloadListResponse = { docs?: unknown[]; hasNextPage?: boolean; nextPage?: number | null };
 
 const PAGE_LIMIT = 100;
-const MAX_PAGES = 50;
+/**
+ * Runaway-pagination guard, so `PAGE_LIMIT * MAX_PAGES` is the real per-collection
+ * ceiling — well below the sitemap spec's 50,000 URLs per file. Hitting it drops
+ * URLs, so it warns rather than truncating silently.
+ */
+const MAX_PAGES = 200;
 
 function isoDate(value: unknown): string | undefined {
   const raw = text(value);
@@ -36,6 +41,13 @@ async function fetchAllDocs(path: string, params: URLSearchParams, tags: string[
     docs.push(...(raw.docs ?? []));
     if (!raw.hasNextPage) break;
     page = typeof raw.nextPage === 'number' ? raw.nextPage : page + 1;
+
+    if (guard === MAX_PAGES - 1) {
+      // Silent truncation reads as "everything is indexed" when it is not.
+      console.warn(
+        `[sitemap] ${path} hit the ${MAX_PAGES}-page guard at ${docs.length} docs; later URLs are missing from the sitemap.`,
+      );
+    }
   }
 
   return docs;
@@ -47,6 +59,10 @@ async function fetchAllDocs(path: string, params: URLSearchParams, tags: string[
  * to index is a contradictory signal.
  *
  * `home` maps to `/` — the same special case the Pages collection enforces.
+ *
+ * Tagged `pages`, not `all`: a page save purges its own `cms-page:<slug>` tag plus
+ * the collection tag, so a new or renamed page reaches the sitemap immediately
+ * instead of waiting out the route's time backstop.
  */
 export async function getSitemapPageEntries(): Promise<SitemapEntry[]> {
   const params = new URLSearchParams({
@@ -57,7 +73,7 @@ export async function getSitemapPageEntries(): Promise<SitemapEntry[]> {
     'select[updatedAt]': 'true',
   });
 
-  const docs = await fetchAllDocs('/api/pages', params, [CMS_CACHE_TAGS.all]);
+  const docs = await fetchAllDocs('/api/pages', params, [CMS_CACHE_TAGS.pages]);
 
   return docs.flatMap((doc) => {
     if (!isRecord(doc)) return [];

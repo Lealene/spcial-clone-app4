@@ -1,4 +1,9 @@
-import { CMS_PAGE_BLOCK_LIMITS, CMS_TEXT_LIMITS, cmsPageCacheTag } from '@mvp-realty/api-contracts';
+import {
+  CMS_CACHE_TAGS,
+  CMS_PAGE_BLOCK_LIMITS,
+  CMS_TEXT_LIMITS,
+  cmsPageCacheTag,
+} from '@mvp-realty/api-contracts';
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
@@ -7,7 +12,9 @@ import { pageBlocks } from '../blocks';
 import { seoField } from '../fields/seo';
 import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate';
 
-const reservedSlugs = new Set(['admin', 'api', 'listings', 'communities', 'ui']);
+// `privacy-policy` is a static web route backed by its own global, so a Pages doc
+// with that slug would be silently unreachable.
+const reservedSlugs = new Set(['admin', 'api', 'listings', 'communities', 'ui', 'privacy-policy']);
 
 function slugOf(doc: unknown): string | undefined {
   if (typeof doc !== 'object' || doc === null) return undefined;
@@ -15,11 +22,18 @@ function slugOf(doc: unknown): string | undefined {
   return typeof slug === 'string' && slug.length > 0 ? slug : undefined;
 }
 
-/** Page caches are keyed by slug, so a rename must clear the old key too. */
+/**
+ * Page caches are keyed by slug, so a rename must clear the old key too. The
+ * collection-wide `pages` tag goes out alongside them for readers that span every
+ * page — the sitemap — which would otherwise only refresh on its time backstop.
+ */
 function pageCacheTags(doc: unknown, previousDoc?: unknown): string[] {
-  return [slugOf(doc), slugOf(previousDoc)]
-    .filter((slug): slug is string => Boolean(slug))
-    .map(cmsPageCacheTag);
+  return [
+    CMS_CACHE_TAGS.pages,
+    ...[slugOf(doc), slugOf(previousDoc)]
+      .filter((slug): slug is string => Boolean(slug))
+      .map(cmsPageCacheTag),
+  ];
 }
 
 export const Pages: CollectionConfig = {
