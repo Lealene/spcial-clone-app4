@@ -470,6 +470,7 @@ export const CMS_CACHE_TAGS = {
   areas: 'areas',
   header: 'cms-global:header',
   footer: 'cms-global:footer',
+  siteSettings: 'cms-global:site-settings',
 } as const;
 
 /** Per-page tag so editing one page does not invalidate the others. */
@@ -530,6 +531,72 @@ export const footerGlobalSchema = z.object({
   bottomRightTextFallback: z.string().optional(),
 });
 export type FooterGlobal = z.infer<typeof footerGlobalSchema>;
+
+// ---------------------------------------------------------------------------
+// Site settings — the canonical business identity behind structured data
+// ---------------------------------------------------------------------------
+
+/** schema.org `dayOfWeek` values, as authored on the opening-hours rows. */
+export const SITE_OPENING_DAYS = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+] as const;
+export const siteOpeningDaySchema = z.enum(SITE_OPENING_DAYS);
+export type SiteOpeningDay = z.infer<typeof siteOpeningDaySchema>;
+
+const timeOfDaySchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use 24-hour HH:MM.');
+
+export const sitePostalAddressSchema = z.object({
+  streetAddress: z.string().max(CMS_TEXT_LIMITS.shortCopy).optional(),
+  addressLocality: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+  addressRegion: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+  postalCode: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+  addressCountry: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+});
+export type SitePostalAddress = z.infer<typeof sitePostalAddressSchema>;
+
+export const siteGeoSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+});
+export type SiteGeo = z.infer<typeof siteGeoSchema>;
+
+export const siteOpeningHoursSchema = z.object({
+  days: z.array(siteOpeningDaySchema).min(1),
+  opens: timeOfDaySchema,
+  closes: timeOfDaySchema,
+});
+export type SiteOpeningHours = z.infer<typeof siteOpeningHoursSchema>;
+
+/**
+ * Everything the JSON-LD organization node and the metadata defaults need.
+ * Only `name` is required — the graph omits any node property left blank, so an
+ * unfilled global degrades to a minimal but still valid entity.
+ */
+export const siteSettingsSchema = z.object({
+  name: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
+  legalName: z.string().max(CMS_TEXT_LIMITS.heading).optional(),
+  description: z.string().max(CMS_TEXT_LIMITS.shortCopy).optional(),
+  logo: cmsImageSchema.optional(),
+  defaultOgImage: cmsImageSchema.optional(),
+  email: z.string().email().optional(),
+  phone: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+  phoneHref: cmsHrefSchema.optional(),
+  address: sitePostalAddressSchema.optional(),
+  geo: siteGeoSchema.optional(),
+  priceRange: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+  areaServed: z.array(z.string().min(1).max(CMS_TEXT_LIMITS.label)).default([]),
+  openingHours: z.array(siteOpeningHoursSchema).default([]),
+  /** Social + directory profile URLs, emitted as schema.org `sameAs`. */
+  sameAs: z.array(z.string().url().max(CMS_TEXT_LIMITS.url)).default([]),
+  licenseNumber: z.string().max(CMS_TEXT_LIMITS.label).optional(),
+});
+export type SiteSettings = z.infer<typeof siteSettingsSchema>;
 
 // ---------------------------------------------------------------------------
 // MLS listings (Payload → web)
@@ -698,8 +765,18 @@ export const listingDetailSchema = listingCardSchema.extend({
   exterior: z.array(listingSpecGroupSchema),
   floorPlan: z.array(listingFloorRoomSchema),
   broker: brokerSchema.nullable(),
+  seo: pageSeoSchema.default({}),
+  /** Last MLS modification, ISO-8601. Feeds sitemap `lastModified`. */
+  updatedAt: z.string().min(1).optional(),
 });
 export type ListingDetail = z.infer<typeof listingDetailSchema>;
+
+/** Minimal projection behind the sharded listings sitemap. */
+export const listingSitemapEntrySchema = z.object({
+  slug: z.string().min(1),
+  updatedAt: z.string().min(1).optional(),
+});
+export type ListingSitemapEntry = z.infer<typeof listingSitemapEntrySchema>;
 
 export const AREA_KINDS = ['community', 'city'] as const;
 export const areaKindSchema = z.enum(AREA_KINDS);
@@ -803,6 +880,8 @@ export const communityDetailSchema = z.object({
   soldCount: z.number().int().nonnegative().optional(),
   similar: z.array(similarCommunitySchema).max(CMS_AREA_DETAIL_LIMITS.similar.max),
   broker: brokerSchema.nullable(),
+  seo: pageSeoSchema.default({}),
+  updatedAt: z.string().min(1).optional(),
 });
 export type CommunityDetail = z.infer<typeof communityDetailSchema>;
 
