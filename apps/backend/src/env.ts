@@ -32,8 +32,14 @@ export const env = createEnv({
     WEB_APP_URL: z.string().url().optional(),
     CMS_REVALIDATE_SECRET: z.string().min(16).optional(),
 
+    // Resend over HTTPS. Preferred in production and required on Railway, which
+    // blocks outbound SMTP ports (25/465/587) — a blocked port shows up as
+    // nodemailer's "Connection timeout" on every lead sync. Takes precedence
+    // over SMTP_* when set.
+    RESEND_API_KEY: z.string().min(1).optional(),
+
     // Outbound SMTP, used for admin password resets and Wise Agent lead parsing.
-    // SMTP rather than a provider SDK so switching providers is an env change.
+    // Fallback transport for local dev and non-Resend providers.
     // Resend: host smtp.resend.com, port 465, user "resend", password = API key.
     SMTP_HOST: z.string().min(1).optional(),
     SMTP_PORT: z.coerce.number().int().positive().default(465),
@@ -73,9 +79,19 @@ export function hasRevalidateConfig(): boolean {
   return Boolean(env.WEB_APP_URL && env.CMS_REVALIDATE_SECRET);
 }
 
-/** Every field the nodemailer adapter needs before Payload can send anything. */
-export function hasEmailConfig(): boolean {
+/** Every field the Resend HTTP adapter needs. Checked before SMTP. */
+export function hasResendConfig(): boolean {
+  return Boolean(env.RESEND_API_KEY && env.EMAIL_FROM_ADDRESS);
+}
+
+/** Every field the nodemailer adapter needs. */
+export function hasSmtpConfig(): boolean {
   return Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASSWORD && env.EMAIL_FROM_ADDRESS);
+}
+
+/** True when any transport is wired up, whichever one Payload ends up using. */
+export function hasEmailConfig(): boolean {
+  return hasResendConfig() || hasSmtpConfig();
 }
 
 /** Port 465 is implicit TLS; 587 and 25 upgrade via STARTTLS. */
