@@ -2,11 +2,11 @@ import { Check, ChevronDown, Trash2 } from 'lucide-react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
 import {
-  COMMUNITY_OPTIONS,
   FEATURE_OPTIONS,
   // STATUS_OPTIONS — re-import with the Availability group below.
   TYPE_OPTIONS,
   type ArrayFacet,
+  type FilterOption,
   type FilterState,
 } from '@/lib/listings/filters';
 
@@ -187,6 +187,7 @@ function CheckList({
 export function FilterPanel({
   filters,
   counts,
+  communityOptions,
   activeCount,
   className,
   headerClassName,
@@ -199,6 +200,8 @@ export function FilterPanel({
 }: {
   filters: FilterState;
   counts: FacetCounts;
+  /** Payload-driven, unlike the other three facets — see `STATIC_FACET_OPTIONS`. */
+  communityOptions: FilterOption[];
   activeCount: number;
   /** Lets the mobile Sheet drop the card chrome and sit flush against the edges. */
   className?: string;
@@ -257,16 +260,19 @@ export function FilterPanel({
         />
       </Group>
 
-      <Group>
-        <GroupHeading>Community</GroupHeading>
-        <CheckList
-          facet="community"
-          options={COMMUNITY_OPTIONS}
-          selected={filters.community}
-          counts={counts.community}
-          onToggle={onToggleFacet}
-        />
-      </Group>
+      {/* Hidden rather than empty if the areas fetch comes back with nothing. */}
+      {communityOptions.length > 0 && (
+        <Group>
+          <GroupHeading>Community</GroupHeading>
+          <CheckList
+            facet="community"
+            options={communityOptions}
+            selected={filters.community}
+            counts={counts.community}
+            onToggle={onToggleFacet}
+          />
+        </Group>
+      )}
 
       {/*
        * Availability hidden for now: the feed only carries active listings, so

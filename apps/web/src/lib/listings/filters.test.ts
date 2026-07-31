@@ -16,6 +16,7 @@ import {
   removeChip,
   serializeFilters,
   sortListings,
+  STATIC_FACET_OPTIONS,
   toggleFacet,
   type FilterState,
 } from './filters';
@@ -125,6 +126,31 @@ describe('sort + serialize', () => {
     expect(parseFilters(new URLSearchParams(serializeFilters(f)))).toEqual(f);
   });
 
+  /**
+   * Community slugs are editor-created in Payload, so membership validation would
+   * silently drop a shared URL for any area added after the last deploy. Shape is
+   * the contract instead.
+   */
+  it('keeps an unknown but slug-shaped community', () => {
+    expect(parseFilters(new URLSearchParams('community=pelican-landing')).community).toEqual([
+      'pelican-landing',
+    ]);
+  });
+
+  it('drops malformed community values', () => {
+    const sp = new URLSearchParams();
+    sp.set(
+      'community',
+      ['../etc', 'Bonita Bay', 'trailing-', 'UPPER', 'a'.repeat(101), 'ok-one'].join(','),
+    );
+    expect(parseFilters(sp).community).toEqual(['ok-one']);
+  });
+
+  it('still rejects unknown values on the enum-backed facets', () => {
+    expect(parseFilters(new URLSearchParams('type=mansion&status=nope')).type).toEqual([]);
+    expect(parseFilters(new URLSearchParams('type=mansion&status=nope')).status).toEqual([]);
+  });
+
   it('omits default page and pageSize from the URL', () => {
     expect(serializeFilters(EMPTY_FILTERS)).toBe('');
     expect(parseFilters(new URLSearchParams('pageSize=15')).pageSize).toBe(15);
@@ -156,9 +182,22 @@ describe('pagination', () => {
 
 describe('facets and chips', () => {
   it('counts contextual facet options', () => {
-    const counts = facetCounts(SAMPLE, EMPTY_FILTERS, 'status');
+    const counts = facetCounts(SAMPLE, EMPTY_FILTERS, 'status', STATIC_FACET_OPTIONS.status);
     expect(counts.active).toBe(2);
     expect(counts.pending).toBe(1);
+  });
+
+  it('counts community options against the list it is given, not a hardcoded set', () => {
+    const counts = facetCounts(SAMPLE, EMPTY_FILTERS, 'community', [
+      { value: 'bonita-bay', label: 'Bonita Bay' },
+      { value: 'valencia-trails', label: 'Valencia Trails' },
+      // A community an editor just created, with no active inventory yet: the UI
+      // relies on the 0 to disable the row rather than omitting it.
+      { value: 'pelican-landing', label: 'Pelican Landing' },
+    ]);
+    expect(counts['bonita-bay']).toBe(2);
+    expect(counts['valencia-trails']).toBe(1);
+    expect(counts['pelican-landing']).toBe(0);
   });
 
   it('tracks active chips and clear', () => {
@@ -167,6 +206,12 @@ describe('facets and chips', () => {
     expect(activeChips(f).some((c) => c.label === 'Active')).toBe(true);
     expect(clearFilters()).toEqual(EMPTY_FILTERS);
     expect(fmtPriceShort(1_500_000)).toBe('$1.5M');
+  });
+
+  it('labels community chips from the CMS list, de-slugifying unknowns', () => {
+    const f = state({ community: ['bonita-bay', 'pelican-landing'] });
+    const chips = activeChips(f, { 'bonita-bay': 'Bonita Bay' });
+    expect(chips.map((c) => c.label)).toEqual(['Bonita Bay', 'Pelican Landing']);
   });
 
   it('toggles and removes facet chips', () => {

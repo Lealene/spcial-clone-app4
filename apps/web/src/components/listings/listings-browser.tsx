@@ -24,9 +24,11 @@ import {
   paginateItems,
   removeChip,
   SORT_OPTIONS,
+  STATIC_FACET_OPTIONS,
   toggleFacet,
   type ArrayFacet,
   type Chip,
+  type FilterOption,
   type PageSize,
   type SortKey,
 } from '@/lib/listings/filters';
@@ -55,7 +57,14 @@ function ConciergeHelpCard() {
   );
 }
 
-export function ListingsBrowser({ listings }: { listings: Listing[] }) {
+export function ListingsBrowser({
+  listings,
+  communityOptions,
+}: {
+  listings: Listing[];
+  /** From Payload `areas` — the only facet whose vocabulary editors control. */
+  communityOptions: FilterOption[];
+}) {
   const { filters, commit } = useListingFilters();
 
   const results = useMemo(() => filterAndSort(listings, filters), [listings, filters]);
@@ -65,14 +74,21 @@ export function ListingsBrowser({ listings }: { listings: Listing[] }) {
   );
   const counts = useMemo<FacetCounts>(
     () => ({
-      type: facetCounts(listings, filters, 'type'),
-      community: facetCounts(listings, filters, 'community'),
-      status: facetCounts(listings, filters, 'status'),
-      features: facetCounts(listings, filters, 'features'),
+      type: facetCounts(listings, filters, 'type', STATIC_FACET_OPTIONS.type),
+      community: facetCounts(listings, filters, 'community', communityOptions),
+      status: facetCounts(listings, filters, 'status', STATIC_FACET_OPTIONS.status),
+      features: facetCounts(listings, filters, 'features', STATIC_FACET_OPTIONS.features),
     }),
-    [listings, filters],
+    [listings, filters, communityOptions],
   );
-  const chips = useMemo<Chip[]>(() => activeChips(filters), [filters]);
+  const communityLabels = useMemo(
+    () => Object.fromEntries(communityOptions.map((o) => [o.value, o.label])),
+    [communityOptions],
+  );
+  const chips = useMemo<Chip[]>(
+    () => activeChips(filters, communityLabels),
+    [filters, communityLabels],
+  );
   const active = countActive(filters);
 
   // Keep the URL page in range after filters shrink the result set.
@@ -111,6 +127,7 @@ export function ListingsBrowser({ listings }: { listings: Listing[] }) {
   const panelProps = {
     filters,
     counts,
+    communityOptions,
     activeCount: active,
     onPriceMin: (v: number) => commitResetPage({ min: v }),
     onPriceMax: (v: number) => commitResetPage({ max: v }),

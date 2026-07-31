@@ -11,6 +11,9 @@ export type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'beds-desc' | 's
 /** Facets whose value is a list of selected options (OR within, except features = AND). */
 export type ArrayFacet = 'type' | 'community' | 'status' | 'features';
 
+/** The array facets backed by a closed enum, so their options can live in code. */
+export type StaticFacet = Exclude<ArrayFacet, 'community'>;
+
 export const PAGE_SIZE_OPTIONS = [15, 20, 25, 30, 50, 100] as const;
 export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 export const DEFAULT_PAGE_SIZE: PageSize = 20;
@@ -51,9 +54,9 @@ export const EMPTY_FILTERS: FilterState = {
   pageSize: DEFAULT_PAGE_SIZE,
 };
 
-type Option = { value: string; label: string };
+export type FilterOption = { value: string; label: string };
 
-export const TYPE_OPTIONS: Option[] = [
+export const TYPE_OPTIONS: FilterOption[] = [
   { value: 'estate', label: 'Estate Home' },
   { value: 'single-family', label: 'Single-Family' },
   { value: 'villa', label: 'Villa' },
@@ -64,15 +67,7 @@ export const TYPE_OPTIONS: Option[] = [
   { value: 'other', label: 'Other' },
 ];
 
-export const COMMUNITY_OPTIONS: Option[] = [
-  { value: 'bonita-bay', label: 'Bonita Bay' },
-  { value: 'valencia-bonita', label: 'Valencia Bonita' },
-  { value: 'valencia-trails', label: 'Valencia Trails' },
-  { value: 'bonita-springs', label: 'Bonita Springs' },
-  { value: 'fort-myers-beach', label: 'Fort Myers Beach' },
-];
-
-export const STATUS_OPTIONS: Option[] = [
+export const STATUS_OPTIONS: FilterOption[] = [
   { value: 'active', label: 'Active' },
   { value: 'pending', label: 'Pending' },
   { value: 'under-contract', label: 'Under Contract' },
@@ -80,7 +75,7 @@ export const STATUS_OPTIONS: Option[] = [
   { value: 'coming-soon', label: 'Coming Soon' },
 ];
 
-export const FEATURE_OPTIONS: Option[] = [
+export const FEATURE_OPTIONS: FilterOption[] = [
   { value: 'waterfront', label: 'Waterfront' },
   { value: 'pool', label: 'Private Pool' },
   { value: 'golf', label: 'Golf Access' },
@@ -88,9 +83,18 @@ export const FEATURE_OPTIONS: Option[] = [
   { value: '55plus', label: '55+ Community' },
 ];
 
-export const FACET_OPTIONS: Record<ArrayFacet, Option[]> = {
+/**
+ * Facets whose vocabulary is a closed Payload `select` enum, declared in
+ * `@mvp-realty/api-contracts` and validated in `cms/listings/normalize.ts`.
+ * Static on purpose: a new option needs a code change (enum value + mapper) either
+ * way, so fetching them would only add a request.
+ *
+ * `community` is deliberately absent — it is `listing.area.slug`, an open-ended
+ * relationship to the `areas` collection, so its options come from Payload at
+ * request time and are passed in as props. See `getCommunityFilterOptions()`.
+ */
+export const STATIC_FACET_OPTIONS: Record<StaticFacet, FilterOption[]> = {
   type: TYPE_OPTIONS,
-  community: COMMUNITY_OPTIONS,
   status: STATUS_OPTIONS,
   features: FEATURE_OPTIONS,
 };
@@ -103,21 +107,32 @@ export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'sqft-desc', label: 'Largest Sq Ft' },
 ];
 
-/** Flat value→label map for chips and badges. */
+/**
+ * Flat value→label map for chips and badges. Static facets only — community labels
+ * come from Payload, so pass them to `activeChips` instead.
+ */
 export const LABELS: Record<string, string> = Object.fromEntries(
-  [...TYPE_OPTIONS, ...COMMUNITY_OPTIONS, ...STATUS_OPTIONS, ...FEATURE_OPTIONS].map((o) => [
-    o.value,
-    o.label,
-  ]),
+  [...TYPE_OPTIONS, ...STATUS_OPTIONS, ...FEATURE_OPTIONS].map((o) => [o.value, o.label]),
 );
 
 const SORT_KEYS = new Set<string>(SORT_OPTIONS.map((s) => s.value));
-const VALID: Record<ArrayFacet, Set<string>> = {
+const VALID: Record<StaticFacet, Set<string>> = {
   type: new Set(TYPE_OPTIONS.map((o) => o.value)),
-  community: new Set(COMMUNITY_OPTIONS.map((o) => o.value)),
   status: new Set(STATUS_OPTIONS.map((o) => o.value)),
   features: new Set(FEATURE_OPTIONS.map((o) => o.value)),
 };
+
+/** Area slugs are editor-created, so `?community=` is validated by shape, not membership. */
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SLUG_MAX = 100;
+
+/** Turn an unknown area slug into a passable chip label, e.g. `pelican-bay` → `Pelican Bay`. */
+export function deslugify(slug: string): string {
+  return slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
 const ARRAY_FACETS: ArrayFacet[] = ['type', 'community', 'status', 'features'];
 
@@ -128,10 +143,10 @@ const ARRAY_FACETS: ArrayFacet[] = ['type', 'community', 'status', 'features'];
 function readList(sp: URLSearchParams, key: ArrayFacet): string[] {
   const raw = sp.get(key);
   if (!raw) return [];
-  return raw
-    .split(',')
-    .map((v) => v.trim())
-    .filter((v) => VALID[key].has(v));
+  const values = raw.split(',').map((v) => v.trim());
+  return key === 'community'
+    ? values.filter((v) => v.length <= SLUG_MAX && SLUG_RE.test(v))
+    : values.filter((v) => VALID[key].has(v));
 }
 
 function readNum(sp: URLSearchParams, key: string): number {
@@ -293,10 +308,11 @@ export function facetCounts(
   items: Listing[],
   f: FilterState,
   facet: ArrayFacet,
+  options: FilterOption[],
 ): Record<string, number> {
   const base = applyFilters(items, { ...f, [facet]: [] });
   const out: Record<string, number> = {};
-  for (const o of FACET_OPTIONS[facet]) {
+  for (const o of options) {
     out[o.value] =
       facet === 'features'
         ? base.filter((l) => l.features.includes(o.value as ListingFeature)).length
@@ -325,7 +341,12 @@ export function fmtPrice(n: number): string {
   return `$${n.toLocaleString('en-US')}`;
 }
 
-export function activeChips(f: FilterState): Chip[] {
+/**
+ * `extraLabels` carries the CMS-driven community labels (slug → Payload name).
+ * An unknown slug — a URL for an area that was renamed or unpublished — falls back
+ * to a de-slugified label rather than showing the raw slug.
+ */
+export function activeChips(f: FilterState, extraLabels?: Record<string, string>): Chip[] {
   const chips: Chip[] = [];
   if (f.q) chips.push({ kind: 'q', value: '', label: `“${f.q}”` });
   if (f.min) chips.push({ kind: 'min', value: '', label: `Min ${fmtPriceShort(f.min)}` });
@@ -333,7 +354,8 @@ export function activeChips(f: FilterState): Chip[] {
   if (f.beds) chips.push({ kind: 'beds', value: '', label: `${f.beds}+ beds` });
   if (f.baths) chips.push({ kind: 'baths', value: '', label: `${f.baths}+ baths` });
   for (const k of ARRAY_FACETS)
-    for (const v of f[k]) chips.push({ kind: k, value: v, label: LABELS[v] ?? v });
+    for (const v of f[k])
+      chips.push({ kind: k, value: v, label: extraLabels?.[v] ?? LABELS[v] ?? deslugify(v) });
   return chips;
 }
 
