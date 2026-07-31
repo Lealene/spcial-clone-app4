@@ -20,6 +20,7 @@
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "seed:local": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/homepage/run-seed-local.ts",
     "seed:community": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/communities/run-seed.ts",
+    "seed:privacy-policy": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/legal/run-seed-privacy-policy.ts",
     "media:remirror-homepage": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/shared/run-remirror-media.ts homepage",
     "media:remirror-communities": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/shared/run-remirror-media.ts communities",
     "media:remirror-listing-heroes": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/run-remirror-listing-heroes.ts",
