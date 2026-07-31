@@ -19,11 +19,8 @@ export type Community = {
   name: string;
   /** City + a short proximity descriptor, e.g. "Bonita Springs · 55+ gated". */
   locality: string;
-  rating: number;
-  reviews: number;
   priceRange: string;
   tags: string[];
-  residences: number;
   nowSelling: number;
   image: Image;
 };

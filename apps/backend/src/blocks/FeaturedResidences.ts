@@ -31,12 +31,19 @@ export const FeaturedResidencesBlock: Block = {
       },
     },
     {
+      /**
+       * DEPRECATED and unread. The rail renders `getFeaturedListings()` — listings
+       * flagged `isFeatured` — and never looks at these rows. Kept (hidden, optional)
+       * only so existing page documents keep their data until the drop migration
+       * runs; do not wire it back into the renderer.
+       */
       name: 'manualListings',
       type: 'array',
-      required: true,
-      minRows: CMS_PAGE_BLOCK_LIMITS.featuredResidences.min,
       maxRows: CMS_PAGE_BLOCK_LIMITS.featuredResidences.max,
-      admin: { description: 'Residence cards. Images should be 4:3.' },
+      admin: {
+        hidden: true,
+        description: 'Deprecated. Superseded by the isFeatured flag on listings.',
+      },
       fields: [
         { name: 'slug', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.slug },
         { name: 'name', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },

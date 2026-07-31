@@ -101,8 +101,14 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
         ],
       },
     ],
-    bottomLeftText: '© 2026 MVP Realty. All rights reserved.',
-    bottomRightLinks: [],
+    // The Equal Housing notice moves left because the footer renders
+    // `bottomRightTextFallback` only while `bottomRightLinks` is empty — filling the
+    // links in would otherwise silently drop a fair-housing disclosure.
+    bottomLeftText: '© 2026 MVP Realty. All rights reserved. · Equal Housing Opportunity',
+    bottomRightLinks: [
+      { link: customLink('Privacy Policy', '/privacy-policy') },
+      { link: customLink('Sitemap', '/sitemap.xml') },
+    ],
     bottomRightTextFallback: 'Equal Housing Opportunity · Privacy · Terms',
   };
 

@@ -12,9 +12,4 @@ export {
 export { buildEntityMetadata, type EntityMetadataInput } from './metadata';
 export { JsonLd } from './json-ld';
 export { buildAgentNode, buildOrganizationNode, buildWebSiteNode } from './organization';
-export {
-  LISTING_SITEMAP_SHARD_SIZE,
-  listingSitemapShardCount,
-  listingSitemapShardUrls,
-} from './sitemap-shards';
 export { buildCmsPageGraph, buildWebPageNode } from './web-page';

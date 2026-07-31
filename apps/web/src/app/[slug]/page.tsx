@@ -7,7 +7,14 @@ import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
 import { JsonLd } from '@/lib/seo/json-ld';
 import { buildCmsPageGraph } from '@/lib/seo/web-page';
 
-const RESERVED_PAGE_SLUGS = new Set(['admin', 'api', 'listings', 'communities', 'ui']);
+const RESERVED_PAGE_SLUGS = new Set([
+  'admin',
+  'api',
+  'listings',
+  'communities',
+  'ui',
+  'privacy-policy',
+]);
 
 /**
  * Pure editorial — `Pages` purges its own `cms-page:<slug>` tag on save, so this

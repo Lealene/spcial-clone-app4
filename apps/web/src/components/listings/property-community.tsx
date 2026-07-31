@@ -41,14 +41,19 @@ export function PropertyCommunity({
       />
       <Container className="relative z-[1] py-[clamp(56px,6vw,86px)]">
         <Kicker tone="dark">The Community</Kicker>
-        <h2 className="mt-3.5 font-serif text-[clamp(28px,3.4vw,44px)] leading-[1.08] font-semibold text-white">
+        <h2 className="mt-3.5 font-serif text-[clamp(28px,3.4vw,44px)] font-semibold leading-[1.08] text-white">
           Life inside <em className="text-accent-soft italic">{communityName}.</em>
         </h2>
         <p className="mt-[18px] max-w-[54ch] font-sans text-[17px] leading-[1.7] text-white/85">
           {blurb}
         </p>
 
-        <div className="mt-[clamp(34px,4vw,52px)] grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-white/15 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+        {/*
+          Column count tracks the fact count: the container's own background shows
+          through any unfilled cell, so a hardcoded 4 left a visible empty block
+          once the "N homes" tile was dropped.
+        */}
+        <div className="mt-[clamp(34px,4vw,52px)] grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-white/15 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
           {facts.map((fact) => {
             const Icon = COMMUNITY_ICON[fact.icon];
             return (
@@ -62,7 +67,7 @@ export function PropertyCommunity({
                 >
                   <Icon className="text-accent size-[21px]" strokeWidth={1.7} />
                 </span>
-                <b className="block font-serif text-[21px] leading-[1.1] font-semibold text-white">
+                <b className="block font-serif text-[21px] font-semibold leading-[1.1] text-white">
                   {fact.value}
                 </b>
                 <span className="mt-[7px] block font-sans text-[14px] leading-[1.5] text-white/65">

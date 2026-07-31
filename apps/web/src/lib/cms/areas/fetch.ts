@@ -1,5 +1,7 @@
 import { CMS_CACHE_TAGS, type AreaPdpMeta, type CommunityDetail } from '@mvp-realty/api-contracts';
 
+import type { FilterOption } from '@/lib/listings/filters';
+
 import { fetchJson } from '../client';
 import {
   normalizeAreaPdpMeta,
@@ -125,6 +127,33 @@ export async function getCommunityNavItems(limit = 12): Promise<CommunityNavItem
   return (raw.docs ?? [])
     .map(toCommunityNavItem)
     .filter((item): item is CommunityNavItem => item !== null);
+}
+
+/**
+ * Options for the `/listings` community facet — `{ value: slug, label: name }`.
+ *
+ * Deliberately *not* filtered to `kind: community`, unlike the nav lists: a listing's
+ * `area` relationship also points at city-kind areas (Fort Myers Beach, Bonita
+ * Springs), and `listing.community` is that area's slug either way. Filtering by kind
+ * would leave every listing in a city area unfilterable.
+ *
+ * No nav-style cap either — the facet must offer every area, not the first dozen.
+ */
+export async function getCommunityFilterOptions(): Promise<FilterOption[]> {
+  const params = new URLSearchParams({
+    sort: 'name',
+    limit: '200',
+    depth: '0',
+  });
+
+  const raw = (await fetchJson(areasPath(params.toString()), {
+    tags: [AREAS_TAG],
+  })) as PayloadListResponse;
+
+  return (raw.docs ?? [])
+    .map(toCommunityNavItem)
+    .filter((item): item is CommunityNavItem => item !== null)
+    .map((item) => ({ value: item.slug, label: item.name }));
 }
 
 /** Lean meta for listing PDP community facts + soldCount. */

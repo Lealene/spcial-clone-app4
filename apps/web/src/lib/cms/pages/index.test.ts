@@ -91,46 +91,53 @@ describe('CMS page adapters', () => {
 
   it('drops malformed collection rows while preserving valid row order', async () => {
     const { normalizeCmsPageBlock } = await import('.');
+    const community = (slug: string, name: string) => ({
+      slug,
+      name,
+      locality: 'Bonita Springs',
+      priceRange: 'From $2M',
+      nowSelling: 12,
+      image: { image: { url: `/media/${slug}.jpg`, alt: name } },
+      link: { type: 'custom', customUrl: `/communities/${slug}`, label: name },
+    });
+
+    const block = normalizeCmsPageBlock({
+      blockType: 'featuredCommunities',
+      header: { kicker: 'Communities', heading: 'Selected communities' },
+      manualCommunities: [
+        community('first-place', 'First Place'),
+        { name: 'Malformed row without required fields' },
+        community('second-place', 'Second Place'),
+      ],
+    });
+
+    expect(block?.blockType).toBe('featuredCommunities');
+    if (block?.blockType === 'featuredCommunities') {
+      expect(block.manualCommunities.map((row) => row.slug)).toEqual([
+        'first-place',
+        'second-place',
+      ]);
+    }
+  });
+
+  it('normalizes featuredResidences without reading the deprecated manual rows', async () => {
+    const { normalizeCmsPageBlock } = await import('.');
     const block = normalizeCmsPageBlock({
       blockType: 'featuredResidences',
       header: { kicker: 'Residences', heading: 'Selected homes' },
-      manualListings: [
-        {
-          slug: 'first-home',
-          name: 'First Home',
-          locality: 'Naples',
-          priceLabel: 'From $2M',
-          beds: 3,
-          baths: 2.5,
-          sqft: 2400,
-          badge: 'Featured',
-          image: { image: { url: '/media/first.jpg', alt: 'First home' } },
-          link: { type: 'custom', customUrl: '/listings/first-home', label: 'First Home' },
-        },
-        { name: 'Malformed row without required fields' },
-        {
-          slug: 'second-home',
-          name: 'Second Home',
-          locality: 'Bonita Springs',
-          priceLabel: 'From $3M',
-          beds: 4,
-          baths: 4,
-          sqft: 3200,
-          badge: 'New',
-          image: { image: { url: '/media/second.jpg', alt: 'Second home' } },
-          link: { type: 'custom', customUrl: '/listings/second-home', label: 'Second Home' },
-        },
-      ],
+      // Legacy rows still present on existing documents. The rail comes from
+      // `isFeatured` listings, so these must neither be mapped nor block validation.
+      manualListings: [{ name: 'Stale card' }],
       cardCtaLabel: 'View residence',
     });
 
     expect(block?.blockType).toBe('featuredResidences');
-    if (block?.blockType === 'featuredResidences') {
-      expect(block.manualListings.map((listing) => listing.slug)).toEqual([
-        'first-home',
-        'second-home',
-      ]);
-    }
+    expect(
+      normalizeCmsPageBlock({
+        blockType: 'featuredResidences',
+        header: { kicker: 'Residences', heading: 'Selected homes' },
+      })?.blockType,
+    ).toBe('featuredResidences');
   });
 
   it('skips disabled blocks silently and accepts legacy enabled values', async () => {

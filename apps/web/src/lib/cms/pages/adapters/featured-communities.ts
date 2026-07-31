@@ -22,22 +22,10 @@ export function normalizeFeaturedCommunitiesBlock(
       const slug = text(row.slug);
       const name = text(row.name);
       const locality = text(row.locality);
-      const rating = finiteNumber(row.rating);
-      const reviews = finiteNumber(row.reviews);
       const priceRange = text(row.priceRange);
-      const residences = finiteNumber(row.residences);
       const nowSelling = finiteNumber(row.nowSelling);
 
-      if (
-        !slug ||
-        !name ||
-        !locality ||
-        rating === null ||
-        reviews === null ||
-        !priceRange ||
-        residences === null ||
-        nowSelling === null
-      ) {
+      if (!slug || !name || !locality || !priceRange || nowSelling === null) {
         return null;
       }
 
@@ -45,13 +33,8 @@ export function normalizeFeaturedCommunitiesBlock(
         slug,
         name,
         locality,
-        rating,
-        reviews,
-        reviewsLabel: text(row.reviewsLabel, 'reviews'),
         priceRange,
         tags: normalizeTags(row.tags),
-        residences,
-        residencesLabel: text(row.residencesLabel, 'residences'),
         nowSelling,
         nowSellingLabel: text(row.nowSellingLabel, 'now selling'),
         image: normalizeMediaField(row.image, name),

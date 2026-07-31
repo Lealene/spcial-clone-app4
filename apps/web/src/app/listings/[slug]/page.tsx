@@ -68,11 +68,6 @@ function communityFactsFromMeta(
       blurb: areaMeta.detailBlurb ?? `${areaMeta.name} on Florida’s Gulf Coast.`,
       facts: [
         {
-          icon: 'homes',
-          value: areaMeta.totalResidences != null ? `${areaMeta.totalResidences} homes` : '—',
-          label: 'Community',
-        },
-        {
           icon: 'gate',
           value: areaMeta.isGated === true ? 'Gated' : areaMeta.isGated === false ? 'Open' : '—',
           label: 'Access',

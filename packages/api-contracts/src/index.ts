@@ -14,13 +14,12 @@ export const CMS_AREA_DETAIL_LIMITS = {
   facts: { max: 6 },
   amenities: { max: 24 },
   clubs: { max: 24 },
-  reviewBars: { max: 8 },
-  reviews: { max: 12 },
   faqs: { max: 12 },
   similar: { max: 6 },
   credentials: { max: 3 },
   gallery: { min: 1 },
   aboutParagraphs: { max: 12 },
+  /** Broker rating bounds; areas no longer carry a rating. */
   rating: { min: 0, max: 5 },
 } as const;
 
@@ -187,15 +186,10 @@ export const featuredCommunitiesBlockSchema = z.object({
         slug: z.string().min(1).max(CMS_TEXT_LIMITS.slug),
         name: z.string().min(1).max(CMS_TEXT_LIMITS.label),
         locality: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-        rating: z.number().min(0).max(5),
-        reviews: z.number().int().nonnegative(),
-        reviewsLabel: z.string().min(1).max(CMS_TEXT_LIMITS.label).default('reviews'),
         priceRange: z.string().min(1).max(CMS_TEXT_LIMITS.label),
         tags: z
           .array(z.string().min(1).max(CMS_TEXT_LIMITS.label))
           .max(CMS_PAGE_BLOCK_LIMITS.communityTags.max),
-        residences: z.number().int().nonnegative(),
-        residencesLabel: z.string().min(1).max(CMS_TEXT_LIMITS.label).default('residences'),
         nowSelling: z.number().int().nonnegative(),
         nowSellingLabel: z.string().min(1).max(CMS_TEXT_LIMITS.label).default('now selling'),
         image: cmsImageSchema,
@@ -216,27 +210,12 @@ export const featuredResidencesBlockSchema = z.object({
   anchorId: cmsAnchorIdSchema.default('listings'),
   header: sectionHeaderSchema,
   sourceMode: z.literal('manual').default('manual'),
-  manualListings: z
-    .array(
-      z.object({
-        slug: z.string().min(1).max(CMS_TEXT_LIMITS.slug),
-        name: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-        locality: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-        price: z.number().nonnegative().optional(),
-        priceLabel: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-        beds: z.number().int().nonnegative(),
-        bedsLabel: z.string().min(1).max(CMS_TEXT_LIMITS.label).default('Beds'),
-        baths: z.number().nonnegative(),
-        bathsLabel: z.string().min(1).max(CMS_TEXT_LIMITS.label).default('Baths'),
-        sqft: z.number().int().nonnegative(),
-        sqftLabel: z.string().min(1).max(CMS_TEXT_LIMITS.label).default('Sq Ft'),
-        badge: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-        image: cmsImageSchema,
-        link: cmsLinkSchema,
-      }),
-    )
-    .min(CMS_PAGE_BLOCK_LIMITS.featuredResidences.min)
-    .max(CMS_PAGE_BLOCK_LIMITS.featuredResidences.max),
+  /**
+   * DEPRECATED and unread by the renderer, which resolves the rail from listings
+   * flagged `isFeatured`. Optional so a page validates without these rows; it stays
+   * in the schema only until the drop migration removes the columns.
+   */
+  manualListings: z.array(z.unknown()).max(CMS_PAGE_BLOCK_LIMITS.featuredResidences.max).optional(),
   cardCtaLabel: z.string().default('View residence'),
   moreLink: cmsCtaSchema.optional(),
   emptyStateHeading: z.string().optional(),
@@ -468,9 +447,16 @@ export const CMS_CACHE_TAGS = {
   listings: 'listings',
   listingsFeatured: 'listings-featured',
   areas: 'areas',
+  /**
+   * Collection-wide pages tag. Per-page tags (`cmsPageCacheTag`) cover a page's own
+   * route; this covers readers of the whole collection — the sitemap — which cannot
+   * know every slug up front.
+   */
+  pages: 'pages',
   header: 'cms-global:header',
   footer: 'cms-global:footer',
   siteSettings: 'cms-global:site-settings',
+  privacyPolicy: 'cms-global:privacy-policy',
 } as const;
 
 /** Per-page tag so editing one page does not invalidate the others. */
@@ -531,6 +517,19 @@ export const footerGlobalSchema = z.object({
   bottomRightTextFallback: z.string().optional(),
 });
 export type FooterGlobal = z.infer<typeof footerGlobalSchema>;
+
+/**
+ * `bodyHtml` is pre-rendered from the Lexical body on the web side rather than
+ * carried as raw editor state: the page needs real headings and lists, which the
+ * paragraph-flattening helper cannot express.
+ */
+export const privacyPolicyGlobalSchema = z.object({
+  title: z.string().min(1),
+  lastUpdated: z.string().optional(),
+  intro: z.string().optional(),
+  bodyHtml: z.string(),
+});
+export type PrivacyPolicyGlobal = z.infer<typeof privacyPolicyGlobalSchema>;
 
 // ---------------------------------------------------------------------------
 // Site settings — the canonical business identity behind structured data
@@ -790,6 +789,12 @@ export const areaCardSchema = z.object({
 });
 export type AreaCard = z.infer<typeof areaCardSchema>;
 
+/**
+ * Amenity icon vocabulary for `areas.amenities[].icon`. Canonical source: the
+ * Payload select options and the web icon map both derive from this list, and the
+ * Postgres enum `enum_areas_amenities_icon` must be widened by migration to match.
+ * Append only — an existing value cannot be removed without migrating stored rows.
+ */
 export const COMMUNITY_AMENITY_ICONS = [
   'golf',
   'marina',
@@ -803,7 +808,62 @@ export const COMMUNITY_AMENITY_ICONS = [
   'spa',
   'gate',
   'dog',
+  'pickleball',
+  'tennis',
+  'boating',
+  'kayak',
+  'playground',
+  'concierge',
+  'valet',
+  'business-center',
+  'library',
+  'garden',
+  'bike',
+  'theater',
+  'sauna',
+  'yoga',
+  'cafe',
+  'bar',
+  'events',
+  'card-room',
 ] as const;
+
+/** Admin-facing labels, so the CMS select does not show raw slugs like `business-center`. */
+export const COMMUNITY_AMENITY_ICON_LABELS: Record<
+  (typeof COMMUNITY_AMENITY_ICONS)[number],
+  string
+> = {
+  golf: 'Golf',
+  marina: 'Marina',
+  beach: 'Beach',
+  racquet: 'Racquet sports',
+  fitness: 'Fitness center',
+  dining: 'Dining',
+  trails: 'Trails & nature',
+  pool: 'Pool',
+  club: 'Clubhouse',
+  spa: 'Spa',
+  gate: 'Gated entry',
+  dog: 'Dog park',
+  pickleball: 'Pickleball',
+  tennis: 'Tennis',
+  boating: 'Boating',
+  kayak: 'Kayak & paddle',
+  playground: 'Playground',
+  concierge: 'Concierge',
+  valet: 'Valet parking',
+  'business-center': 'Business center',
+  library: 'Library',
+  garden: 'Gardens',
+  bike: 'Bike paths',
+  theater: 'Theater',
+  sauna: 'Sauna',
+  yoga: 'Yoga studio',
+  cafe: 'Café',
+  bar: 'Bar & lounge',
+  events: 'Event calendar',
+  'card-room': 'Card room',
+};
 export const communityAmenityIconSchema = z.enum(COMMUNITY_AMENITY_ICONS);
 export type CommunityAmenityIcon = z.infer<typeof communityAmenityIconSchema>;
 
@@ -819,20 +879,6 @@ export const communityAmenitySchema = z.object({
 });
 export type CommunityAmenity = z.infer<typeof communityAmenitySchema>;
 
-export const communityReviewBarSchema = z.object({
-  label: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-  pct: z.number().min(0).max(100),
-  score: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-});
-export type CommunityReviewBar = z.infer<typeof communityReviewBarSchema>;
-
-export const communityReviewSchema = z.object({
-  quote: z.string().min(1).max(CMS_TEXT_LIMITS.longCopy),
-  who: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-  meta: z.string().max(CMS_TEXT_LIMITS.label).optional(),
-});
-export type CommunityReview = z.infer<typeof communityReviewSchema>;
-
 export const communityFaqSchema = z.object({
   q: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
   a: z.string().min(1).max(CMS_TEXT_LIMITS.longCopy),
@@ -843,14 +889,7 @@ export const similarCommunitySchema = z.object({
   slug: z.string().min(1).max(CMS_TEXT_LIMITS.slug),
   name: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
   locality: z.string().min(1).max(CMS_TEXT_LIMITS.shortCopy),
-  rating: z
-    .number()
-    .min(CMS_AREA_DETAIL_LIMITS.rating.min)
-    .max(CMS_AREA_DETAIL_LIMITS.rating.max)
-    .nullable(),
-  reviews: z.number().int().nonnegative(),
   priceRange: z.string().min(1).max(CMS_TEXT_LIMITS.shortCopy),
-  residences: z.number().int().nonnegative().nullable(),
   image: cmsImageSchema,
 });
 export type SimilarCommunity = z.infer<typeof similarCommunitySchema>;
@@ -860,20 +899,12 @@ export const communityDetailSchema = z.object({
   name: z.string().min(1).max(CMS_TEXT_LIMITS.heading),
   city: z.string().min(1).max(CMS_TEXT_LIMITS.label),
   blurb: z.string().min(1).max(CMS_TEXT_LIMITS.longCopy),
-  rating: z
-    .number()
-    .min(CMS_AREA_DETAIL_LIMITS.rating.min)
-    .max(CMS_AREA_DETAIL_LIMITS.rating.max)
-    .nullable(),
-  reviews: z.number().int().nonnegative(),
   photoCount: z.number().int().nonnegative(),
   gallery: z.array(cmsImageSchema).min(CMS_AREA_DETAIL_LIMITS.gallery.min),
   facts: z.array(communityFactSchema).max(CMS_AREA_DETAIL_LIMITS.facts.max),
   about: z.array(z.string()).max(CMS_AREA_DETAIL_LIMITS.aboutParagraphs.max),
   amenities: z.array(communityAmenitySchema).max(CMS_AREA_DETAIL_LIMITS.amenities.max),
   clubs: z.array(z.string().min(1)).max(CMS_AREA_DETAIL_LIMITS.clubs.max),
-  reviewBars: z.array(communityReviewBarSchema).max(CMS_AREA_DETAIL_LIMITS.reviewBars.max),
-  reviewCards: z.array(communityReviewSchema).max(CMS_AREA_DETAIL_LIMITS.reviews.max),
   faqs: z.array(communityFaqSchema).max(CMS_AREA_DETAIL_LIMITS.faqs.max),
   phone: z.string().max(CMS_TEXT_LIMITS.label).optional(),
   phoneHref: cmsHrefSchema.optional(),
@@ -889,7 +920,6 @@ export const areaPdpMetaSchema = z.object({
   slug: z.string().min(1),
   name: z.string().min(1),
   city: z.string().min(1),
-  totalResidences: z.number().int().nonnegative().nullable(),
   isGated: z.boolean().nullable(),
   is55Plus: z.boolean().nullable(),
   soldCount: z.number().int().nonnegative().optional(),

@@ -29,6 +29,7 @@ import {
 } from './env';
 import { Footer } from './globals/Footer';
 import { Header } from './globals/Header';
+import { PrivacyPolicy } from './globals/PrivacyPolicy';
 import { SiteSettings } from './globals/SiteSettings';
 import { mirrorListingHeroTask } from './jobs/mirror-listing-hero';
 import { syncBridgeListingsTask } from './jobs/sync-bridge-listings';
@@ -108,7 +109,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Pages, Brokers, Areas, Listings, Leads, SyncLogs],
-  globals: [SiteSettings, Header, Footer],
+  globals: [SiteSettings, Header, Footer, PrivacyPolicy],
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
   typescript: {

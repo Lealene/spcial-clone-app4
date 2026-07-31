@@ -43,12 +43,16 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
         </div>
 
         <div className="border-t border-white/10">
-          <div className="flex flex-wrap justify-between gap-[22px] py-6 font-sans text-[13.5px]">
+          <div className="flex flex-wrap justify-between gap-[22px] pt-6 pb-1.5 font-sans text-[13.5px]">
             <span>{footer.bottomLeftText}</span>
             {footer.bottomRightLinks.length > 0 ? (
               <span className="flex flex-wrap gap-3">
                 {footer.bottomRightLinks.map((link) => (
-                  <Link key={`${link.label}-${link.href}`} {...getLinkRenderProps(link)}>
+                  <Link
+                    key={`${link.label}-${link.href}`}
+                    {...getLinkRenderProps(link)}
+                    className="hover:text-accent transition-colors"
+                  >
                     {link.label}
                   </Link>
                 ))}
@@ -57,6 +61,26 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
               <span>{footer.bottomRightTextFallback}</span>
             )}
           </div>
+
+          {/*
+            Agency attribution — deliberately hardcoded rather than a Footer global
+            field: it is ours, not client-editable content, and `normalizeFooter`
+            throws on missing required fields.
+          */}
+          <p className="pb-6 text-right font-sans text-[13.5px] text-white/45">
+            <a
+              href="https://medianeth.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent no-underline transition-colors"
+            >
+              Made with{' '}
+              <span aria-hidden="true" className="not-italic">
+                ❤️
+              </span>
+              <span className="sr-only">love</span> by Medianeth
+            </a>
+          </p>
         </div>
       </Container>
     </footer>

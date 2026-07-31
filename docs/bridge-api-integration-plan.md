@@ -87,7 +87,7 @@ Install `@payloadcms/storage-s3`, register the plugin in `payload.config.ts` poi
 - **Identity:** `slug` (unique), `name`, `kind` (`community` | `city`), `city`, `county`
 - **Sync control:** `mlsAreaMajor` (match string), `syncEnabled` (bool), `lastSyncedAt`
 - **Editorial** (communities only, mirrors `CommunityDetail`): `blurb`, `gallery`, `about` (rich text), `amenities` (array), `clubs`, `faqs`, `phone`
-- **Reviews:** `rating`, `reviewCount`, `reviewBars`, `reviews` (array) — all authored
+- **Reviews:** removed. `rating`, `reviewCount`, `reviewBars` and `reviews` were authored fields, dropped by the `drop_area_reviews` migration. Broker ratings are unaffected.
 - **Computed stats** (written by sync, read-only intent): `activeCount`, `priceMin`, `priceMax`, `avgPricePerSqft`, `bedsMin/Max`, `sqftMin/Max`, `hoaMin/Max`, `yearBuiltMin/Max`, `is55Plus`, `isGated`
 
 Seed the 5 rows via a script. Frontend does not read this yet.

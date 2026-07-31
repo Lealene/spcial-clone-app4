@@ -105,12 +105,14 @@ export interface Config {
     'site-settings': SiteSetting;
     header: Header;
     footer: Footer;
+    'privacy-policy': PrivacyPolicy;
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
     'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
@@ -397,7 +399,7 @@ export interface FeaturedCommunitiesBlock {
     lede?: string | null;
   };
   /**
-   * Areas mode loads community cards from Areas (kind=community). Edit blurbs, gallery, ratings, and tags there — not here.
+   * Areas mode loads community cards from Areas (kind=community). Edit blurbs, gallery, and tags there — not here.
    */
   sourceMode?: ('areas' | 'manual') | null;
   /**
@@ -408,9 +410,6 @@ export interface FeaturedCommunitiesBlock {
         slug: string;
         name: string;
         locality: string;
-        rating: number;
-        reviews: number;
-        reviewsLabel?: string | null;
         priceRange: string;
         tags?:
           | {
@@ -506,53 +505,55 @@ export interface FeaturedResidencesBlock {
    */
   sourceMode?: 'manual' | null;
   /**
-   * Residence cards. Images should be 4:3.
+   * Deprecated. Superseded by the isFeatured flag on listings.
    */
-  manualListings: {
-    slug: string;
-    name: string;
-    locality: string;
-    /**
-     * Reserved for future sorting; priceLabel is displayed.
-     */
-    price?: number | null;
-    priceLabel: string;
-    beds: number;
-    bedsLabel?: string | null;
-    baths: number;
-    bathsLabel?: string | null;
-    sqft: number;
-    sqftLabel?: string | null;
-    badge: string;
-    image: {
-      /**
-       * Recommended aspect ratio: 4:3.
-       */
-      image: number | Media;
-      /**
-       * Optional. Falls back to the media alt text.
-       */
-      altOverride?: string | null;
-    };
-    link: {
-      label?: string | null;
-      type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
-      page?: (number | null) | Page;
-      /**
-       * Use a single-leading-slash app route or an HTTP(S) URL.
-       */
-      customUrl?: string | null;
-      /**
-       * Examples: #lead, /#lead.
-       */
-      anchor?: string | null;
-      phone?: string | null;
-      email?: string | null;
-      newTab?: boolean | null;
-      ariaLabel?: string | null;
-    };
-    id?: string | null;
-  }[];
+  manualListings?:
+    | {
+        slug: string;
+        name: string;
+        locality: string;
+        /**
+         * Reserved for future sorting; priceLabel is displayed.
+         */
+        price?: number | null;
+        priceLabel: string;
+        beds: number;
+        bedsLabel?: string | null;
+        baths: number;
+        bathsLabel?: string | null;
+        sqft: number;
+        sqftLabel?: string | null;
+        badge: string;
+        image: {
+          /**
+           * Recommended aspect ratio: 4:3.
+           */
+          image: number | Media;
+          /**
+           * Optional. Falls back to the media alt text.
+           */
+          altOverride?: string | null;
+        };
+        link: {
+          label?: string | null;
+          type: 'internal' | 'custom' | 'anchor' | 'phone' | 'email';
+          page?: (number | null) | Page;
+          /**
+           * Use a single-leading-slash app route or an HTTP(S) URL.
+           */
+          customUrl?: string | null;
+          /**
+           * Examples: #lead, /#lead.
+           */
+          anchor?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          newTab?: boolean | null;
+          ariaLabel?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
   cardCtaLabel?: string | null;
   moreLink?: {
     label?: string | null;
@@ -1037,7 +1038,25 @@ export interface Area {
           | 'club'
           | 'spa'
           | 'gate'
-          | 'dog';
+          | 'dog'
+          | 'pickleball'
+          | 'tennis'
+          | 'boating'
+          | 'kayak'
+          | 'playground'
+          | 'concierge'
+          | 'valet'
+          | 'business-center'
+          | 'library'
+          | 'garden'
+          | 'bike'
+          | 'theater'
+          | 'sauna'
+          | 'yoga'
+          | 'cafe'
+          | 'bar'
+          | 'events'
+          | 'card-room';
         title: string;
         id?: string | null;
       }[]
@@ -1059,28 +1078,10 @@ export interface Area {
    * Similar nearby communities rail on the detail page.
    */
   similar?: (number | Area)[] | null;
-  rating?: number | null;
-  reviewCount?: number | null;
   /**
    * Homes this brokerage has sold in this community. Manually maintained — not derived from MLS data. Leave empty to hide the tile.
    */
   soldCount?: number | null;
-  reviewBars?:
-    | {
-        label: string;
-        pct: number;
-        score: string;
-        id?: string | null;
-      }[]
-    | null;
-  reviews?:
-    | {
-        quote: string;
-        who: string;
-        meta?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   /**
    * Overrides only, and only meaningful for community Areas (cities have no detail page). Blank fields are generated from the name, city and blurb.
    */
@@ -1857,9 +1858,6 @@ export interface FeaturedCommunitiesBlockSelect<T extends boolean = true> {
         slug?: T;
         name?: T;
         locality?: T;
-        rating?: T;
-        reviews?: T;
-        reviewsLabel?: T;
         priceRange?: T;
         tags?:
           | T
@@ -2299,25 +2297,7 @@ export interface AreasSelect<T extends boolean = true> {
         id?: T;
       };
   similar?: T;
-  rating?: T;
-  reviewCount?: T;
   soldCount?: T;
-  reviewBars?:
-    | T
-    | {
-        label?: T;
-        pct?: T;
-        score?: T;
-        id?: T;
-      };
-  reviews?:
-    | T
-    | {
-        quote?: T;
-        who?: T;
-        meta?: T;
-        id?: T;
-      };
   seo?:
     | T
     | {
@@ -2904,6 +2884,68 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
+ * The published privacy policy at /privacy-policy. Have counsel review changes before saving — this is a legal disclosure, not marketing copy.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy".
+ */
+export interface PrivacyPolicy {
+  id: number;
+  title: string;
+  /**
+   * Shown under the title. Update it whenever the policy text changes.
+   */
+  lastUpdated?: string | null;
+  /**
+   * Optional lead paragraph, rendered above the policy body.
+   */
+  intro?: string | null;
+  /**
+   * Use headings for each section; lists and links are supported.
+   */
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Leave blank to fall back to the policy title and intro.
+   */
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    canonicalMode?: ('auto' | 'custom') | null;
+    canonicalUrl?: string | null;
+    index?: boolean | null;
+    follow?: boolean | null;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+    ogImage?: (number | null) | Media;
+    ogImageAlt?: string | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+    twitterTitle?: string | null;
+    twitterDescription?: string | null;
+    twitterImage?: (number | null) | Media;
+    twitterImageAlt?: string | null;
+    /**
+     * Uncheck to keep this URL out of /sitemap.xml.
+     */
+    includeInSitemap?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs-stats".
  */
@@ -3096,6 +3138,39 @@ export interface FooterSelect<T extends boolean = true> {
         id?: T;
       };
   bottomRightTextFallback?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy_select".
+ */
+export interface PrivacyPolicySelect<T extends boolean = true> {
+  title?: T;
+  lastUpdated?: T;
+  intro?: T;
+  body?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        canonicalMode?: T;
+        canonicalUrl?: T;
+        index?: T;
+        follow?: T;
+        ogTitle?: T;
+        ogDescription?: T;
+        ogImage?: T;
+        ogImageAlt?: T;
+        twitterCard?: T;
+        twitterTitle?: T;
+        twitterDescription?: T;
+        twitterImage?: T;
+        twitterImageAlt?: T;
+        includeInSitemap?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

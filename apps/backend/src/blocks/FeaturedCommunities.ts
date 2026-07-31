@@ -30,7 +30,7 @@ export const FeaturedCommunitiesBlock: Block = {
       ],
       admin: {
         description:
-          'Areas mode loads community cards from Areas (kind=community). Edit blurbs, gallery, ratings, and tags there — not here.',
+          'Areas mode loads community cards from Areas (kind=community). Edit blurbs, gallery, and tags there — not here.',
       },
     },
     {
@@ -47,14 +47,6 @@ export const FeaturedCommunitiesBlock: Block = {
         { name: 'slug', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.slug },
         { name: 'name', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },
         { name: 'locality', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },
-        { name: 'rating', type: 'number', required: true, min: 0, max: 5 },
-        { name: 'reviews', type: 'number', required: true, min: 0, validate: integerValidator },
-        {
-          name: 'reviewsLabel',
-          type: 'text',
-          defaultValue: 'reviews',
-          maxLength: CMS_TEXT_LIMITS.label,
-        },
         {
           name: 'priceRange',
           type: 'text',

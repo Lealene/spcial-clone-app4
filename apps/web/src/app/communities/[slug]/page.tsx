@@ -58,9 +58,6 @@ function sectionsFor(community: CommunityDetail): Tab[] {
   sections.push({ id: 'homes', label: 'Homes for Sale' });
   if (community.amenities.length > 0) sections.push({ id: 'amenities', label: 'Amenities' });
   if (community.clubs.length > 0) sections.push({ id: 'lifestyle', label: 'Lifestyle' });
-  if (community.reviewBars.length > 0 || community.reviewCards.length > 0) {
-    sections.push({ id: 'reviews', label: 'Reviews' });
-  }
   if (community.faqs.length > 0) sections.push({ id: 'faqs', label: 'FAQs' });
   return sections;
 }

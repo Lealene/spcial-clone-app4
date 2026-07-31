@@ -95,3 +95,70 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+/*
+ * Long-form CMS prose (privacy policy). The body arrives as HTML from
+ * `lexicalToHtml`, so the elements cannot carry utility classes — style them here
+ * with the same semantic role tokens the components use.
+ */
+.prose-legal {
+  color: var(--color-ink-soft);
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  line-height: 1.75;
+}
+.prose-legal > * + * {
+  margin-top: 1.1em;
+}
+.prose-legal h2,
+.prose-legal h3,
+.prose-legal h4 {
+  color: var(--color-primary);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 2em;
+}
+.prose-legal h2 {
+  font-size: 1.6em;
+}
+.prose-legal h3 {
+  font-size: 1.3em;
+}
+.prose-legal h4 {
+  font-size: 1.1em;
+}
+.prose-legal strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+.prose-legal a {
+  color: var(--color-accent-deep);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-legal ul,
+.prose-legal ol {
+  padding-left: 1.4em;
+}
+.prose-legal ul {
+  list-style: disc;
+}
+.prose-legal ol {
+  list-style: decimal;
+}
+.prose-legal li + li {
+  margin-top: 0.45em;
+}
+.prose-legal blockquote {
+  border-left: 3px solid var(--color-line);
+  padding-left: 1em;
+  font-style: italic;
+}
+.prose-legal hr {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+.prose-legal code {
+  font-size: 0.9em;
+}
