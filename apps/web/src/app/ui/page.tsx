@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { Badge } from '@mvp-realty/ui/components/ui/badge';
 import { Button } from '@mvp-realty/ui/components/ui/button';
 import {
@@ -10,6 +12,12 @@ import {
 } from '@mvp-realty/ui/components/ui/card';
 import { Input } from '@mvp-realty/ui/components/ui/input';
 import { Label } from '@mvp-realty/ui/components/ui/label';
+
+/** Internal surface — kept out of the index and out of the sitemap. */
+export const metadata: Metadata = {
+  title: 'UI gallery',
+  robots: { index: false, follow: false },
+};
 
 /**
  * shadcn/ui component gallery. A smoke-test surface for the design system —

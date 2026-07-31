@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { CmsPageBlocksRenderer } from '@/components/blocks';
 import { getPageContent, type CmsPageContentResult } from '@/lib/cms/pages';
 import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
+import { JsonLd } from '@/lib/seo/json-ld';
+import { buildCmsPageGraph } from '@/lib/seo/web-page';
 
 const RESERVED_PAGE_SLUGS = new Set(['admin', 'api', 'listings', 'communities', 'ui']);
 
@@ -26,10 +28,11 @@ function requireCmsPage(result: CmsPageContentResult) {
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  if (isReservedSlug(slug)) return { title: 'Page Not Found — MVP Realty' };
+  const missing: Metadata = { title: 'Page not found', robots: { index: false, follow: true } };
+  if (isReservedSlug(slug)) return missing;
 
   const result = await getPageContent(slug);
-  if (result.status === 'missing') return { title: 'Page Not Found — MVP Realty' };
+  if (result.status === 'missing') return missing;
   return getCmsPageMetadata(result.page, `/${slug}`);
 }
 
@@ -38,5 +41,10 @@ export default async function CmsPageRoute({ params }: { params: Promise<Params>
   if (isReservedSlug(slug)) notFound();
 
   const page = requireCmsPage(await getPageContent(slug));
-  return <CmsPageBlocksRenderer blocks={page.layout} />;
+  return (
+    <>
+      <JsonLd nodes={buildCmsPageGraph(page, `/${slug}`)} />
+      <CmsPageBlocksRenderer blocks={page.layout} />
+    </>
+  );
 }

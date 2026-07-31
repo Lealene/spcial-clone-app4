@@ -15,6 +15,7 @@ import {
 import { env } from '@/env';
 
 import { normalizeBroker, resolveBroker } from '../brokers';
+import { normalizeSeo } from '../seo';
 
 const BRIDGE_CDN_HOST = 'dvvjkgh94f2v6.cloudfront.net';
 const FALLBACK_IMAGE = {
@@ -32,6 +33,22 @@ function text(value: unknown): string | undefined {
 
 function finiteNumber(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function isoDate(value: unknown): string | undefined {
+  const raw = text(value);
+  if (!raw) return undefined;
+  const parsed = new Date(raw);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+}
+
+/**
+ * Sitemap `lastModified`. The MLS timestamp is the meaningful one — Payload's
+ * `updatedAt` also moves when a sync rewrites unchanged fields — so prefer it
+ * and fall back only when the feed omitted it.
+ */
+export function listingLastModified(raw: Record<string, unknown>): string | undefined {
+  return isoDate(raw.modificationTimestamp) ?? isoDate(raw.updatedAt);
 }
 
 /**
@@ -326,6 +343,8 @@ export function normalizeListingDetail(raw: unknown): ListingDetail | null {
     exterior: buildExterior(raw.exteriorSpecs),
     floorPlan: buildFloorPlan(raw.floorPlan),
     broker: resolveBroker(normalizeBroker(raw.broker), areaBroker),
+    seo: normalizeSeo(raw.seo),
+    updatedAt: listingLastModified(raw),
   };
 
   const parsed = listingDetailSchema.safeParse(candidate);

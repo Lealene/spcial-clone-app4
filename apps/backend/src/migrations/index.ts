@@ -11,6 +11,7 @@ import * as migration_20260728_235518_add_sync_lead_task_slug from './20260728_2
 import * as migration_20260729_163225_drop_lead_crm_client_id from './20260729_163225_drop_lead_crm_client_id';
 import * as migration_20260729_220708_listing_coordinates from './20260729_220708_listing_coordinates';
 import * as migration_20260730_133854_footer_community_columns from './20260730_133854_footer_community_columns';
+import * as migration_20260730_180825_seo_site_settings from './20260730_180825_seo_site_settings';
 
 export const migrations = [
   {
@@ -77,5 +78,10 @@ export const migrations = [
     up: migration_20260730_133854_footer_community_columns.up,
     down: migration_20260730_133854_footer_community_columns.down,
     name: '20260730_133854_footer_community_columns',
+  },
+  {
+    up: migration_20260730_180825_seo_site_settings.up,
+    down: migration_20260730_180825_seo_site_settings.down,
+    name: '20260730_180825_seo_site_settings',
   },
 ];

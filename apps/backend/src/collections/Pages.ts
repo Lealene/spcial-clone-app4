@@ -71,7 +71,7 @@ export const Pages: CollectionConfig = {
         return true;
       },
     },
-    seoField,
+    seoField(),
     {
       name: 'layout',
       type: 'blocks',

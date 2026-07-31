@@ -2,6 +2,7 @@ import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { CollectionConfig, Field } from 'payload';
 
 import { authenticated } from '../access/authenticated';
+import { seoField } from '../fields/seo';
 import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate';
 
 const CACHE_TAGS = [CMS_CACHE_TAGS.listings, CMS_CACHE_TAGS.listingsFeatured];
@@ -334,6 +335,15 @@ export const Listings: CollectionConfig = {
                 },
               ],
             },
+          ],
+        },
+        {
+          label: 'SEO',
+          fields: [
+            seoField({
+              description:
+                'Overrides only. Anything left blank is generated from the address, community, price and specs.',
+            }),
           ],
         },
         {

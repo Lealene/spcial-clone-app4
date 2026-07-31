@@ -102,11 +102,13 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    'site-settings': SiteSetting;
     header: Header;
     footer: Footer;
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
@@ -219,7 +221,7 @@ export interface Page {
     twitterImage?: (number | null) | Media;
     twitterImageAlt?: string | null;
     /**
-     * Reserved for the future generated sitemap.
+     * Uncheck to keep this URL out of /sitemap.xml.
      */
     includeInSitemap?: boolean | null;
   };
@@ -1080,6 +1082,30 @@ export interface Area {
       }[]
     | null;
   /**
+   * Overrides only, and only meaningful for community Areas (cities have no detail page). Blank fields are generated from the name, city and blurb.
+   */
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    canonicalMode?: ('auto' | 'custom') | null;
+    canonicalUrl?: string | null;
+    index?: boolean | null;
+    follow?: boolean | null;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+    ogImage?: (number | null) | Media;
+    ogImageAlt?: string | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+    twitterTitle?: string | null;
+    twitterDescription?: string | null;
+    twitterImage?: (number | null) | Media;
+    twitterImageAlt?: string | null;
+    /**
+     * Uncheck to keep this URL out of /sitemap.xml.
+     */
+    includeInSitemap?: boolean | null;
+  };
+  /**
    * Written by sync from active listings in this area.
    */
   activeCount?: number | null;
@@ -1298,6 +1324,30 @@ export interface Listing {
       }[]
     | null;
   /**
+   * Overrides only. Anything left blank is generated from the address, community, price and specs.
+   */
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    canonicalMode?: ('auto' | 'custom') | null;
+    canonicalUrl?: string | null;
+    index?: boolean | null;
+    follow?: boolean | null;
+    ogTitle?: string | null;
+    ogDescription?: string | null;
+    ogImage?: (number | null) | Media;
+    ogImageAlt?: string | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+    twitterTitle?: string | null;
+    twitterDescription?: string | null;
+    twitterImage?: (number | null) | Media;
+    twitterImageAlt?: string | null;
+    /**
+     * Uncheck to keep this URL out of /sitemap.xml.
+     */
+    includeInSitemap?: boolean | null;
+  };
+  /**
    * Full RESO record for debugging / later field extraction.
    */
   rawData?:
@@ -1355,7 +1405,7 @@ export interface Lead {
    */
   crm: {
     /**
-     * synced means the mail provider accepted the lead email — email parsing sends no confirmation back. skipped means no lead-capture address or SMTP transport was configured when the job ran; requeue with `leads:resync`.
+     * synced means the mail provider accepted the lead email — email parsing sends no confirmation back. skipped means no lead-capture address or mail transport was configured when the job ran. A failed sync can be retried below; bulk replays use `leads:resync`.
      */
     status: 'pending' | 'synced' | 'failed' | 'skipped';
     syncedAt?: string | null;
@@ -2268,6 +2318,26 @@ export interface AreasSelect<T extends boolean = true> {
         meta?: T;
         id?: T;
       };
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        canonicalMode?: T;
+        canonicalUrl?: T;
+        index?: T;
+        follow?: T;
+        ogTitle?: T;
+        ogDescription?: T;
+        ogImage?: T;
+        ogImageAlt?: T;
+        twitterCard?: T;
+        twitterTitle?: T;
+        twitterDescription?: T;
+        twitterImage?: T;
+        twitterImageAlt?: T;
+        includeInSitemap?: T;
+      };
   activeCount?: T;
   priceMin?: T;
   priceMax?: T;
@@ -2436,6 +2506,26 @@ export interface ListingsSelect<T extends boolean = true> {
         tone?: T;
         id?: T;
       };
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        canonicalMode?: T;
+        canonicalUrl?: T;
+        index?: T;
+        follow?: T;
+        ogTitle?: T;
+        ogDescription?: T;
+        ogImage?: T;
+        ogImageAlt?: T;
+        twitterCard?: T;
+        twitterTitle?: T;
+        twitterDescription?: T;
+        twitterImage?: T;
+        twitterImageAlt?: T;
+        includeInSitemap?: T;
+      };
   rawData?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2572,6 +2662,93 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Business identity used for structured data (JSON-LD) and default social sharing tags. Keep the name, address and phone identical to the Google Business Profile.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * Public brand name, e.g. "MVP Realty".
+   */
+  name: string;
+  /**
+   * Registered entity name, if it differs from the brand.
+   */
+  legalName?: string | null;
+  /**
+   * Falls back to the built-in site description when blank.
+   */
+  description?: string | null;
+  /**
+   * Florida real estate license number.
+   */
+  licenseNumber?: string | null;
+  /**
+   * schema.org priceRange, e.g. "$$$$".
+   */
+  priceRange?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: {
+    streetAddress?: string | null;
+    addressLocality?: string | null;
+    addressRegion?: string | null;
+    postalCode?: string | null;
+    addressCountry?: string | null;
+  };
+  /**
+   * Office coordinates. Emitted only when both are set.
+   */
+  geo?: {
+    latitude?: number | null;
+    longitude?: number | null;
+  };
+  openingHours?:
+    | {
+        days: ('Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday')[];
+        /**
+         * 24-hour HH:MM, e.g. 09:00.
+         */
+        opens: string;
+        /**
+         * 24-hour HH:MM, e.g. 17:30.
+         */
+        closes: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Cities and regions the brokerage covers.
+   */
+  areaServed?:
+    | {
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Square or wide logo used as the organization logo.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Fallback social card for pages without their own image.
+   */
+  defaultOgImage?: (number | null) | Media;
+  /**
+   * Absolute URLs to official profiles (Facebook, Instagram, LinkedIn, Zillow, Google Business Profile).
+   */
+  sameAs?:
+    | {
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2743,6 +2920,59 @@ export interface PayloadJobsStat {
     | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  name?: T;
+  legalName?: T;
+  description?: T;
+  licenseNumber?: T;
+  priceRange?: T;
+  phone?: T;
+  email?: T;
+  address?:
+    | T
+    | {
+        streetAddress?: T;
+        addressLocality?: T;
+        addressRegion?: T;
+        postalCode?: T;
+        addressCountry?: T;
+      };
+  geo?:
+    | T
+    | {
+        latitude?: T;
+        longitude?: T;
+      };
+  openingHours?:
+    | T
+    | {
+        days?: T;
+        opens?: T;
+        closes?: T;
+        id?: T;
+      };
+  areaServed?:
+    | T
+    | {
+        value?: T;
+        id?: T;
+      };
+  logo?: T;
+  defaultOgImage?: T;
+  sameAs?:
+    | T
+    | {
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

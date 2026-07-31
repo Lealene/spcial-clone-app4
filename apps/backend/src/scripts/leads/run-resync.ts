@@ -5,8 +5,8 @@
  *   pnpm -C apps/backend leads:resync failed       # one status only
  *   pnpm -C apps/backend leads:resync --limit=50
  *
- * Recovery path for a mail-provider outage or the backlog that accumulates while
- * WISE_AGENT_LEAD_EMAIL or the SMTP transport is unset (those land as `skipped`).
+ * Shell-based escape hatch. The same operation is available to admins from the
+ * Leads list view (POST /api/leads/resync).
  */
 import { getPayload } from 'payload';
 
@@ -14,7 +14,7 @@ import config from '@payload-config';
 
 import { LEAD_CRM_STATUSES, type LeadCrmStatus } from '@mvp-realty/api-contracts';
 
-const RESYNCABLE: LeadCrmStatus[] = ['pending', 'failed', 'skipped'];
+import { RESYNCABLE_LEAD_STATUSES, resyncLeads } from '../../services/leads/resync';
 
 const statusArg = process.argv.slice(2).find((arg) => !arg.startsWith('--'));
 const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
@@ -29,40 +29,15 @@ if (!Number.isFinite(limit) || limit <= 0) {
   throw new Error(`--limit must be a positive number, received "${limitArg}".`);
 }
 
-const statuses = statusArg ? [statusArg as LeadCrmStatus] : RESYNCABLE;
+const statuses = statusArg ? [statusArg as LeadCrmStatus] : RESYNCABLE_LEAD_STATUSES;
 
 const payload = await getPayload({ config });
 
-const stale = await payload.find({
-  collection: 'leads',
-  where: { 'crm.status': { in: statuses } },
-  limit,
-  depth: 0,
-  sort: 'createdAt',
-  overrideAccess: true,
-});
-
-for (const lead of stale.docs) {
-  await payload.update({
-    collection: 'leads',
-    id: lead.id,
-    data: { crm: { status: 'pending', error: null } },
-    overrideAccess: true,
-  });
-
-  await payload.jobs.queue({
-    task: 'syncLeadToWiseAgent',
-    input: { leadId: String(lead.id) },
-    queue: 'default',
-  });
-}
-
-// Drain immediately rather than waiting on autoRun, so the CLI reports outcomes.
-await payload.jobs.run({ limit: Math.min(stale.docs.length, limit) });
+const result = await resyncLeads(payload, { statuses, limit });
 
 payload.logger.info({
   msg: 'Lead resync complete.',
   statuses,
-  requeued: stale.docs.length,
-  totalMatching: stale.totalDocs,
+  requeued: result.requeued,
+  totalMatching: result.totalMatching,
 });

@@ -7,6 +7,7 @@ import {
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
+import { leadsResyncEndpoint } from '../endpoints/leads-resync';
 import { leadsSubmitEndpoint } from '../endpoints/leads-submit';
 
 const titleCase = (value: string) =>
@@ -23,8 +24,8 @@ export const Leads: CollectionConfig = {
     description:
       'Website lead submissions. Source of truth — Wise Agent sync is an outbound mirror, so a failed sync never loses a lead.',
   },
-  // Serves POST /api/leads/submit.
-  endpoints: [leadsSubmitEndpoint],
+  // Serves POST /api/leads/submit and POST /api/leads/:id/resync.
+  endpoints: [leadsSubmitEndpoint, leadsResyncEndpoint],
   access: {
     // The ingest endpoint writes with overrideAccess after validating a shared
     // secret; nothing else may create. Reads stay admin-only (leads are PII).
@@ -140,11 +141,21 @@ export const Leads: CollectionConfig = {
           options: LEAD_CRM_STATUSES.map((value) => ({ label: titleCase(value), value })),
           admin: {
             description:
-              'synced means the mail provider accepted the lead email — email parsing sends no confirmation back. skipped means no lead-capture address or SMTP transport was configured when the job ran; requeue with `leads:resync`.',
+              'synced means the mail provider accepted the lead email — email parsing sends no confirmation back. skipped means no lead-capture address or mail transport was configured when the job ran. A failed sync can be retried below; bulk replays use `leads:resync`.',
           },
         },
         { name: 'syncedAt', type: 'date', admin: { date: { pickerAppearance: 'dayAndTime' } } },
         { name: 'error', type: 'textarea' },
+        {
+          name: 'retrySync',
+          type: 'ui',
+          admin: {
+            // Only offered on a failed sync. A pending lead is still queued, and
+            // a synced one would be mailed to the CRM twice.
+            condition: (_data, siblingData) => siblingData?.status === 'failed',
+            components: { Field: '/components/admin/ResyncLeadButton' },
+          },
+        },
       ],
     },
   ],

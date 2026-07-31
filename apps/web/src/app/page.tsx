@@ -5,6 +5,8 @@ import { CmsPageBlocksRenderer } from '@/components/blocks';
 import { CmsDataError } from '@/lib/cms/errors';
 import { getPageContent } from '@/lib/cms/pages';
 import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
+import { JsonLd } from '@/lib/seo/json-ld';
+import { buildCmsPageGraph } from '@/lib/seo/web-page';
 
 /**
  * Mixes CMS page blocks with featured listings, so it is purged by both the
@@ -30,5 +32,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const page = await getHomePageContent();
-  return <CmsPageBlocksRenderer blocks={page.layout} />;
+  return (
+    <>
+      <JsonLd nodes={buildCmsPageGraph(page, '/')} />
+      <CmsPageBlocksRenderer blocks={page.layout} />
+    </>
+  );
 }
