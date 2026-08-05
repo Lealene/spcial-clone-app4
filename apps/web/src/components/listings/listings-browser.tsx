@@ -148,10 +148,10 @@ export function ListingsBrowser({
 
       <Container
         id="results"
-        className="grid scroll-mt-[var(--chrome-h,154px)] items-start gap-[clamp(28px,3vw,48px)] py-[clamp(36px,4vw,56px)] lg:grid-cols-[312px_minmax(0,1fr)]"
+        className="grid scroll-mt-[var(--nav-h,77px)] items-start gap-[clamp(28px,3vw,48px)] py-[clamp(36px,4vw,56px)] lg:grid-cols-[312px_minmax(0,1fr)]"
       >
-        {/* Desktop sidebar — sticky under nav + quick filters; inner scroll, Refine header pins */}
-        <aside className="hidden [scrollbar-width:none] self-start [-ms-overflow-style:none] lg:sticky lg:top-[var(--chrome-h,154px)] lg:block lg:max-h-[calc(100dvh-var(--chrome-h,154px)-12px)] lg:overflow-y-auto lg:overscroll-contain [&::-webkit-scrollbar]:hidden">
+        {/* Desktop sidebar — sticky under nav; inner scroll, Refine header pins */}
+        <aside className="hidden [scrollbar-width:none] self-start [-ms-overflow-style:none] lg:sticky lg:top-[var(--nav-h,77px)] lg:block lg:max-h-[calc(100dvh-var(--nav-h,77px)-12px)] lg:overflow-y-auto lg:overscroll-contain [&::-webkit-scrollbar]:hidden">
           <FilterPanel {...panelProps} />
           <ConciergeHelpCard />
         </aside>

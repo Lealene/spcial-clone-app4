@@ -17,13 +17,27 @@
  * offsets cannot drift apart.
  * ------------------------------------------------------------------------- */
 :root {
-  /* Measured from the rendered header (py-4 + brand mark). The previous
-     hard-coded 73px/74px literals scattered through components were both
-     slightly short, which left a sliver of content scrolling between the
-     nav and the sub-navs pinned beneath it. */
-  --nav-h: 77px;
+  /* Measured from the rendered header (vertical padding + brand logo). Both
+     padding (`py-2 md:py-1`) and logo height (`max-h-16 lg:max-h-22`) change
+     at their own breakpoint, so the header has three distinct real heights.
+     The previous hard-coded 73px/74px literals scattered through components
+     were both slightly short, which left a sliver of content scrolling
+     between the nav and the sub-navs pinned beneath it. */
+  --nav-h: 81px;
   --subnav-h: 77px;
   --chrome-h: calc(var(--nav-h) + var(--subnav-h));
+}
+
+@media (min-width: 768px) {
+  :root {
+    --nav-h: 73px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: 97px;
+  }
 }
 
 /*

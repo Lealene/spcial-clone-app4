@@ -87,22 +87,28 @@ export default async function CommunityPage({ params }: { params: Promise<Params
       />
       <DetailHeader community={community} />
       <Gallery images={community.gallery} photoCount={community.photoCount} />
-      <SectionTabs sections={sections} />
+      {/* Real DOM box (not a Fragment): SectionTabs' sticky containing block must end
+          here, right after this Container — otherwise it stays pinned across
+          SimilarCommunities and TourBand too, since Fragment boundaries don't scope
+          sticky release. */}
+      <div>
+        <SectionTabs sections={sections} />
 
-      <Container className="grid items-start gap-[clamp(34px,4vw,64px)] py-[clamp(46px,5vw,72px)] lg:grid-cols-[minmax(0,1fr)_372px]">
-        <MainContent
-          community={community}
-          homes={homes}
-          brokerFirstName={community.broker?.firstName}
-        />
-        <AgentAside
-          communityName={community.name}
-          communitySlug={community.slug}
-          broker={community.broker}
-          phone={community.phone}
-          phoneHref={community.phoneHref}
-        />
-      </Container>
+        <Container className="grid items-start gap-[clamp(34px,4vw,64px)] py-[clamp(46px,5vw,72px)] lg:grid-cols-[minmax(0,1fr)_372px]">
+          <MainContent
+            community={community}
+            homes={homes}
+            brokerFirstName={community.broker?.firstName}
+          />
+          <AgentAside
+            communityName={community.name}
+            communitySlug={community.slug}
+            broker={community.broker}
+            phone={community.phone}
+            phoneHref={community.phoneHref}
+          />
+        </Container>
+      </div>
 
       <SimilarCommunities communities={community.similar} />
       <TourBand

@@ -28,7 +28,7 @@ export function SiteNavInteractive({ header }: { header: HeaderGlobal }) {
         scrolled && 'shadow-[0_1px_0_var(--line-soft),0_16px_34px_-28px_rgba(8,26,48,0.4)]',
       )}
     >
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-[clamp(22px,4vw,64px)] py-4">
+      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-[clamp(22px,4vw,64px)] py-2 md:py-1">
         <Link
           {...getLinkRenderProps(header.brandHomeLink, header.brandMarkAlt ?? header.brandLabel)}
           className="flex items-center gap-[13px]"

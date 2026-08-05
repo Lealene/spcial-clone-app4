@@ -37,7 +37,7 @@ export function QuickFilterBar({
   hasAnyActive: boolean;
 }) {
   return (
-    <div className="border-line-soft bg-surface-muted sticky top-[var(--nav-h,77px)] z-40 border-b">
+    <div className="border-line-soft bg-surface-muted border-b">
       {/* Right-edge fade so it reads as scrollable; the trailing spacer below
           restores the inline padding the scroll container loses at scroll end. */}
       <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-10 bg-gradient-to-l from-[var(--surface-muted)] to-transparent sm:hidden" />
