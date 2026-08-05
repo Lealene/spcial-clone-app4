@@ -9,6 +9,7 @@ import {
 import { getCommunityNavItems, type CommunityNavItem } from './areas';
 import { fetchJson } from './client';
 import { normalizeCta, normalizeLink } from './links';
+import { normalizeOptionalMediaField } from './media';
 import { array, isRecord, optionalNum, text } from './pages/primitives';
 
 const DEFAULT_COMMUNITY_COLUMN_LIMIT = 6;
@@ -18,6 +19,10 @@ function requiredText(value: unknown, field: string): string {
   const normalized = text(value);
   if (!normalized) throw new Error(`CMS ${field} is required.`);
   return normalized;
+}
+
+function resolveBrandDisplayMode(raw: unknown, logo: unknown): 'text' | 'logo' {
+  return text(raw) === 'logo' && logo ? 'logo' : 'text';
 }
 
 function toCommunityNavItem(value: unknown): CommunityNavItem | null {
@@ -52,10 +57,15 @@ function communityColumnLinks(
 export function normalizeHeader(raw: unknown): HeaderGlobal {
   if (!isRecord(raw)) throw new Error('CMS header must be an object.');
 
+  const brandLabel = requiredText(raw.brandLabel, 'header brand label');
+  const brandLogo = normalizeOptionalMediaField(raw.brandLogo, brandLabel);
+
   return headerGlobalSchema.parse({
     brandHomeLink: normalizeLink(raw.brandHomeLink),
-    brandLabel: requiredText(raw.brandLabel, 'header brand label'),
+    brandDisplayMode: resolveBrandDisplayMode(raw.brandDisplayMode, brandLogo),
+    brandLabel,
     brandMarkAlt: text(raw.brandMarkAlt) || undefined,
+    brandLogo,
     navItems: array(raw.navItems).map((item) => {
       if (!isRecord(item)) throw new Error('CMS header navigation item must be an object.');
       const label = requiredText(item.label, 'header navigation label');
@@ -74,9 +84,14 @@ export function normalizeHeader(raw: unknown): HeaderGlobal {
 export function normalizeFooter(raw: unknown, communities: CommunityNavItem[] = []): FooterGlobal {
   if (!isRecord(raw)) throw new Error('CMS footer must be an object.');
 
+  const brandName = requiredText(raw.brandName, 'footer brand name');
+  const brandLogo = normalizeOptionalMediaField(raw.brandLogo, brandName);
+
   return footerGlobalSchema.parse({
-    brandName: requiredText(raw.brandName, 'footer brand name'),
+    brandName,
+    brandDisplayMode: resolveBrandDisplayMode(raw.brandDisplayMode, brandLogo),
     brandAccentText: text(raw.brandAccentText) || undefined,
+    brandLogo,
     brandBlurb: requiredText(raw.brandBlurb, 'footer brand blurb'),
     columns: array(raw.columns).map((column) => {
       if (!isRecord(column)) throw new Error('CMS footer column must be an object.');
