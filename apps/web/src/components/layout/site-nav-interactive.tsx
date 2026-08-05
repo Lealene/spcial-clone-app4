@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
-import { BrandMark, BrandWordmark } from '@/components/layout/brand-mark';
+import { BrandLockup } from '@/components/layout/brand-mark';
 import { Button } from '@/components/ui/button';
 import { getLinkRenderProps } from '@/lib/cms/links';
 
@@ -33,8 +33,12 @@ export function SiteNavInteractive({ header }: { header: HeaderGlobal }) {
           {...getLinkRenderProps(header.brandHomeLink, header.brandMarkAlt ?? header.brandLabel)}
           className="flex items-center gap-[13px]"
         >
-          <BrandMark />
-          <BrandWordmark label={header.brandLabel} />
+          <BrandLockup
+            mode={header.brandDisplayMode}
+            logo={header.brandLogo}
+            label={header.brandLabel}
+            variant="header"
+          />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
