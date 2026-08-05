@@ -87,7 +87,7 @@ export function BrandLockup({
         height={logo.height && logo.height > 0 ? logo.height : maxHeight}
         className={cn(
           'w-auto object-contain',
-          variant === 'header' ? 'max-h-22' : 'max-h-20',
+          variant === 'header' ? 'max-h-16 lg:max-h-22' : 'max-h-20',
           className,
         )}
         priority={variant === 'header'}
