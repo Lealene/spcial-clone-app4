@@ -1,5 +1,5 @@
 import { CMS_TEXT_LIMITS } from '@mvp-realty/api-contracts';
-import type { Field } from 'payload';
+import type { GroupField } from 'payload';
 
 type MediaFieldOptions = {
   name?: string;
@@ -15,7 +15,7 @@ export function mediaField({
   required = false,
   description,
   caption = false,
-}: MediaFieldOptions = {}): Field {
+}: MediaFieldOptions = {}): GroupField {
   return {
     name,
     type: 'group',

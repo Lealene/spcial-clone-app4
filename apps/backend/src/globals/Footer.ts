@@ -3,6 +3,7 @@ import type { GlobalConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
 import { linkField } from '../fields/link';
+import { mediaField } from '../fields/media';
 import { revalidateGlobalAfterChange } from '../hooks/revalidate';
 
 // Column-level conditions read siblingData — the array row, not the global doc.
@@ -10,6 +11,11 @@ const isManualColumn = (_?: unknown, sibling?: { source?: string } | null) =>
   (sibling?.source ?? 'manual') === 'manual';
 const isCommunityColumn = (_?: unknown, sibling?: { source?: string } | null) =>
   sibling?.source === 'communities';
+
+const isTextDisplayMode = (_?: unknown, sibling?: { brandDisplayMode?: string } | null) =>
+  (sibling?.brandDisplayMode ?? 'text') === 'text';
+const isLogoDisplayMode = (_?: unknown, sibling?: { brandDisplayMode?: string } | null) =>
+  sibling?.brandDisplayMode === 'logo';
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -23,7 +29,34 @@ export const Footer: GlobalConfig = {
   },
   fields: [
     { name: 'brandName', type: 'text', required: true },
-    { name: 'brandAccentText', type: 'text' },
+    {
+      name: 'brandDisplayMode',
+      type: 'select',
+      required: true,
+      defaultValue: 'text',
+      options: [
+        { label: 'Text (name + accent)', value: 'text' },
+        { label: 'Logo image', value: 'logo' },
+      ],
+      admin: {
+        description:
+          'Text renders brandName + brandAccentText. Logo renders the Brand logo image instead. brandName always remains the fallback alt text.',
+      },
+    },
+    {
+      name: 'brandAccentText',
+      type: 'text',
+      admin: { condition: isTextDisplayMode },
+    },
+    {
+      ...mediaField({
+        name: 'brandLogo',
+        label: 'Brand logo',
+        required: false,
+        description: 'Shown only when Brand display mode is Logo.',
+      }),
+      admin: { condition: isLogoDisplayMode },
+    },
     { name: 'brandBlurb', type: 'textarea', required: true },
     {
       name: 'columns',

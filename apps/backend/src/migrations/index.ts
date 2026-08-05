@@ -15,6 +15,7 @@ import * as migration_20260730_180825_seo_site_settings from './20260730_180825_
 import * as migration_20260731_185501_areas_amenity_icon_options from './20260731_185501_areas_amenity_icon_options';
 import * as migration_20260731_190155_privacy_policy_global from './20260731_190155_privacy_policy_global';
 import * as migration_20260731_202436_drop_area_reviews from './20260731_202436_drop_area_reviews';
+import * as migration_20260805_195547_brand_display_mode_and_logo_header_footer from './20260805_195547_brand_display_mode_and_logo_header_footer';
 
 export const migrations = [
   {
@@ -101,5 +102,10 @@ export const migrations = [
     up: migration_20260731_202436_drop_area_reviews.up,
     down: migration_20260731_202436_drop_area_reviews.down,
     name: '20260731_202436_drop_area_reviews',
+  },
+  {
+    up: migration_20260805_195547_brand_display_mode_and_logo_header_footer.up,
+    down: migration_20260805_195547_brand_display_mode_and_logo_header_footer.down,
+    name: '20260805_195547_brand_display_mode_and_logo_header_footer',
   },
 ];
