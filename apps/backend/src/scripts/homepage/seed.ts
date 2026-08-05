@@ -52,6 +52,7 @@ function media(image: HomepageSeedMediaDoc, altOverride?: string): MediaFieldDat
 export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
   const header: Omit<Header, 'id' | 'createdAt' | 'updatedAt'> = {
     brandHomeLink: customLink('MVP Realty home', '/'),
+    brandDisplayMode: 'text',
     brandLabel: 'MVP Realty',
     navItems: [
       { label: 'The Life', link: customLink('The Life', '/#lifestyle') },
@@ -66,6 +67,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
 
   const footer: Omit<Footer, 'id' | 'createdAt' | 'updatedAt'> = {
     brandName: 'MVP',
+    brandDisplayMode: 'text',
     brandAccentText: 'Realty',
     brandBlurb:
       'Florida’s Gulf-Coast concierge for luxury gated communities and beachfront residences, minutes from the sand.',
