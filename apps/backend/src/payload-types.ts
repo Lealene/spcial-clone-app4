@@ -2753,8 +2753,22 @@ export interface Header {
     newTab?: boolean | null;
     ariaLabel?: string | null;
   };
+  /**
+   * Text renders the house mark + brandLabel wordmark. Logo renders the Brand logo image instead. brandLabel / brandMarkAlt always remain the link’s accessible name, in either mode.
+   */
+  brandDisplayMode: 'text' | 'logo';
   brandLabel: string;
   brandMarkAlt?: string | null;
+  brandLogo?: {
+    /**
+     * Shown only when Brand display mode is Logo.
+     */
+    image?: (number | null) | Media;
+    /**
+     * Optional. Falls back to the media alt text.
+     */
+    altOverride?: string | null;
+  };
   navItems?:
     | {
         label: string;
@@ -2812,7 +2826,21 @@ export interface Header {
 export interface Footer {
   id: number;
   brandName: string;
+  /**
+   * Text renders brandName + brandAccentText. Logo renders the Brand logo image instead. brandName always remains the fallback alt text.
+   */
+  brandDisplayMode: 'text' | 'logo';
   brandAccentText?: string | null;
+  brandLogo?: {
+    /**
+     * Shown only when Brand display mode is Logo.
+     */
+    image?: (number | null) | Media;
+    /**
+     * Optional. Falls back to the media alt text.
+     */
+    altOverride?: string | null;
+  };
   brandBlurb: string;
   columns?:
     | {
@@ -3034,8 +3062,15 @@ export interface HeaderSelect<T extends boolean = true> {
         newTab?: T;
         ariaLabel?: T;
       };
+  brandDisplayMode?: T;
   brandLabel?: T;
   brandMarkAlt?: T;
+  brandLogo?:
+    | T
+    | {
+        image?: T;
+        altOverride?: T;
+      };
   navItems?:
     | T
     | {
@@ -3087,7 +3122,14 @@ export interface HeaderSelect<T extends boolean = true> {
  */
 export interface FooterSelect<T extends boolean = true> {
   brandName?: T;
+  brandDisplayMode?: T;
   brandAccentText?: T;
+  brandLogo?:
+    | T
+    | {
+        image?: T;
+        altOverride?: T;
+      };
   brandBlurb?: T;
   columns?:
     | T

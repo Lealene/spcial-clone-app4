@@ -1,3 +1,6 @@
+import type { CmsBrandDisplayMode, CmsImage } from '@mvp-realty/api-contracts';
+import Image from 'next/image';
+
 import { cn } from '@mvp-realty/ui/lib/utils';
 
 /** The MVP Realty house mark — gold roofline over a navy tile. */
@@ -39,5 +42,71 @@ export function BrandWordmark({
       {prefix ? `${prefix} ` : null}
       <i className="text-accent-deep not-italic">{accent}</i>
     </b>
+  );
+}
+
+type BrandLockupProps = {
+  mode: CmsBrandDisplayMode;
+  logo?: CmsImage;
+  /** Wordmark / footer brand name; also used as image alt fallback upstream. */
+  label: string;
+  /** Footer-only accent suffix when rendering the string brand. */
+  accentText?: string;
+  variant: 'header' | 'footer';
+  className?: string;
+};
+
+/**
+ * Header/footer brand lockup. When `mode` is 'logo', the image replaces the
+ * full string/SVG treatment; otherwise the existing mark + wordmark (header)
+ * or split text (footer) path is used.
+ */
+export function BrandLockup({
+  mode,
+  logo,
+  label,
+  accentText,
+  variant,
+  className,
+}: BrandLockupProps) {
+  if (mode === 'logo' && logo) {
+    const maxHeight = variant === 'header' ? 42 : 34;
+    const width =
+      logo.width && logo.height
+        ? Math.round((logo.width / logo.height) * maxHeight)
+        : maxHeight * 3;
+    // Header brand sits in a link that already has an accessible name — empty alt
+    // avoids double announcement. Footer has no link, so the media alt is required.
+    const alt = variant === 'header' ? '' : logo.alt;
+
+    return (
+      <Image
+        src={logo.src}
+        alt={alt}
+        width={logo.width && logo.width > 0 ? logo.width : width}
+        height={logo.height && logo.height > 0 ? logo.height : maxHeight}
+        className={cn(
+          'w-auto object-contain',
+          variant === 'header' ? 'max-h-[42px]' : 'max-h-[34px]',
+          className,
+        )}
+        priority={variant === 'header'}
+      />
+    );
+  }
+
+  if (variant === 'footer') {
+    return (
+      <b className={cn('font-serif text-2xl font-bold text-white', className)}>
+        {label} {accentText ? <i className="text-accent not-italic">{accentText}</i> : null}
+      </b>
+    );
+  }
+
+  return (
+    <span className={cn('flex items-center gap-[13px]', className)}>
+      <BrandMark />
+      <BrandWordmark label={label} />
+    </span>
   );
 }

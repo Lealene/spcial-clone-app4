@@ -121,6 +121,100 @@ describe('site chrome CMS normalization', () => {
     ]);
   });
 
+  it('maps a populated header brandLogo and soft-fails a broken one', async () => {
+    const { normalizeHeader } = await import('./site-chrome');
+
+    const base = {
+      brandHomeLink: { type: 'custom', customUrl: '/', label: 'Home' },
+      brandLabel: 'MVP Realty',
+      navItems: [],
+      primaryCta: {
+        label: 'Contact',
+        link: { type: 'anchor', anchor: '/#lead', label: 'Contact' },
+      },
+      mobileMenuLabel: 'Menu',
+      mobileMenuCloseLabel: 'Close menu',
+    };
+
+    const withLogo = normalizeHeader({
+      ...base,
+      brandDisplayMode: 'logo',
+      brandLogo: {
+        image: {
+          url: '/api/media/file/logo.png',
+          alt: 'MVP logo',
+          width: 240,
+          height: 80,
+          mimeType: 'image/png',
+        },
+        altOverride: 'MVP Realty logo',
+      },
+    });
+    expect(withLogo.brandLogo).toEqual({
+      src: 'http://localhost:3002/api/media/file/logo.png',
+      alt: 'MVP Realty logo',
+      width: 240,
+      height: 80,
+    });
+    expect(withLogo.brandDisplayMode).toBe('logo');
+
+    const withoutLogo = normalizeHeader(base);
+    expect(withoutLogo.brandLogo).toBeUndefined();
+    expect(withoutLogo.brandDisplayMode).toBe('text');
+
+    const brokenLogo = normalizeHeader({
+      ...base,
+      brandDisplayMode: 'logo',
+      brandLogo: { image: 12 },
+    });
+    expect(brokenLogo.brandLogo).toBeUndefined();
+    expect(brokenLogo.brandLabel).toBe('MVP Realty');
+    expect(brokenLogo.brandDisplayMode).toBe('text');
+  });
+
+  it('maps a populated footer brandLogo and soft-fails a broken one', async () => {
+    const { normalizeFooter } = await import('./site-chrome');
+
+    const base = {
+      brandName: 'MVP',
+      brandAccentText: 'Realty',
+      brandBlurb: 'Concierge real estate.',
+      columns: [],
+      bottomLeftText: '© MVP Realty',
+      bottomRightLinks: [],
+    };
+
+    const withLogo = normalizeFooter({
+      ...base,
+      brandDisplayMode: 'logo',
+      brandLogo: {
+        image: {
+          url: 'http://localhost:3002/api/media/file/footer-logo.png',
+          alt: 'Footer mark',
+          mimeType: 'image/png',
+        },
+      },
+    });
+    expect(withLogo.brandLogo).toMatchObject({
+      src: 'http://localhost:3002/api/media/file/footer-logo.png',
+      alt: 'Footer mark',
+    });
+    expect(withLogo.brandDisplayMode).toBe('logo');
+
+    const withoutLogo = normalizeFooter(base);
+    expect(withoutLogo.brandLogo).toBeUndefined();
+    expect(withoutLogo.brandDisplayMode).toBe('text');
+
+    const brokenLogo = normalizeFooter({
+      ...base,
+      brandDisplayMode: 'logo',
+      brandLogo: { image: null },
+    });
+    expect(brokenLogo.brandLogo).toBeUndefined();
+    expect(brokenLogo.brandName).toBe('MVP');
+    expect(brokenLogo.brandDisplayMode).toBe('text');
+  });
+
   it('rejects missing CMS-owned header and footer copy', async () => {
     const { normalizeFooter, normalizeHeader } = await import('./site-chrome');
 

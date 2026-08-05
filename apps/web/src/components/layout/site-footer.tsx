@@ -1,6 +1,7 @@
 import type { FooterGlobal } from '@mvp-realty/api-contracts';
 import Link from 'next/link';
 
+import { BrandLockup } from '@/components/layout/brand-mark';
 import { Container } from '@/components/layout/container';
 import { getLinkRenderProps } from '@/lib/cms/links';
 
@@ -10,12 +11,13 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
       <Container>
         <div className="grid gap-12 py-[78px] pb-[50px] md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr]">
           <div>
-            <b className="font-serif text-2xl font-bold text-white">
-              {footer.brandName}{' '}
-              {footer.brandAccentText && (
-                <i className="text-accent not-italic">{footer.brandAccentText}</i>
-              )}
-            </b>
+            <BrandLockup
+              mode={footer.brandDisplayMode}
+              logo={footer.brandLogo}
+              label={footer.brandName}
+              accentText={footer.brandAccentText}
+              variant="footer"
+            />
             <p className="mt-4 max-w-[36ch] font-sans text-[15.5px] leading-relaxed">
               {footer.brandBlurb}
             </p>

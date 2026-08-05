@@ -479,10 +479,16 @@ export const cmsRevalidateRequestSchema = z.object({
 });
 export type CmsRevalidateRequest = z.infer<typeof cmsRevalidateRequestSchema>;
 
+export const CMS_BRAND_DISPLAY_MODES = ['text', 'logo'] as const;
+export const cmsBrandDisplayModeSchema = z.enum(CMS_BRAND_DISPLAY_MODES);
+export type CmsBrandDisplayMode = z.infer<typeof cmsBrandDisplayModeSchema>;
+
 export const headerGlobalSchema = z.object({
   brandHomeLink: cmsLinkSchema,
+  brandDisplayMode: cmsBrandDisplayModeSchema.default('text'),
   brandLabel: z.string().min(1),
   brandMarkAlt: z.string().optional(),
+  brandLogo: cmsImageSchema.optional(),
   navItems: z.array(
     z.object({
       label: z.string().min(1),
@@ -498,7 +504,9 @@ export type HeaderGlobal = z.infer<typeof headerGlobalSchema>;
 
 export const footerGlobalSchema = z.object({
   brandName: z.string().min(1),
+  brandDisplayMode: cmsBrandDisplayModeSchema.default('text'),
   brandAccentText: z.string().optional(),
+  brandLogo: cmsImageSchema.optional(),
   brandBlurb: z.string().min(1),
   columns: z.array(
     z.object({

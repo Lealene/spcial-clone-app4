@@ -83,11 +83,21 @@ describe('fresh Payload globals', () => {
     expect(
       headerIsUnseeded({ ...header, navItems: [{ label: 'Edited' }] } as unknown as Header),
     ).toBe(false);
+    expect(headerIsUnseeded({ ...header, brandLogo: { image: 12 } } as unknown as Header)).toBe(
+      false,
+    );
   });
 
   it('accepts an empty Footer as unseeded', () => {
     expect(footerIsUnseeded({ columns: [], bottomRightLinks: [] } as unknown as Footer)).toBe(true);
     expect(footerIsUnseeded({ brandName: 'Edited' } as unknown as Footer)).toBe(false);
+    expect(
+      footerIsUnseeded({
+        columns: [],
+        bottomRightLinks: [],
+        brandLogo: { image: 12 },
+      } as unknown as Footer),
+    ).toBe(false);
   });
 });
 

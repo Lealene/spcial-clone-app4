@@ -15,6 +15,13 @@ function linkHasContent(value: unknown): boolean {
   });
 }
 
+/** True when an optional brandLogo upload is populated (id or nested media). */
+function hasBrandLogo(value: unknown): boolean {
+  if (!value || typeof value !== 'object') return false;
+  const image = (value as { image?: unknown }).image;
+  return typeof image === 'number' || (image !== null && typeof image === 'object');
+}
+
 export function headerIsUnseeded(header: Header): boolean {
   const primaryCta = header.primaryCta as Record<string, unknown> | null | undefined;
 
@@ -22,6 +29,7 @@ export function headerIsUnseeded(header: Header): boolean {
     !linkHasContent(header.brandHomeLink) &&
     (!hasText(header.brandLabel) || header.brandLabel === 'MVP Realty') &&
     !hasText(header.brandMarkAlt) &&
+    !hasBrandLogo(header.brandLogo) &&
     (!header.navItems || header.navItems.length === 0) &&
     !hasText(primaryCta?.label) &&
     !linkHasContent(primaryCta?.link) &&
@@ -35,6 +43,7 @@ export function footerIsUnseeded(footer: Footer): boolean {
   return (
     !hasText(footer.brandName) &&
     !hasText(footer.brandAccentText) &&
+    !hasBrandLogo(footer.brandLogo) &&
     !hasText(footer.brandBlurb) &&
     (!footer.columns || footer.columns.length === 0) &&
     !hasText(footer.bottomLeftText) &&
