@@ -70,7 +70,7 @@ export function BrandLockup({
   className,
 }: BrandLockupProps) {
   if (mode === 'logo' && logo) {
-    const maxHeight = variant === 'header' ? 72 : 84;
+    const maxHeight = variant === 'header' ? 88 : 84;
     const width =
       logo.width && logo.height
         ? Math.round((logo.width / logo.height) * maxHeight)
@@ -87,7 +87,7 @@ export function BrandLockup({
         height={logo.height && logo.height > 0 ? logo.height : maxHeight}
         className={cn(
           'w-auto object-contain',
-          variant === 'header' ? 'max-h-18' : 'max-h-20',
+          variant === 'header' ? 'max-h-22' : 'max-h-20',
           className,
         )}
         priority={variant === 'header'}
