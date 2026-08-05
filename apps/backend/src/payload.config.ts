@@ -104,9 +104,6 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
-    components: {
-      beforeDashboard: ['/components/admin/SyncAllAreasButton'],
-    },
   },
   collections: [Users, Media, Pages, Brokers, Areas, Listings, Leads, SyncLogs],
   globals: [SiteSettings, Header, Footer, PrivacyPolicy],

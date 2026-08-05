@@ -19,7 +19,7 @@ export default function SyncAreaButton() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ areaSlug: slug }),
+        body: JSON.stringify({ areaSlug: slug, full: true }),
       });
       const json = (await response.json()) as {
         ok?: boolean;
@@ -40,7 +40,7 @@ export default function SyncAreaButton() {
 
   return (
     <Button buttonStyle="secondary" disabled={pending} onClick={() => void onClick()}>
-      {pending ? 'Syncing…' : 'Sync this area'}
+      {pending ? 'Syncing…' : 'Full sync this area'}
     </Button>
   );
 }

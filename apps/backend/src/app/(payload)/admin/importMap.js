@@ -24,7 +24,6 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_f11d8dfe4b28896e6aa04253f1770d10 } from '../../../components/admin/SyncAreaButton'
 import { default as default_e7d3af2d3f353338daaeb6f6793fbe52 } from '../../../components/admin/ResyncLeadButton'
-import { default as default_f15cad2e3d1e2fefb95f3acdf2f049c1 } from '../../../components/admin/SyncAllAreasButton'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -56,7 +55,6 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/SyncAreaButton#default": default_f11d8dfe4b28896e6aa04253f1770d10,
   "/components/admin/ResyncLeadButton#default": default_e7d3af2d3f353338daaeb6f6793fbe52,
-  "/components/admin/SyncAllAreasButton#default": default_f15cad2e3d1e2fefb95f3acdf2f049c1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
