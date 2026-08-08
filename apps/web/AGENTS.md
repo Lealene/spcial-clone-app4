@@ -23,11 +23,11 @@ Root rules in `/AGENTS.md` apply. This file carries only web-specific convention
 - `src/components/` — app-specific components, grouped by role:
   - `blocks/` — CMS-renderable page blocks only; registered through `index.ts`/renderer. Private block children (sliders, etc.) live in the feature folder that owns them (`listings/`, `communities/`).
   - `layout/` — page scaffolding and site chrome (`container`, `section-header`, nav, footer, brand).
-  - `shared/` — widgets used by more than one feature folder (lightbox, breadcrumb, save/share, reveal, broker avatar).
+  - `shared/` — widgets used by more than one feature folder (lightbox, breadcrumb, share, reveal, broker avatar).
   - `leads/` — lead-capture form and related compositions.
   - `listings/`, `communities/` — feature compositions for those routes.
   - `ui/` — app-local primitive overrides (e.g. Sand-token `Button`); prefer `@mvp-realty/ui` for shared kit primitives.
-- `src/lib/` — app logic. Domain folders include `cms/`, `seo/`, `leads/`, and `listings/` (client-side filter/URL state; distinct from `cms/listings/` fetch+normalize). Cross-domain leaves like `saved-local.ts` may sit at the lib root.
+- `src/lib/` — app logic. Domain folders include `cms/`, `seo/`, `leads/`, and `listings/` (client-side filter/URL state; distinct from `cms/listings/` fetch+normalize). Cross-domain leaves may sit at the lib root; there are none today.
 - `src/data/` — typed hardcoded data that mirrors future Payload schemas.
 - `next.config.ts` — workspace transpilation, image patterns, dev origins, and browser-to-terminal logging.
 - `next-env.d.ts` — generated; never edit.

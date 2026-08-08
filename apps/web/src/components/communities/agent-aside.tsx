@@ -81,16 +81,13 @@ export function AgentAside({
       </div>
 
       {resolvedPhone && resolvedPhoneHref ? (
-        <div className="border-line bg-surface-soft rounded-xl border px-6 py-5 text-center">
-          <span className="text-muted font-sans text-[14px]">Prefer to call?</span>
-          <a
-            href={resolvedPhoneHref}
-            className="text-primary mt-1.5 inline-flex items-center gap-[9px] font-sans text-[18px] font-extrabold"
-          >
-            <Phone className="text-accent-deep size-[17px]" strokeWidth={1.8} />
-            {resolvedPhone}
-          </a>
-        </div>
+        <a
+          href={resolvedPhoneHref}
+          className="border-line bg-surface-soft text-primary hover:border-accent-deep flex items-center justify-center gap-2.5 rounded-xl border px-6 py-5 font-sans text-[15px] font-bold transition-colors"
+        >
+          <Phone className="text-accent-deep size-[17px]" strokeWidth={1.8} />
+          Prefer to call? {resolvedPhone}
+        </a>
       ) : null}
     </aside>
   );
