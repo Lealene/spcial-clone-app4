@@ -11,12 +11,22 @@ export function SiteFooter({ footer }: { footer: FooterGlobal }) {
       <Container>
         <div className="grid gap-12 py-[78px] pb-[50px] md:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr]">
           <div>
+            {/*
+              The brand PNG bakes ~11.9% transparent clear-space into each side,
+              which pushes the mark right of the blurb below it. translate-x
+              resolves percentages against the element's own box, so this cancels
+              the left bleed exactly at any rendered size — a percentage margin
+              would resolve against the footer column instead. The text brand has
+              no bleed, hence the mode guard. Remove this if a tightly-cropped
+              logo is ever uploaded.
+            */}
             <BrandLockup
               mode={footer.brandDisplayMode}
               logo={footer.brandLogo}
               label={footer.brandName}
               accentText={footer.brandAccentText}
               variant="footer"
+              className={footer.brandDisplayMode === 'logo' ? '-translate-x-[11.9%]' : undefined}
             />
             <p className="mt-4 max-w-[36ch] font-sans text-[15.5px] leading-relaxed">
               {footer.brandBlurb}

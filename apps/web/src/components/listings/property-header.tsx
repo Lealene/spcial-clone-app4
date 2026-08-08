@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import { Container } from '@/components/layout/container';
-import { SaveShareActions } from '@/components/shared/save-share-actions';
+import { ShareAction } from '@/components/shared/share-action';
 import type { KeyFact, PropertyView } from '@/data/property';
 
 const FACT_ICON: Record<KeyFact['icon'], LucideIcon> = {
@@ -58,7 +58,7 @@ export function PropertyHeader({ view }: { view: PropertyView }) {
             </a>
           </p>
         </div>
-        <SaveShareActions kind="listing" name={listing.name} slug={listing.slug} />
+        <ShareAction name={listing.name} />
       </div>
 
       {/* Key-facts ribbon */}
