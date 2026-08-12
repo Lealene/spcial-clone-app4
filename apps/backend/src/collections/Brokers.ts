@@ -1,4 +1,4 @@
-import { CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
+import { CMS_AREA_DETAIL_LIMITS, CMS_CACHE_TAGS } from '@mvp-realty/api-contracts';
 import type { CollectionConfig } from 'payload';
 
 import { authenticated } from '../access/authenticated';
@@ -123,7 +123,9 @@ export const Brokers: CollectionConfig = {
     {
       name: 'credentials',
       type: 'array',
-      maxRows: 3,
+      required: false,
+      maxRows: CMS_AREA_DETAIL_LIMITS.credentials.max,
+      admin: { description: 'Optional: up to 3 credential stats.' },
       fields: [
         { name: 'value', type: 'text', required: true },
         { name: 'label', type: 'text', required: true },

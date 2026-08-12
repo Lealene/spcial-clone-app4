@@ -39,21 +39,24 @@ describe('Payload page block catalog', () => {
     });
   });
 
-  it('keeps repeatable authoring arrays required and bounded', () => {
+  it('bounds repeatable authoring arrays and keeps the mandatory ones required', () => {
     const expectations: Array<{
       blockType: CmsPageBlockType;
       fieldName: string;
       limits: { min: number; max: number };
+      required: boolean;
     }> = [
       {
         blockType: 'communitiesStrip',
         fieldName: 'items',
         limits: CMS_PAGE_BLOCK_LIMITS.communitiesStripItems,
+        required: false,
       },
       {
         blockType: 'featuredCommunities',
         fieldName: 'manualCommunities',
         limits: CMS_PAGE_BLOCK_LIMITS.featuredCommunities,
+        required: false,
       },
       // featuredResidences.manualListings is intentionally absent: it is deprecated
       // and optional, asserted separately below.
@@ -61,28 +64,33 @@ describe('Payload page block catalog', () => {
         blockType: 'lifestyle',
         fieldName: 'tiles',
         limits: CMS_PAGE_BLOCK_LIMITS.lifestyleTiles,
+        required: true,
       },
       {
         blockType: 'testimonials',
         fieldName: 'stories',
         limits: CMS_PAGE_BLOCK_LIMITS.testimonialStories,
+        required: true,
       },
       {
         blockType: 'amenities',
         fieldName: 'amenities',
         limits: CMS_PAGE_BLOCK_LIMITS.amenities,
+        required: true,
       },
+      // Credential stats are optional decoration; an owner intro saves with zero rows.
       {
         blockType: 'ownerIntro',
         fieldName: 'credentials',
         limits: CMS_PAGE_BLOCK_LIMITS.ownerCredentials,
+        required: false,
       },
     ];
 
-    expectations.forEach(({ blockType, fieldName, limits }) => {
+    expectations.forEach(({ blockType, fieldName, limits, required }) => {
       expect(namedField(pageBlocksByType[blockType].fields, fieldName)).toMatchObject({
         type: 'array',
-        required: true,
+        required,
         minRows: limits.min,
         maxRows: limits.max,
       });

@@ -778,13 +778,15 @@ export interface OwnerIntroBlock {
   bio: string;
   signature: string;
   /**
-   * Recommended: 1-4 credential stats.
+   * Optional: up to 4 credential stats.
    */
-  credentials: {
-    value: string;
-    label: string;
-    id?: string | null;
-  }[];
+  credentials?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'ownerIntro';
@@ -904,6 +906,9 @@ export interface Broker {
    */
   bio?: string | null;
   signature?: string | null;
+  /**
+   * Optional: up to 3 credential stats.
+   */
   credentials?:
     | {
         value: string;
