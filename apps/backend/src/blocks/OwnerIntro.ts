@@ -31,10 +31,10 @@ export const OwnerIntroBlock: Block = {
     {
       name: 'credentials',
       type: 'array',
-      required: true,
+      required: false,
       minRows: CMS_PAGE_BLOCK_LIMITS.ownerCredentials.min,
       maxRows: CMS_PAGE_BLOCK_LIMITS.ownerCredentials.max,
-      admin: { description: 'Recommended: 1-4 credential stats.' },
+      admin: { description: 'Optional: up to 4 credential stats.' },
       fields: [
         { name: 'value', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },
         { name: 'label', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },

@@ -35,7 +35,8 @@ export const CMS_PAGE_BLOCK_LIMITS = {
   lifestyleTiles: { min: 1, max: 3 },
   testimonialStories: { min: 1, max: 8 },
   amenities: { min: 1, max: 6 },
-  ownerCredentials: { min: 1, max: 4 },
+  // Credential stats are optional decoration on the owner intro; an empty group is valid.
+  ownerCredentials: { min: 0, max: 4 },
   communityTags: { max: 6 },
   testimonialIntervalMs: { min: 1000, max: 60000 },
 } as const;
