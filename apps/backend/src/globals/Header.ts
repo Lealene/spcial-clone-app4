@@ -36,7 +36,7 @@ export const Header: GlobalConfig = {
           'Text renders the house mark + brandLabel wordmark. Logo renders the Brand logo image instead. brandLabel / brandMarkAlt always remain the link’s accessible name, in either mode.',
       },
     },
-    { name: 'brandLabel', type: 'text', defaultValue: 'MVP Realty', required: true },
+    { name: 'brandLabel', type: 'text', defaultValue: '55 Living Team', required: true },
     { name: 'brandMarkAlt', type: 'text' },
     {
       ...mediaField({

@@ -65,7 +65,7 @@ const COMMUNITY_CONTENT_SEEDS: CommunityContentSeed[] = [
     about: [
       "Set along the Imperial River where it meets Estero Bay, **Bonita Bay** is one of Southwest Florida's most established gated communities — 2,400 acres of preserved wetlands, oak canopies, and shoreline given over to a single, unhurried idea of coastal living. Residents move between five championship golf courses, a full-service marina, and a private beach park reached by the community's own shuttle.",
       "Inside the gates you'll find everything from lakefront single-family homes to coach residences and full-floor tower condominiums with Gulf views. The pace is social but never crowded: morning tee times, afternoons on the courts, and evenings at the lifestyle center, where the calendar fills itself.",
-      'It is the kind of address that rarely needs explaining — and the kind of move MVP Realty makes effortless, from your first walk-through to the day the keys change hands.',
+      'It is the kind of address that rarely needs explaining — and the kind of move 55 Living Team makes effortless, from your first walk-through to the day the keys change hands.',
     ],
     amenities: [
       { icon: 'golf', title: 'Five Championship Golf Courses' },
@@ -144,7 +144,7 @@ const COMMUNITY_CONTENT_SEEDS: CommunityContentSeed[] = [
     about: [
       'In the heart of Bonita Springs, **Valencia Bonita** is GL Homes’ flagship 55+ community — 410 single-story villas and single-family homes wrapped around a 45,000-square-foot social clubhouse that runs more like a private resort than an HOA amenity.',
       'Days here are made of choices: a class in the arts studio, a set of pickleball, laps in the resort pool, then a show in the on-site social hall. The maintenance-light, single-story floor plans are built for an unhurried second act, with paver drives, tile roofs, and screened lanais throughout.',
-      'It is one of the most sought-after age-qualified addresses on the Gulf Coast — and MVP Realty knows every floor plan, every street, and every quiet listing before it reaches the search.',
+      'It is one of the most sought-after age-qualified addresses on the Gulf Coast — and 55 Living Team knows every floor plan, every street, and every quiet listing before it reaches the search.',
     ],
     amenities: [
       { icon: 'club', title: '45,000 Sq Ft Social Clubhouse' },
@@ -226,7 +226,7 @@ const COMMUNITY_CONTENT_SEEDS: CommunityContentSeed[] = [
     about: [
       'Just north of Naples, **Valencia Trails** is one of GL Homes’ newest 55+ communities — 275 single-family homes set around a 42,000-square-foot clubhouse and a beach-entry resort pool, all within a short drive of the Gulf beaches.',
       'The draw here is newness with a settled feel: contemporary open floor plans, energy-efficient construction, and a lifestyle director who keeps the social hall, the courts, and the trails in constant use. Lakes and preserves thread between the streets, so most homesites look out on water or green.',
-      'For buyers who want a brand-new home without giving up an established community feel, Valencia Trails is hard to beat — and MVP Realty tracks every release, incentive, and resale as it comes.',
+      'For buyers who want a brand-new home without giving up an established community feel, Valencia Trails is hard to beat — and 55 Living Team tracks every release, incentive, and resale as it comes.',
     ],
     amenities: [
       { icon: 'club', title: '42,000 Sq Ft Resort Clubhouse' },

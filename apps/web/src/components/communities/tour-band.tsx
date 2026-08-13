@@ -26,7 +26,7 @@ export function TourBand({
       <Container className="relative grid grid-cols-1 items-center gap-[clamp(36px,5vw,72px)] py-[clamp(56px,6vw,92px)] lg:grid-cols-[1.1fr_1fr]">
         <div>
           <Kicker tone="dark">Want more about {communityName}?</Kicker>
-          <h2 className="mt-4 max-w-[16ch] font-serif text-[clamp(30px,3.6vw,46px)] leading-[1.07] font-semibold tracking-[-0.01em]">
+          <h2 className="mt-4 max-w-[16ch] font-serif text-[clamp(30px,3.6vw,46px)] font-semibold leading-[1.07] tracking-[-0.01em]">
             Let a concierge plan your <em className="text-accent-soft italic">private tour.</em>
           </h2>
           <p className="mt-5 max-w-[46ch] font-sans text-[18px] leading-[1.7] text-white/85">
@@ -47,7 +47,7 @@ export function TourBand({
               successHeading: 'Your tour request is in.',
               successBody: `${firstName} will reach out within one business day to plan your visit to ${communityName}.`,
               privacyText:
-                'MVP Realty does not provide or maintain community HOA information. We never share your details.',
+                '55 Living Team does not provide or maintain community HOA information. We never share your details.',
             }}
             fields={{
               message: {

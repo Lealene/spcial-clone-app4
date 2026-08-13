@@ -7,7 +7,7 @@ const adapter = () =>
   resendAdapter({
     apiKey: 'test-key',
     defaultFromAddress: 'leads@example.com',
-    defaultFromName: 'MVP Realty',
+    defaultFromName: '55 Living Team',
   })({ payload: {} as Payload });
 
 /** Resolve like Resend's 200 response. */
@@ -61,7 +61,7 @@ describe('resendAdapter', () => {
   it('falls back to the default from address when the message omits one', async () => {
     await adapter().sendEmail({ to: 'lead@example.com', subject: 'Hi' });
 
-    expect(sentBody(fetchMock).from).toBe('MVP Realty <leads@example.com>');
+    expect(sentBody(fetchMock).from).toBe('55 Living Team <leads@example.com>');
   });
 
   it('prefers an explicit from address', async () => {

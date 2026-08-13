@@ -20,7 +20,7 @@ export const Users: CollectionConfig = {
   auth: {
     forgotPassword: {
       expiration: PASSWORD_RESET_EXPIRATION_MS,
-      generateEmailSubject: () => 'Reset your MVP Realty admin password',
+      generateEmailSubject: () => 'Reset your 55 Living Team admin password',
       generateEmailHTML: (args) => {
         // Read the routes from config rather than hardcoding `/admin/reset` so a
         // customised admin route or Next basePath cannot silently break the link.

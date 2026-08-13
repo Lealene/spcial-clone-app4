@@ -7,7 +7,7 @@ export const homepageSeedAssets = {
   },
   owner: {
     fileName: 'owner-eleanor-voss.jpg',
-    alt: 'Portrait of Eleanor Voss, Broker and Owner of MVP Realty, with her Doberman',
+    alt: 'Portrait of Eleanor Voss, Broker and Owner of 55 Living Team, with her Doberman',
     mimeType: 'image/jpeg',
     sha256: '74af39f942c701b885e51084ff003d7d957fa32bc87b348a85b4a1d686289748',
   },

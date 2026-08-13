@@ -51,9 +51,9 @@ function media(image: HomepageSeedMediaDoc, altOverride?: string): MediaFieldDat
 
 export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
   const header: Omit<Header, 'id' | 'createdAt' | 'updatedAt'> = {
-    brandHomeLink: customLink('MVP Realty home', '/'),
+    brandHomeLink: customLink('55 Living Team home', '/'),
     brandDisplayMode: 'text',
-    brandLabel: 'MVP Realty',
+    brandLabel: '55 Living Team',
     navItems: [
       { label: 'The Life', link: customLink('The Life', '/#lifestyle') },
       { label: 'Amenities', link: customLink('Amenities', '/#amenities') },
@@ -106,7 +106,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
     // The Equal Housing notice moves left because the footer renders
     // `bottomRightTextFallback` only while `bottomRightLinks` is empty — filling the
     // links in would otherwise silently drop a fair-housing disclosure.
-    bottomLeftText: '© 2026 MVP Realty. All rights reserved. · Equal Housing Opportunity',
+    bottomLeftText: '© 2026 55 Living Team. All rights reserved. · Equal Housing Opportunity',
     bottomRightLinks: [
       { link: customLink('Privacy Policy', '/privacy-policy') },
       { link: customLink('Sitemap', '/sitemap.xml') },
@@ -119,7 +119,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
     slug: 'home',
     _status: 'published',
     seo: {
-      metaTitle: 'MVP Realty — Gulf-Coast Concierge for Luxury Gated Communities',
+      metaTitle: '55 Living Team — Gulf-Coast Concierge for Luxury Gated Communities',
       metaDescription:
         'A prestigious Gulf-Coast address with resort amenities and a personal concierge. Private gated communities minutes from the Naples beaches.',
       index: true,
@@ -369,7 +369,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
         kicker: 'Meet the Owner',
         heading: 'One person, from first call to',
         headingAccent: 'front door.',
-        titleLine: 'Eleanor Voss · Broker & Owner, MVP Realty',
+        titleLine: 'Eleanor Voss · Broker & Owner, 55 Living Team',
         bio: 'Eleanor has spent eighteen years matching Gulf-Coast buyers to the right gate, not just the right house. As the broker who owns the firm, she answers her own phone, walks the courts and clubhouses with you, and stays on long after the keys change hands. You are never handed off to a sales floor.',
         signature: 'Eleanor Voss',
         credentials: [
@@ -399,7 +399,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
         },
         submitLabel: 'Request My Shortlist',
         privacyText:
-          'A private introduction to MVP Realty. We never share your details, and you will only hear from your own concierge.',
+          'A private introduction to 55 Living Team. We never share your details, and you will only hear from your own concierge.',
         successHeading: 'Your request is in.',
         successBody:
           'Thank you. Your concierge will be in touch shortly with a shortlist prepared just for you — no sales floor, no obligation.',

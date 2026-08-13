@@ -6,7 +6,7 @@ vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://mvprealty.test');
 import { siteSettingsSchema, type SiteSettings } from '@mvp-realty/api-contracts';
 
 function makeSettings(overrides: Record<string, unknown> = {}): SiteSettings {
-  return siteSettingsSchema.parse({ name: 'MVP Realty', ...overrides });
+  return siteSettingsSchema.parse({ name: '55 Living Team', ...overrides });
 }
 
 describe('buildOrganizationNode', () => {

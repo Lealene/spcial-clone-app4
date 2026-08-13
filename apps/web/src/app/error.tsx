@@ -10,7 +10,7 @@ export default function ErrorPage({
   unstable_retry: () => void;
 }) {
   useEffect(() => {
-    console.error('MVP Realty route error', error);
+    console.error('55 Living Team route error', error);
   }, [error]);
 
   return (

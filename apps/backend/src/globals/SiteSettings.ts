@@ -37,9 +37,9 @@ export const SiteSettings: GlobalConfig = {
               name: 'name',
               type: 'text',
               required: true,
-              defaultValue: 'MVP Realty',
+              defaultValue: '55 Living Team',
               maxLength: CMS_TEXT_LIMITS.heading,
-              admin: { description: 'Public brand name, e.g. "MVP Realty".' },
+              admin: { description: 'Public brand name, e.g. "55 Living Team".' },
             },
             {
               name: 'legalName',

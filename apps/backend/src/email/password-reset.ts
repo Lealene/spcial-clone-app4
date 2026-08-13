@@ -34,14 +34,14 @@ export function renderPasswordResetEmail({ resetUrl }: { resetUrl: string }): st
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background-color:#ffffff;border-radius:10px;border:1px solid #e5ded4;">
             <tr>
               <td style="padding:32px 32px 8px 32px;">
-                <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#8a7f70;">MVP Realty</p>
+                <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#8a7f70;">55 Living Team</p>
                 <h1 style="margin:0;font-size:22px;line-height:1.3;color:#26201a;font-weight:600;">Reset your password</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:16px 32px 0 32px;">
                 <p style="margin:0;font-size:15px;line-height:1.6;color:#4b4238;">
-                  We received a request to reset the password for your MVP Realty admin account.
+                  We received a request to reset the password for your 55 Living Team admin account.
                   Choose a new password using the button below.
                 </p>
               </td>

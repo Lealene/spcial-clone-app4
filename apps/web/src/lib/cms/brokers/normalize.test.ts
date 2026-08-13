@@ -23,7 +23,7 @@ describe('normalizeBroker', () => {
       slug: 'eleanor-voss',
       name: 'Eleanor Voss',
       title: 'Broker & Owner',
-      brokerage: 'MVP Realty',
+      brokerage: '55 Living Team',
       rating: 0,
     });
     expect(broker?.rating).toBe(0);

@@ -49,7 +49,7 @@ export const env = createEnv({
     SMTP_SECURE: z.enum(['true', 'false']).optional(),
     // Must be on a domain verified with the provider or mail is rejected.
     EMAIL_FROM_ADDRESS: z.string().email().optional(),
-    EMAIL_FROM_NAME: z.string().min(1).default('MVP Realty'),
+    EMAIL_FROM_NAME: z.string().min(1).default('55 Living Team'),
 
     // Wise Agent CRM lead-capture (email parsing) address from
     // Integrations → Settings → API Keys and Lead Email. Wise Agent's

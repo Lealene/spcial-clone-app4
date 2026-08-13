@@ -24,7 +24,7 @@ export function PropertyTourForm({
   return (
     <div className="bg-surface border-line shadow-card rounded-xl border p-[clamp(22px,2.4vw,28px)]">
       <p className="text-primary font-serif text-[22px] font-semibold">Tour this home</p>
-      <p className="text-muted mt-1 mb-[18px] font-sans text-[14px]">
+      <p className="text-muted mb-[18px] mt-1 font-sans text-[14px]">
         No obligation. Your concierge replies within minutes, not days.
       </p>
 
@@ -38,7 +38,7 @@ export function PropertyTourForm({
           successHeading: 'Your request is in.',
           successBody: `${firstName} will reach out shortly about ${propertyName}.`,
           privacyText:
-            'By requesting information you agree MVP Realty may call, text, or email you about this property. Consent is not a condition of purchase.',
+            'By requesting information you agree 55 Living Team may call, text, or email you about this property. Consent is not a condition of purchase.',
         }}
         fields={{
           message: {

@@ -13,7 +13,7 @@ export default function GlobalError({
   unstable_retry: () => void;
 }) {
   useEffect(() => {
-    console.error('MVP Realty global error', error);
+    console.error('55 Living Team global error', error);
   }, [error]);
 
   return (
@@ -21,11 +21,11 @@ export default function GlobalError({
       <body className="bg-surface text-ink min-h-screen">
         <main className="flex min-h-screen items-center justify-center px-6 py-24 text-center">
           <div className="max-w-xl">
-            <div className="flex items-center justify-center gap-3" aria-label="MVP Realty">
+            <div className="flex items-center justify-center gap-3" aria-label="55 Living Team">
               <BrandMark />
               <BrandWordmark />
             </div>
-            <p className="text-accent-deep mt-10 text-sm font-bold tracking-[0.18em] uppercase">
+            <p className="text-accent-deep mt-10 text-sm font-bold uppercase tracking-[0.18em]">
               Temporarily unavailable
             </p>
             <h1 className="text-primary mt-4 font-serif text-4xl font-bold sm:text-5xl">

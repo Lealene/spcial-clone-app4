@@ -1,6 +1,10 @@
 import { fetchJson } from '../client';
+import { isCmsAvailabilityError } from '../errors';
 import { normalizeListingCard, normalizeListingDetail } from './normalize';
 import { CMS_CACHE_TAGS, type ListingCard, type ListingDetail } from '@mvp-realty/api-contracts';
+import { communityListingCountsFallback } from '@/data/communities';
+import { featuredListingsFallback } from '@/data/featured-listings';
+import { connection } from 'next/server';
 
 const LISTINGS_TAG = CMS_CACHE_TAGS.listings;
 const PAGE_LIMIT = 100;
@@ -87,14 +91,20 @@ export async function getFeaturedListings(limit = 12): Promise<ListingCard[]> {
     depth: '1',
   });
   applyListSelect(params);
-  const raw = (await fetchJson(listingsPath(params.toString()), {
-    tags: [LISTINGS_TAG, CMS_CACHE_TAGS.listingsFeatured],
-  })) as PayloadListResponse;
+  try {
+    const raw = (await fetchJson(listingsPath(params.toString()), {
+      tags: [LISTINGS_TAG, CMS_CACHE_TAGS.listingsFeatured],
+    })) as PayloadListResponse;
 
-  return (raw.docs ?? [])
-    .map(normalizeListingCard)
-    .filter((listing): listing is ListingCard => listing !== null)
-    .slice(0, limit);
+    return (raw.docs ?? [])
+      .map(normalizeListingCard)
+      .filter((listing): listing is ListingCard => listing !== null)
+      .slice(0, limit);
+  } catch (error) {
+    if (!isCmsAvailabilityError(error)) throw error;
+    await connection();
+    return featuredListingsFallback.slice(0, limit);
+  }
 }
 
 export async function getListingsForArea(areaSlug: string): Promise<ListingCard[]> {
@@ -104,12 +114,18 @@ export async function getListingsForArea(areaSlug: string): Promise<ListingCard[
 
 /** Active listing counts keyed by area slug — powers "now selling" on community cards. */
 export async function getActiveListingCountsByCommunity(): Promise<Map<string, number>> {
-  const listings = await getActiveListings();
-  const counts = new Map<string, number>();
-  for (const listing of listings) {
-    counts.set(listing.community, (counts.get(listing.community) ?? 0) + 1);
+  try {
+    const listings = await getActiveListings();
+    const counts = new Map<string, number>();
+    for (const listing of listings) {
+      counts.set(listing.community, (counts.get(listing.community) ?? 0) + 1);
+    }
+    return counts;
+  } catch (error) {
+    if (!isCmsAvailabilityError(error)) throw error;
+    await connection();
+    return new Map(communityListingCountsFallback);
   }
-  return counts;
 }
 
 export async function getListingBySlug(slug: string): Promise<ListingDetail | null> {

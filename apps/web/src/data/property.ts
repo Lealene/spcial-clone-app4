@@ -85,7 +85,7 @@ export type CommunityPdpMeta = {
 function splitRemarks(remarks: string | undefined): { lede: string; rest: string[] } {
   if (!remarks) {
     return {
-      lede: 'Ask your MVP Realty concierge for the full story on this residence.',
+      lede: 'Ask your 55 Living Team concierge for the full story on this residence.',
       rest: [],
     };
   }

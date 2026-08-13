@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.stubEnv('NEXT_PUBLIC_BACKEND_URL', 'http://localhost:3002');
 vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3003');
+vi.mock('next/server', () => ({ connection: vi.fn(async () => undefined) }));
 
 describe('site chrome CMS normalization', () => {
   afterEach(() => {
@@ -13,7 +14,7 @@ describe('site chrome CMS normalization', () => {
 
     const header = normalizeHeader({
       brandHomeLink: { type: 'internal', page: { slug: 'home' }, label: 'Home' },
-      brandLabel: 'MVP Realty',
+      brandLabel: '55 Living Team',
       navItems: [
         {
           label: 'The Life',
@@ -50,17 +51,17 @@ describe('site chrome CMS normalization', () => {
             {
               label: 'Call',
               link: { type: 'phone', phone: '(239) 555-0148', label: 'Call' },
-              ariaLabel: 'Call MVP Realty',
+              ariaLabel: 'Call 55 Living Team',
             },
           ],
         },
       ],
-      bottomLeftText: '© MVP Realty',
+      bottomLeftText: '© 55 Living Team',
       bottomRightLinks: [{ type: 'email', email: 'hello@example.com', label: 'Email' }],
     });
 
     expect(footer.columns[0]?.links[0]).toMatchObject({
-      ariaLabel: 'Call MVP Realty',
+      ariaLabel: 'Call 55 Living Team',
       link: { href: 'tel:2395550148' },
     });
     expect(footer.bottomRightLinks[0]).toMatchObject({ href: 'mailto:hello@example.com' });
@@ -74,7 +75,7 @@ describe('site chrome CMS normalization', () => {
         brandName: 'MVP',
         brandBlurb: 'Concierge real estate.',
         columns: [{ title: 'Communities', source: 'communities', communityLimit: 2 }],
-        bottomLeftText: '© MVP Realty',
+        bottomLeftText: '© 55 Living Team',
         bottomRightLinks: [],
       },
       [
@@ -109,7 +110,7 @@ describe('site chrome CMS normalization', () => {
             ],
           },
         ],
-        bottomLeftText: '© MVP Realty',
+        bottomLeftText: '© 55 Living Team',
         bottomRightLinks: [],
       },
       [{ slug: 'pelican-bay', name: 'Pelican Bay' }],
@@ -126,7 +127,7 @@ describe('site chrome CMS normalization', () => {
 
     const base = {
       brandHomeLink: { type: 'custom', customUrl: '/', label: 'Home' },
-      brandLabel: 'MVP Realty',
+      brandLabel: '55 Living Team',
       navItems: [],
       primaryCta: {
         label: 'Contact',
@@ -147,12 +148,12 @@ describe('site chrome CMS normalization', () => {
           height: 80,
           mimeType: 'image/png',
         },
-        altOverride: 'MVP Realty logo',
+        altOverride: '55 Living Team logo',
       },
     });
     expect(withLogo.brandLogo).toEqual({
       src: 'http://localhost:3002/api/media/file/logo.png',
-      alt: 'MVP Realty logo',
+      alt: '55 Living Team logo',
       width: 240,
       height: 80,
     });
@@ -168,7 +169,7 @@ describe('site chrome CMS normalization', () => {
       brandLogo: { image: 12 },
     });
     expect(brokenLogo.brandLogo).toBeUndefined();
-    expect(brokenLogo.brandLabel).toBe('MVP Realty');
+    expect(brokenLogo.brandLabel).toBe('55 Living Team');
     expect(brokenLogo.brandDisplayMode).toBe('text');
   });
 
@@ -180,7 +181,7 @@ describe('site chrome CMS normalization', () => {
       brandAccentText: 'Realty',
       brandBlurb: 'Concierge real estate.',
       columns: [],
-      bottomLeftText: '© MVP Realty',
+      bottomLeftText: '© 55 Living Team',
       bottomRightLinks: [],
     };
 
@@ -221,7 +222,7 @@ describe('site chrome CMS normalization', () => {
     expect(() =>
       normalizeHeader({
         brandHomeLink: { type: 'custom', customUrl: '/', label: 'Home' },
-        brandLabel: 'MVP Realty',
+        brandLabel: '55 Living Team',
         navItems: [],
         primaryCta: {
           label: 'Contact',
@@ -234,14 +235,13 @@ describe('site chrome CMS normalization', () => {
     );
   });
 
-  it('propagates CMS request failures instead of returning fixture chrome', async () => {
+  it('returns the public snapshot when CMS chrome is unavailable', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 503 }));
     const { getHeaderContent } = await import('./site-chrome');
 
-    await expect(getHeaderContent()).rejects.toMatchObject({
-      name: 'CmsDataError',
-      kind: 'request-failed',
-      status: 503,
+    await expect(getHeaderContent()).resolves.toMatchObject({
+      brandLabel: '55 Living Team',
+      brandDisplayMode: 'logo',
     });
   });
 });

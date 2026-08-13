@@ -192,7 +192,7 @@ describe('CMS page contracts', () => {
   it('requires authored header menu labels', () => {
     const header = {
       brandHomeLink: link('Home', '/'),
-      brandLabel: 'MVP Realty',
+      brandLabel: '55 Living Team',
       navItems: [{ label: 'The Life', link: link('The Life', '/#lifestyle') }],
       primaryCta: link('Request My Shortlist', '/#lead'),
       mobileMenuLabel: 'Menu',
@@ -263,6 +263,6 @@ describe('lead submission contracts', () => {
 
     expect(Object.keys(LEAD_SOURCES)).toEqual([...LEAD_FORM_TYPES]);
     expect(new Set(sources).size).toBe(LEAD_FORM_TYPES.length);
-    expect(sources.every((source) => source.startsWith('MVP Realty Website - '))).toBe(true);
+    expect(sources.every((source) => source.startsWith('55 Living Team Website - '))).toBe(true);
   });
 });
