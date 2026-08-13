@@ -19,7 +19,7 @@ const manrope = Manrope({
 });
 
 /** Used until Site Settings carries its own copy. */
-const DEFAULT_TITLE = 'MVP Realty — Gulf-Coast Concierge for Luxury Gated Communities';
+const DEFAULT_TITLE = '55 Living Team — Gulf-Coast Concierge for Luxury Gated Communities';
 const DEFAULT_DESCRIPTION =
   'A prestigious Gulf-Coast address with resort amenities and a personal concierge. Private gated communities minutes from the Naples beaches.';
 

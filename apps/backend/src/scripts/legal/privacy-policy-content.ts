@@ -4,7 +4,7 @@
  * IMPORTANT: this is a structural placeholder, not legal advice and not a policy
  * anyone may publish as-is. The section list follows what a Florida brokerage site
  * with an IDX/MLS feed and lead-capture forms typically has to disclose, but every
- * paragraph marked [REVIEW] must be replaced with text MVP Realty's counsel has
+ * paragraph marked [REVIEW] must be replaced with text 55 Living Team's counsel has
  * approved. Do not paste another brokerage's policy in here — it is their
  * copyrighted text and it names their entity, licenses and privacy contact.
  */
@@ -152,7 +152,7 @@ const SECTIONS: { heading: string; body: (string | string[])[] }[] = [
 export const PRIVACY_POLICY_TITLE = 'Privacy Policy';
 
 export const PRIVACY_POLICY_INTRO =
-  '[REVIEW] This policy explains what information MVP Realty collects through this website, how we use it, and the choices you have. Replace this paragraph with counsel-approved wording before publishing.';
+  '[REVIEW] This policy explains what information 55 Living Team collects through this website, how we use it, and the choices you have. Replace this paragraph with counsel-approved wording before publishing.';
 
 export function privacyPolicyBody(): LexicalDoc {
   const children: ElementNode[] = [];

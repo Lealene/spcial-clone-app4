@@ -24,3 +24,10 @@ export class CmsDataError extends Error {
     this.status = options.status;
   }
 }
+
+export function isCmsAvailabilityError(error: unknown): error is CmsDataError {
+  return (
+    error instanceof CmsDataError &&
+    (error.kind === 'request-failed' || error.kind === 'invalid-response')
+  );
+}

@@ -5,9 +5,13 @@ import {
   type FooterGlobal,
   type HeaderGlobal,
 } from '@mvp-realty/api-contracts';
+import { connection } from 'next/server';
+
+import { footerFallback, headerFallback } from '@/data/site-chrome';
 
 import { getCommunityNavItems, type CommunityNavItem } from './areas';
 import { fetchJson } from './client';
+import { isCmsAvailabilityError } from './errors';
 import { normalizeCta, normalizeLink } from './links';
 import { normalizeOptionalMediaField } from './media';
 import { array, isRecord, optionalNum, text } from './pages/primitives';
@@ -124,9 +128,15 @@ export function normalizeFooter(raw: unknown, communities: CommunityNavItem[] = 
 }
 
 export async function getHeaderContent(): Promise<HeaderGlobal> {
-  return normalizeHeader(
-    await fetchJson('/api/globals/header?depth=2', { tags: [CMS_CACHE_TAGS.header] }),
-  );
+  try {
+    return normalizeHeader(
+      await fetchJson('/api/globals/header?depth=2', { tags: [CMS_CACHE_TAGS.header] }),
+    );
+  } catch (error) {
+    if (!isCmsAvailabilityError(error)) throw error;
+    await connection();
+    return headerFallback;
+  }
 }
 
 /** True only when a column needs the Areas query — pinned overrides arrive populated at depth 2. */
@@ -141,11 +151,17 @@ function needsCommunityQuery(raw: unknown): boolean {
 }
 
 export async function getFooterContent(): Promise<FooterGlobal> {
-  // Tagged with `areas` too: publishing a community must refresh auto footer columns.
-  const raw = await fetchJson('/api/globals/footer?depth=2', {
-    tags: [CMS_CACHE_TAGS.footer, CMS_CACHE_TAGS.areas],
-  });
+  try {
+    // Tagged with `areas` too: publishing a community must refresh auto footer columns.
+    const raw = await fetchJson('/api/globals/footer?depth=2', {
+      tags: [CMS_CACHE_TAGS.footer, CMS_CACHE_TAGS.areas],
+    });
 
-  const communities = needsCommunityQuery(raw) ? await getCommunityNavItems() : [];
-  return normalizeFooter(raw, communities);
+    const communities = needsCommunityQuery(raw) ? await getCommunityNavItems() : [];
+    return normalizeFooter(raw, communities);
+  } catch (error) {
+    if (!isCmsAvailabilityError(error)) throw error;
+    await connection();
+    return footerFallback;
+  }
 }

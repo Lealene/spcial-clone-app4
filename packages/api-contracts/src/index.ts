@@ -955,8 +955,8 @@ export type LeadFormType = z.infer<typeof leadFormTypeSchema>;
  * are contract — changing one silently re-routes leads in the CRM.
  */
 export const LEAD_SOURCES = {
-  tour: 'MVP Realty Website - Tour Request',
-  shortlist: 'MVP Realty Website - Shortlist',
+  tour: '55 Living Team Website - Tour Request',
+  shortlist: '55 Living Team Website - Shortlist',
 } as const satisfies Record<LeadFormType, string>;
 
 /**

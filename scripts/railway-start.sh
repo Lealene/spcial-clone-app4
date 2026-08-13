@@ -11,10 +11,7 @@ target="${APP_TARGET:-web}"
 echo "railway-start: APP_TARGET=${target}"
 
 case "${target}" in
-  backend)
-    pnpm --filter @mvp-realty/backend migrate
-    pnpm --filter @mvp-realty/backend start
-    ;;
+  backend) pnpm --filter @mvp-realty/backend start ;;
   web) pnpm --filter @mvp-realty/web start ;;
   *) echo "railway-start: unknown APP_TARGET '${target}'" >&2; exit 1 ;;
 esac

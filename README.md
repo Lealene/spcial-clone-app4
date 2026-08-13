@@ -1,6 +1,6 @@
-# MVP Realty
+# 55 Living Team
 
-MVP Realty is a pnpm monorepo with a customer-facing **Next.js 16** website and a **Payload v3** CMS backed by PostgreSQL. Turborepo runs the apps and shared TypeScript packages together.
+55 Living Team is a pnpm monorepo with a customer-facing **Next.js 16** website and a **Payload v3** CMS backed by PostgreSQL. Turborepo runs the apps and shared TypeScript packages together.
 
 If this is your first time working in the repository, follow **First-time setup** from top to bottom.
 

@@ -72,7 +72,7 @@ describe('fresh Payload globals', () => {
   it('accepts Payload Header defaults as unseeded', () => {
     const header = {
       brandHomeLink: { type: 'custom' },
-      brandLabel: 'MVP Realty',
+      brandLabel: '55 Living Team',
       navItems: [],
       primaryCta: { link: { type: 'custom' } },
       mobileMenuLabel: 'Menu',

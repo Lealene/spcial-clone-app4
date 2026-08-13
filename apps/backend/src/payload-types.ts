@@ -2657,7 +2657,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface SiteSetting {
   id: number;
   /**
-   * Public brand name, e.g. "MVP Realty".
+   * Public brand name, e.g. "55 Living Team".
    */
   name: string;
   /**

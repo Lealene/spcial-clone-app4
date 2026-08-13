@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { cache } from 'react';
 
 import { CmsPageBlocksRenderer } from '@/components/blocks';
-import { CmsDataError } from '@/lib/cms/errors';
-import { getPageContent } from '@/lib/cms/pages';
+import { getHomePageContent as resolveHomePageContent } from '@/lib/cms/pages/home';
 import { getCmsPageMetadata } from '@/lib/cms/pages/metadata';
 import { JsonLd } from '@/lib/seo/json-ld';
 import { buildCmsPageGraph } from '@/lib/seo/web-page';
@@ -14,16 +13,7 @@ import { buildCmsPageGraph } from '@/lib/seo/web-page';
  */
 export const revalidate = 3600;
 
-const getHomePageContent = cache(async () => {
-  const result = await getPageContent('home');
-  if (result.status === 'missing') {
-    throw new CmsDataError('The required CMS homepage is missing.', {
-      kind: 'missing-required-content',
-      resource: 'page:home',
-    });
-  }
-  return result.page;
-});
+const getHomePageContent = cache(resolveHomePageContent);
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getHomePageContent();

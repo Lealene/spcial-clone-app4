@@ -1,7 +1,7 @@
 import { getSiteSettings } from '@/lib/cms/site-settings';
 import { OG_IMAGE_CONTENT_TYPE, OG_IMAGE_SIZE, renderOgCard } from '@/lib/seo/og-card';
 
-export const alt = 'MVP Realty — Gulf-Coast concierge for luxury gated communities';
+export const alt = '55 Living Team — Gulf-Coast concierge for luxury gated communities';
 export const size = OG_IMAGE_SIZE;
 export const contentType = OG_IMAGE_CONTENT_TYPE;
 

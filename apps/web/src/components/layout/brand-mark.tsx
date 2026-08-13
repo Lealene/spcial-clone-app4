@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 import { cn } from '@mvp-realty/ui/lib/utils';
 
-/** The MVP Realty house mark — gold roofline over a navy tile. */
+/** The 55 Living Team house mark — gold roofline over a navy tile. */
 export function BrandMark({ className }: { className?: string }) {
   return (
     <span
@@ -23,7 +23,7 @@ export function BrandMark({ className }: { className?: string }) {
 /** Brand wordmark with the final word highlighted in gold. */
 export function BrandWordmark({
   className,
-  label = 'MVP Realty',
+  label = '55 Living Team',
 }: {
   className?: string;
   label?: string;
@@ -35,7 +35,7 @@ export function BrandWordmark({
   return (
     <b
       className={cn(
-        'text-primary font-serif text-[23px] leading-none font-bold tracking-[0.005em]',
+        'text-primary font-serif text-[23px] font-bold leading-none tracking-[0.005em]',
         className,
       )}
     >
@@ -87,7 +87,7 @@ export function BrandLockup({
         height={logo.height && logo.height > 0 ? logo.height : maxHeight}
         className={cn(
           'w-auto object-contain',
-          variant === 'header' ? 'max-h-16 lg:max-h-22' : 'max-h-20',
+          variant === 'header' ? 'lg:max-h-22 max-h-16' : 'max-h-20',
           className,
         )}
         priority={variant === 'header'}

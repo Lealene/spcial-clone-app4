@@ -90,14 +90,14 @@ describe('normalizeListingCard / Detail', () => {
           slug: 'area-broker',
           name: 'Area Broker',
           title: 'Agent',
-          brokerage: 'MVP Realty',
+          brokerage: '55 Living Team',
         },
       },
       broker: {
         slug: 'listing-broker',
         name: 'Listing Broker',
         title: 'Broker',
-        brokerage: 'MVP Realty',
+        brokerage: '55 Living Team',
       },
       heroImage: {
         url: 'https://pub-example.r2.dev/listing-225077871-hero.jpg',

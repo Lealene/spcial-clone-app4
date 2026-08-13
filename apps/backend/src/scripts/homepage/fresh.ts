@@ -27,7 +27,7 @@ export function headerIsUnseeded(header: Header): boolean {
 
   return (
     !linkHasContent(header.brandHomeLink) &&
-    (!hasText(header.brandLabel) || header.brandLabel === 'MVP Realty') &&
+    (!hasText(header.brandLabel) || header.brandLabel === '55 Living Team') &&
     !hasText(header.brandMarkAlt) &&
     !hasBrandLogo(header.brandLogo) &&
     (!header.navItems || header.navItems.length === 0) &&

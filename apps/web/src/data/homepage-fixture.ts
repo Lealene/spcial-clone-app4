@@ -1,18 +1,19 @@
 import type { CmsPage } from '@mvp-realty/api-contracts';
 
 import { amenities } from './amenities';
-import { unsplash } from './images';
 import { lifestyleTiles } from './lifestyle';
-import { featuredResidences } from './residences';
 import { testimonials } from './testimonials';
 
 const link = (label: string, href: string) => ({ label, href });
+const mediaBaseUrl = 'https://pub-de584fcb52e3431f837b039818423714.r2.dev';
+
+/** Read-only fallback snapshot of the published homepage, captured 2026-08-14. */
 
 export const homepageFixture: CmsPage = {
   title: 'Home',
   slug: 'home',
   seo: {
-    metaTitle: 'MVP Realty — Gulf-Coast Concierge for Luxury Gated Communities',
+    metaTitle: '55 Living Team — Gulf-Coast Concierge for Luxury Gated Communities',
     metaDescription:
       'A prestigious Gulf-Coast address with resort amenities and a personal concierge. Private gated communities minutes from the Naples beaches.',
     canonicalMode: 'auto',
@@ -25,7 +26,7 @@ export const homepageFixture: CmsPage = {
     {
       blockType: 'hero',
       backgroundImage: {
-        src: '/images/hero-naples-waterfront.jpg',
+        src: `${mediaBaseUrl}/seed-homepage--hero--9a64ed39f1e6.jpg`,
         alt: 'Naples bayfront residences along the Gulf Coast at golden hour',
       },
       backgroundImagePriority: true,
@@ -66,13 +67,6 @@ export const homepageFixture: CmsPage = {
         lede: 'A sample of what is selling now, with starting prices, so you can see where you fit before we ever talk.',
       },
       sourceMode: 'manual',
-      manualListings: featuredResidences.map((residence) => ({
-        ...residence,
-        bedsLabel: 'Beds',
-        bathsLabel: 'Baths',
-        sqftLabel: 'Sq Ft',
-        link: link(residence.name, `/listings/${residence.slug}`),
-      })),
       cardCtaLabel: 'View residence',
       moreLink: link('View the full collection', '/listings'),
     },
@@ -80,7 +74,7 @@ export const homepageFixture: CmsPage = {
       blockType: 'lifestyle',
       anchorId: 'lifestyle',
       backgroundImage: {
-        src: unsplash('1414235077428-338989a2e8c0', 2000),
+        src: `${mediaBaseUrl}/seed-homepage--hero--9a64ed39f1e6.jpg`,
         alt: 'Residents gathered around a long candlelit table at a clubhouse dinner, talking and laughing together',
       },
       kicker: 'The Life Inside the Gates',
@@ -114,7 +108,7 @@ export const homepageFixture: CmsPage = {
         lede: 'From the first cup of coffee at the clubhouse to sunset by the pool, the amenities are designed for an active, social life, and tended so you never have to think about the upkeep.',
       },
       featureImage: {
-        src: unsplash('1576013551627-0cc20b96c2a7', 1400),
+        src: `${mediaBaseUrl}/seed-homepage--hero--9a64ed39f1e6.jpg`,
         alt: 'Residents gathered with drinks at the resort pool deck on a sunny afternoon',
       },
       featureTitle: 'The Grand Clubhouse',
@@ -125,21 +119,17 @@ export const homepageFixture: CmsPage = {
       blockType: 'ownerIntro',
       anchorId: 'concierge',
       portrait: {
-        src: '/images/owner-eleanor-voss.jpg',
-        alt: 'Portrait of Eleanor Voss, Broker and Owner of MVP Realty, with her Doberman',
+        src: `${mediaBaseUrl}/55Living_Headshot_Kim_accent.png`,
+        alt: 'Portrait of Kim Noble, Senior Real Estate Specialist, with her Doberman',
       },
-      portraitBadgeLabel: 'Broker & Owner',
-      kicker: 'Meet the Owner',
+      portraitBadgeLabel: 'Real Estate Advisor',
+      kicker: 'Meet the Real Estate Advisor',
       heading: 'One person, from first call to',
       headingAccent: 'front door.',
-      titleLine: 'Eleanor Voss · Broker & Owner, MVP Realty',
-      bio: 'Eleanor has spent eighteen years matching Gulf-Coast buyers to the right gate, not just the right house. As the broker who owns the firm, she answers her own phone, walks the courts and clubhouses with you, and stays on long after the keys change hands. You are never handed off to a sales floor.',
-      signature: 'Eleanor Voss',
-      credentials: [
-        { value: '18 yrs', label: 'on the Gulf Coast' },
-        { value: '9', label: 'communities, known by name' },
-        { value: '1:1', label: 'by appointment only' },
-      ],
+      titleLine: 'Kim Noble Senior Real Estate Specialist',
+      bio: "Since 2005, I've specialized in helping buyers discover the Southwest Florida lifestyle that best fits their next chapter. My unique niche combines expertise in active adult lifestyle communities and new construction, giving my clients access to opportunities and insights that few REALTORS® can offer. With an intimate knowledge of the local market and a personalized approach, I'm committed to helping you make a confident, informed decision. Whether you're searching for a low-maintenance home, a golf community, or a resort-style neighborhood, I'll help you find the perfect place to call home.",
+      signature: 'Kim Noble',
+      credentials: [],
     },
     {
       blockType: 'leadCapture',
@@ -161,7 +151,7 @@ export const homepageFixture: CmsPage = {
       },
       submitLabel: 'Request My Shortlist',
       privacyText:
-        'A private introduction to MVP Realty. We never share your details, and you will only hear from your own concierge.',
+        'A private introduction to 55 Living Team. We never share your details, and you will only hear from your own concierge.',
       successHeading: 'Your request is in.',
       successBody:
         'Thank you. Your concierge will be in touch shortly with a shortlist prepared just for you — no sales floor, no obligation.',

@@ -25,10 +25,17 @@ export const featuredCommunities: Community[] = [
     name: 'Bonita Bay',
     locality: 'Bonita Springs · private Gulf beach park',
     priceRange: 'From the $400s – $5M+',
-    tags: ['Golf & Marina', 'Gated', 'Beach Park'],
-    nowSelling: 14,
+    tags: [
+      'Five Championship Golf Courses',
+      'Full-Service Marina',
+      'Private Beach Park & Shuttle',
+      'Tennis & Pickleball Courts',
+      'Lifestyle & Fitness Center',
+      'Waterfront Dining & Social',
+    ],
+    nowSelling: 103,
     image: {
-      src: '/images/community-bonita-bay.jpg',
+      src: 'https://pub-de584fcb52e3431f837b039818423714.r2.dev/seed-homepage--bonitaBay--978435a6e300.jpg',
       alt: "Bonita Bay's landmark stone entrance monument framed by oaks and flowering beds",
     },
   },
@@ -37,11 +44,18 @@ export const featuredCommunities: Community[] = [
     name: 'Valencia Bonita',
     locality: 'Bonita Springs · 55+ gated',
     priceRange: 'From the $500s – $1M',
-    tags: ['55+ Gated', 'Resort Clubhouse', 'Tennis & Pickleball'],
-    nowSelling: 22,
+    tags: [
+      '45,000 Sq Ft Social Clubhouse',
+      'Resort & Lap Pools',
+      'Tennis & Pickleball Courts',
+      'Fitness Center & Studios',
+      'Spa & Wellness Suite',
+      'On-Site Restaurant & Bar',
+    ],
+    nowSelling: 18,
     image: {
-      src: '/images/community-valencia-bonita.jpg',
-      alt: 'The 45,000-square-foot resort clubhouse at Valencia Bonita, framed by royal palms',
+      src: 'https://pub-de584fcb52e3431f837b039818423714.r2.dev/46823846_281274406064033_6998392021895348224_n.jpg',
+      alt: 'The resort clubhouse at Valencia Bonita, framed by royal palms',
     },
   },
   {
@@ -49,11 +63,22 @@ export const featuredCommunities: Community[] = [
     name: 'Valencia Trails',
     locality: 'Naples · 55+ gated',
     priceRange: 'From the $600s – $1.3M',
-    tags: ['New & Resale', '55+ Gated', 'Resort Pool'],
-    nowSelling: 9,
+    tags: [
+      '42,000 Sq Ft Resort Clubhouse',
+      'Beach-Entry Resort Pool',
+      'Tennis & Pickleball Courts',
+      'Fitness Center & Group Studio',
+      'Day Spa & Salon',
+      'Café & Social Hall',
+    ],
+    nowSelling: 23,
     image: {
-      src: '/images/community-valencia-trails.jpg',
+      src: 'https://pub-de584fcb52e3431f837b039818423714.r2.dev/seed-homepage--valenciaTrails--3a96abcb0c6b.jpg',
       alt: 'Aerial of the resort-style beach-entry pool and clubhouse at Valencia Trails',
     },
   },
 ];
+
+export const communityListingCountsFallback = new Map(
+  featuredCommunities.map((community) => [community.slug, community.nowSelling]),
+);

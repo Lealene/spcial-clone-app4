@@ -21,7 +21,7 @@ const LISTINGS_TITLE = 'Browse Residences';
 const LISTINGS_DESCRIPTION =
   "Browse luxury residences across Southwest Florida's premier gated communities. Refine by community, price, beds, and features — or let a concierge build your shortlist.";
 
-// Title omits the brand so the root layout's `%s | MVP Realty` template applies.
+// Title omits the brand so the root layout's `%s | 55 Living Team` template applies.
 export const metadata: Metadata = {
   title: LISTINGS_TITLE,
   description: LISTINGS_DESCRIPTION,

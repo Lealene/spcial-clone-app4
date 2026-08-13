@@ -7,8 +7,10 @@ import {
   type SitePostalAddress,
   type SiteSettings,
 } from '@mvp-realty/api-contracts';
+import { connection } from 'next/server';
 
 import { fetchJson } from './client';
+import { isCmsAvailabilityError } from './errors';
 import { normalizeOptionalMediaField } from './media';
 import { array, isRecord, optionalNum, text } from './pages/primitives';
 import { toTelHref } from './phone';
@@ -18,7 +20,7 @@ import { toTelHref } from './phone';
  * must still render if the CMS is unreachable — this keeps the organization
  * node valid rather than dropping it.
  */
-const FALLBACK_SETTINGS: SiteSettings = siteSettingsSchema.parse({ name: 'MVP Realty' });
+const FALLBACK_SETTINGS: SiteSettings = siteSettingsSchema.parse({ name: '55 Living Team' });
 
 const OPENING_DAY_SET = new Set<string>(SITE_OPENING_DAYS);
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -106,7 +108,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       tags: [CMS_CACHE_TAGS.siteSettings],
     });
     return normalizeSiteSettings(raw);
-  } catch {
+  } catch (error) {
+    if (!isCmsAvailabilityError(error)) throw error;
+    await connection();
     return FALLBACK_SETTINGS;
   }
 }

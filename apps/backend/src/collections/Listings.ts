@@ -3,6 +3,7 @@ import type { CollectionConfig, Field } from 'payload';
 
 import { authenticated } from '../access/authenticated';
 import { seoField } from '../fields/seo';
+import { authenticatedFieldRead } from '../hooks/public-listing-data';
 import { revalidateAfterChange, revalidateAfterDelete } from '../hooks/revalidate';
 
 const CACHE_TAGS = [CMS_CACHE_TAGS.listings, CMS_CACHE_TAGS.listingsFeatured];
@@ -254,7 +255,11 @@ export const Listings: CollectionConfig = {
           fields: [
             { name: 'publicRemarks', type: 'textarea' },
             { name: 'listAgentName', type: 'text' },
-            { name: 'listOfficeName', type: 'text' },
+            {
+              name: 'listOfficeName',
+              type: 'text',
+              access: { read: authenticatedFieldRead },
+            },
             {
               name: 'interiorSpecs',
               type: 'group',
@@ -352,6 +357,7 @@ export const Listings: CollectionConfig = {
             {
               name: 'rawData',
               type: 'json',
+              access: { read: authenticatedFieldRead },
               admin: {
                 description: 'Full RESO record for debugging / later field extraction.',
               },

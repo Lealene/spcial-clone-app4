@@ -1,8 +1,11 @@
 import { CMS_CACHE_TAGS, type AreaPdpMeta, type CommunityDetail } from '@mvp-realty/api-contracts';
+import { connection } from 'next/server';
 
 import type { FilterOption } from '@/lib/listings/filters';
+import { featuredCommunities, heroCommunities } from '@/data/communities';
 
 import { fetchJson } from '../client';
+import { isCmsAvailabilityError } from '../errors';
 import {
   normalizeAreaPdpMeta,
   normalizeCommunityAreaCard,
@@ -39,20 +42,39 @@ async function fetchCommunityAreaDocs(): Promise<unknown[]> {
 
 /** Homepage featured community cards — Payload Areas with kind=community. */
 export async function getCommunityAreaCards(limit = 12): Promise<CommunityAreaCard[]> {
-  const docs = await fetchCommunityAreaDocs();
-  return docs
-    .map(normalizeCommunityAreaCard)
-    .filter((card): card is CommunityAreaCard => card !== null)
-    .slice(0, limit);
+  try {
+    const docs = await fetchCommunityAreaDocs();
+    return docs
+      .map(normalizeCommunityAreaCard)
+      .filter((card): card is CommunityAreaCard => card !== null)
+      .slice(0, limit);
+  } catch (error) {
+    if (!isCmsAvailabilityError(error)) throw error;
+    await connection();
+    return featuredCommunities.slice(0, limit).map((community) => ({
+      ...community,
+      nowSellingLabel: 'now selling',
+      href: `/communities/${community.slug}`,
+    }));
+  }
 }
 
 /** Homepage communities strip — same Areas source as featured cards. */
 export async function getCommunityAreaStripItems(limit = 3): Promise<CommunityAreaStripItem[]> {
-  const docs = await fetchCommunityAreaDocs();
-  return docs
-    .map(normalizeCommunityAreaStripItem)
-    .filter((item): item is CommunityAreaStripItem => item !== null)
-    .slice(0, limit);
+  try {
+    const docs = await fetchCommunityAreaDocs();
+    return docs
+      .map(normalizeCommunityAreaStripItem)
+      .filter((item): item is CommunityAreaStripItem => item !== null)
+      .slice(0, limit);
+  } catch (error) {
+    if (!isCmsAvailabilityError(error)) throw error;
+    await connection();
+    return heroCommunities.slice(0, limit).map((community) => ({
+      ...community,
+      href: `/communities/${community.slug}`,
+    }));
+  }
 }
 
 export async function getCommunityDetailBySlug(slug: string): Promise<CommunityDetail | null> {

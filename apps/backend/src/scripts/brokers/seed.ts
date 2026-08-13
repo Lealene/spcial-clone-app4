@@ -24,7 +24,7 @@ export const BROKER_SEEDS: BrokerSeed[] = [
     slug: 'eleanor-voss',
     name: 'Eleanor Voss',
     title: 'Broker & Owner',
-    brokerage: 'MVP Realty',
+    brokerage: '55 Living Team',
     conciergeLabel: 'Your {community} Concierge',
     phone: '(239) 555-0148',
     bio: 'Eleanor has spent eighteen years matching Gulf-Coast buyers to the right gate, not just the right house. As the broker who owns the firm, she answers her own phone, walks the courts and clubhouses with you, and stays on long after the keys change hands. You are never handed off to a sales floor.',
