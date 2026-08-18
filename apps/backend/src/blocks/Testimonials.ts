@@ -30,7 +30,7 @@ export const TestimonialsBlock: Block = {
       fields: [
         { name: 'slug', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.slug },
         { name: 'name', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },
-        { name: 'location', type: 'text', required: true, maxLength: CMS_TEXT_LIMITS.label },
+
         { name: 'quote', type: 'textarea', required: true, maxLength: CMS_TEXT_LIMITS.longCopy },
         mediaField({
           name: 'portrait',

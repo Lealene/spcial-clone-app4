@@ -43,7 +43,7 @@ export type Residence = {
 export type Testimonial = {
   slug: string;
   name: string;
-  location: string;
+  
   quote: string;
   portrait: Image;
 };

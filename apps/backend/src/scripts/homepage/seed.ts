@@ -279,7 +279,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
           {
             slug: 'whitfield',
             name: 'Margaret & Tom Whitfield',
-            location: 'Residents · Seaside Cove, Naples',
+            
             quote:
               'We came for the lanai and the sunsets. We stayed because, for the first time in years, our calendar is full of people we love.',
             portrait: media(mediaDocs.owner, 'Portrait of Margaret and Tom Whitfield'),
@@ -287,7 +287,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
           {
             slug: 'alvarez',
             name: 'Diane Alvarez',
-            location: 'Resident · Mangrove Bay, Bonita Springs',
+            
             quote:
               'I worried about starting over at sixty-six. By the second week I had a pickleball partner, a book club, and a standing dinner. I worried about nothing.',
             portrait: media(mediaDocs.valenciaBonita, 'Portrait of Diane Alvarez'),
@@ -295,7 +295,7 @@ export function buildHomepageSeedData(mediaDocs: HomepageSeedMediaDocs) {
           {
             slug: 'bennett',
             name: 'Charles & Ruth Bennett',
-            location: 'Residents · Palm Reserve, Marco Island',
+            
             quote:
               'The concierge handled the move down to the last box. We spent our first weekend on the courts, not unpacking. That was the whole difference.',
             portrait: media(mediaDocs.valenciaTrails, 'Portrait of Charles and Ruth Bennett'),

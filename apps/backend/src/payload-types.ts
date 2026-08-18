@@ -671,7 +671,6 @@ export interface TestimonialsBlock {
   stories: {
     slug: string;
     name: string;
-    location: string;
     quote: string;
     portrait: {
       /**
@@ -2058,7 +2057,6 @@ export interface TestimonialsBlockSelect<T extends boolean = true> {
     | {
         slug?: T;
         name?: T;
-        location?: T;
         quote?: T;
         portrait?:
           | T

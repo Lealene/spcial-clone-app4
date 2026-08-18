@@ -123,12 +123,25 @@ function normalizeCmsPageBlockEntry(
           id: typeof raw.id === 'string' && raw.id.length > 0 ? raw.id : undefined,
         }
       : normalized;
-    const parsed = cmsPageBlockSchemasByType[blockType].safeParse(candidate);
+        const parsed = cmsPageBlockSchemasByType[blockType].safeParse(candidate);
 
     if (!parsed.success) {
+      console.error('[cms-page] Testimonials/block validation error', {
+        blockType,
+        pageSlug,
+        layoutIndex,
+        issues: parsed.error.issues,
+        candidate,
+      });
+
       return {
         status: 'invalid',
-        diagnostic: invalidDiagnostic(raw, pageSlug, layoutIndex, zodIssues(parsed.error)),
+        diagnostic: invalidDiagnostic(
+          raw,
+          pageSlug,
+          layoutIndex,
+          zodIssues(parsed.error),
+        ),
       };
     }
 
@@ -142,7 +155,6 @@ function normalizeCmsPageBlockEntry(
     };
   }
 }
-
 export function normalizeCmsPageBlocks(
   rawLayout: readonly unknown[],
   pageSlug: string,

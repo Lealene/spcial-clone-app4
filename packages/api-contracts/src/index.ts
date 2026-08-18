@@ -254,7 +254,7 @@ export type LifestyleBlock = z.infer<typeof lifestyleBlockSchema>;
 export const testimonialStorySchema = z.object({
   slug: z.string().min(1).max(CMS_TEXT_LIMITS.slug),
   name: z.string().min(1).max(CMS_TEXT_LIMITS.label),
-  location: z.string().min(1).max(CMS_TEXT_LIMITS.label),
+  
   quote: z.string().min(1).max(CMS_TEXT_LIMITS.longCopy),
   portrait: cmsImageSchema,
   tabAriaLabel: z.string().optional(),
