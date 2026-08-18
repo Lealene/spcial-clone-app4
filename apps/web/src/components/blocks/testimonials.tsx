@@ -164,9 +164,7 @@ export function Testimonials({ block }: { block: TestimonialsBlock }) {
                       <b className="block font-sans text-[17px] font-bold tracking-[0.005em] text-white">
                         {t.name}
                       </b>
-                      <span className="mt-[3px] block font-sans text-[14px] text-white/60">
-                        {t.location}
-                      </span>
+                      
                     </div>
                   </div>
                 </article>
